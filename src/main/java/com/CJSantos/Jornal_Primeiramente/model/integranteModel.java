@@ -30,4 +30,5 @@ public class integranteModel {
     public integranteModel() {}
 
     // Getters e Setters...
+
 }
