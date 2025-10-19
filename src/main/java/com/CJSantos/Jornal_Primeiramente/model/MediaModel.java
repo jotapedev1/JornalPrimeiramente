@@ -24,7 +24,7 @@ public class MediaModel {
     @Column(name = "description", nullable = false, length = 255)
     private String description;
 
-    @Column(name = "save_count", nullable = false)
+    @Column(name = "like_count", nullable = false)
     private int likeCount;
 
     @Column(name = "save_count", nullable = false)
