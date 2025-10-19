@@ -8,6 +8,7 @@ import java.util.UUID;
 @Table(name = "reader")
 @Getter
 @Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

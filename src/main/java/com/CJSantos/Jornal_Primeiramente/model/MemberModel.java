@@ -10,6 +10,7 @@ import java.util.UUID;
 //Lombok saving lives below OMG
 @Getter
 @Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
