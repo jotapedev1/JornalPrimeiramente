@@ -25,6 +25,9 @@ public class NoticeModel {
     @Column(nullable = false)
     private LocalDateTime creationDate;
 
+    @Lob
+    private byte[] photo;
+
     @ManyToOne
     @JoinColumn(name = "id_moderator")
     private ModeratorModel moderator;

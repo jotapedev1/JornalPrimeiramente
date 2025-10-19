@@ -34,7 +34,7 @@ public class MemberModel {
     @Column(name = "class", nullable = false, length = 10)
     private String classroom; //We cant use 'class' LOL
 
-    @Column(name = "photo")
+    @Lob
     private byte[] photo;
 
     @Column(nullable = false, length = 100)

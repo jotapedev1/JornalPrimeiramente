@@ -29,7 +29,7 @@ public class ReaderModel {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "photo")
+    @Lob
     private byte[] photo;
 
     @Column(nullable = false, length = 100)
