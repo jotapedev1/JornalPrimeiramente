@@ -1,35 +1,56 @@
-HELP.md
+# Maven/Gradle build output
 target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-application.properties
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
 build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### VS Code ###
+# IDE-specific files (e.g., IntelliJ, Eclipse)
+.idea/
 .vscode/
-/resources/
+*.iml
+.classpath
+.project
+.settings/
+
+# Log files
+*.log
+logs/
+
+# Sensitive files (e.g., configuration with credentials)
+application*.properties.local
+application*.yml.local
+
+# Node modules
+node_modules/
+
+# Metro Bundler cache
+.expo/
+.yarn/
+.pnp/
+.pnp.js
+
+# Android build outputs
+android/build/
+android/app/build/
+android/.gradle/
+
+# iOS build outputs
+ios/build/
+ios/Pods/
+ios/.xcode.env.local
+
+# Expo-specific files (if using Expo)
+*.jks
+*.keystore
+
+# React Native specific files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor specific files
+*.sublime-workspace
+*.sublime-project
