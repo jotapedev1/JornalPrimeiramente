@@ -4,26 +4,24 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.UUID;
 
+@Data
 @Entity
 @Table(name = "like_entry")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class LikeEntryModel {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_like", columnDefinition = "CHAR(36)")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id_like", columnDefinition = "UUID")
     private UUID idLike;
 
     @ManyToOne
-    @JoinColumn(name = "id_media")
+    @JoinColumn(name = "media_id", nullable = false)
     private MediaModel media;
 
     @ManyToOne
-    @JoinColumn(name = "id_member")
-    private MemberModel member;
-
-    @ManyToOne
-    @JoinColumn(name = "id_reader")
-    private ReaderModel reader;
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserModel user; // Pode ser Reader, Member ou Moderator
 }

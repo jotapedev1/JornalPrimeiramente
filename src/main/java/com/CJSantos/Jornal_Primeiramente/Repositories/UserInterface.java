@@ -1,4 +1,4 @@
-package com.CJSantos.Jornal_Primeiramente.UserPackage;
+package com.CJSantos.Jornal_Primeiramente.Repositories;
 
 public interface UserInterface {
 

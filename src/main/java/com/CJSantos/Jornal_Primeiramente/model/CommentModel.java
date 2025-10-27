@@ -23,10 +23,6 @@ public class CommentModel {
     private MediaModel media;
 
     @ManyToOne
-    @JoinColumn(name = "id_member")
-    private MemberModel member;
-
-    @ManyToOne
-    @JoinColumn(name = "id_reader")
-    private ReaderModel reader;
+    @JoinColumn(name = "id_user")
+    private UserModel user;
 }

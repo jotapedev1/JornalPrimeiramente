@@ -1,4 +1,4 @@
-package com.CJSantos.Jornal_Primeiramente;
+package com.CJSantos.Jornal_Primeiramente.MediaPackage;
 
 public enum MediaType {
     ARTICLE,

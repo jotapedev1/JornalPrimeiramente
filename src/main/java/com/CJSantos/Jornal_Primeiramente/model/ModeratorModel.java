@@ -4,14 +4,19 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.UUID;
 
+@Data
 @Entity
 @Table(name = "moderator")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ModeratorModel {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_moderator", columnDefinition = "CHAR(36)")
-    private UUID idModerator;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserModel user;
 }
