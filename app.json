@@ -1,0 +1,8 @@
+{
+  "android": {
+    "package": "com.anonymous.jornalprimeiramente"
+  },
+  "ios": {
+    "bundleIdentifier": "com.anonymous.jornalprimeiramente"
+  }
+}
