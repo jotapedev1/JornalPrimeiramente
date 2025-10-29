@@ -17,6 +17,8 @@ logs/
 # Sensitive files (e.g., configuration with credentials)
 application*.properties.local
 application*.yml.local
+application.properties
+resources/application.properties
 
 # Node modules
 node_modules/
