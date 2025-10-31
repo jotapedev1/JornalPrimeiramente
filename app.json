@@ -4,5 +4,36 @@
   },
   "ios": {
     "bundleIdentifier": "com.anonymous.jornalprimeiramente"
-  }
+  },
+  "plugins": [
+    [
+      "expo-font",
+      {
+        "fonts": [
+          "./assets/fonts/Lalezar-MediumItalic.ttf"
+        ],
+        "android": {
+          "fonts": ["node_modules/@expo-google-fonts/inter/900Black/Inter_900Black.ttf",
+            {
+              "fontFamily": "Lalezar",
+              "fontDefinitions": [
+                {
+                  "path": "./assets/fonts/Lalezar-BoldItalic.ttf",
+                  "weight": 700,
+                  "style": "italic"
+                },
+                {
+                  "path": "./assets/fonts/Lalezar-Bold.ttf",
+                  "weight": 700
+                }
+              ]
+            }
+          ]
+        },
+        "ios": {
+          "fonts": ["./assets/fonts/Lalezar-Bold.ttf", "./assets/fonts/Lalezar-BoldItalic.ttf"]
+        }
+      }
+    ]
+  ]
 }
