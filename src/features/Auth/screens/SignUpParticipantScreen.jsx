@@ -3,30 +3,39 @@ import {View, Text, TextInput, Button, StyleSheet, ActivityIndicator, BackHandle
 import {Platform} from "react-native";
 import {Lalezar_400Regular} from "@expo-google-fonts/lalezar";
 import InputButton from "../components/inputButton";
-// Importe o authApi, que você criará em breve
-// import authApi from '../api/authApi';
+import SendButton from "../components/SendButton";
+import TemplateButton from "../components/TemplateButton";
 
-const SignUpScreen = ({ navigation }) => {
+const SignUpParticipantScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.topContainer}>
                 <Text style={styles.titleJornal}>JORNAL PRIMEIRAMENTE</Text>
             </View>
-            <Text style={[styles.title,{ width: '100%', textAlign: 'center'}]}>Cadastre-se</Text>
+            <Text style={[styles.title,{ width: '100%', textAlign: 'center', fontFamily: 'Lalezar_400Regular'}]}>Cadastre-se</Text>
+            <InputButton
+                label="Nome Completo"
+                placeholder="Digite seu nome completo"
+            />
             <InputButton
                 label="E-mail"
                 placeholder="Digite seu e-mail"
+            />
+            <InputButton
+                label="Confirme seu e-mail"
+            />
+            <InputButton
+                label="Turma"
             />
             <InputButton
                 label="Senha"
                 placeholder="Digite sua senha"
             />
             <InputButton
-                label="Nome"
-                placeholder="Digite seu nome completo"
+                label="Confirme sua senha"
             />
-            <Button title={'Cadastre-se'}></Button>
-            <Button title={'Já tem cadastro?'} onPress={()=> navigation.navigate('Login')}/>
+            <SendButton label={'Cadastre-se'}></SendButton>
+            <TemplateButton label={'Já tem cadastro?'} onPress={()=> navigation.popTo('Login')}/>
 
         </View>
     );
@@ -34,7 +43,7 @@ const SignUpScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     titleJornal: {
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: '900',
         textAlign: 'center',
         color: 'white',
@@ -48,7 +57,7 @@ const styles = StyleSheet.create({
         padding: 1,
         width: '110%',
         height: '8.5%',
-        backgroundColor: 'red',
+        backgroundColor: '#e30000',
     },
     container: {
         flex: 1,
@@ -70,4 +79,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default SignUpScreen;
+export default SignUpParticipantScreen;

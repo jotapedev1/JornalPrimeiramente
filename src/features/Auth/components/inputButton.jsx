@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         paddingHorizontal: 10,
         borderRadius: 30,
+        backgroundColor: '#d9d9d9',
     },
     inputLabel: {
         fontSize: 13,
@@ -31,5 +32,6 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         marginBottom: 3,
         paddingHorizontal: 10,
+        fontFamily: 'Inter-Regular'
     },
 });
