@@ -4,13 +4,12 @@ import {Platform} from "react-native";
 import SendButton from "../components/SendButton";
 import TemplateButton from "../components/TemplateButton";
 import {Lalezar_400Regular} from "@expo-google-fonts/lalezar";
+import JornalLogo from "../../../shared/components/JornalLogo";
 
 const TypeSignUpScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
-            <View style={styles.topContainer}>
-                <Text style={styles.titleJornal}>JORNAL PRIMEIRAMENTE</Text>
-            </View>
+            <JornalLogo/>
 
             <Image source={require('../../../assets/imgs/signupimg.jpg')} style={styles.image1}/>
 
@@ -31,23 +30,6 @@ const TypeSignUpScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    titleJornal: {
-        fontFamily: 'Lalezar_400Regular',
-        fontSize: 28,
-        fontWeight: '900',
-        textAlign: 'center',
-        color: 'white',
-    },
-    topContainer: {
-        position: 'absolute',
-        top: 0,
-        justifyContent: 'center',
-        alignContent: 'center',
-        padding: 1,
-        width: '110%',
-        height: '8.5%',
-        backgroundColor: '#e30000',
-    },
     container: {
         flex: 1,
         justifyContent: 'center',
@@ -74,6 +56,5 @@ const styles = StyleSheet.create({
         top: 64,
     }
 });
-
 
 export default TypeSignUpScreen;

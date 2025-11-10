@@ -4,13 +4,13 @@ import {Platform} from "react-native";
 import InputButton from "../components/inputButton"
 import SendButton from "../components/SendButton";
 import TemplateButton from "../components/TemplateButton";
+import JornalLogo from "../../../shared/components/JornalLogo";
 
 const LoginScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
-            <View style={styles.topContainer}>
-                <Text style={styles.titleJornal}>JORNAL PRIMEIRAMENTE</Text>
-            </View>
+                <JornalLogo/>
+
                 <Text style={[styles.title,{width: '100%', textAlign: 'center', fontFamily: 'Lalezar_400Regular'}]}>Login</Text>
                 <InputButton
                     label="E-mail"
@@ -20,7 +20,7 @@ const LoginScreen = ({ navigation }) => {
                     label="Senha"
                     placeholder="Digite sua senha"
                 />
-                <SendButton label={'Entrar'}/>
+                <SendButton label={'Entrar'} onPress={()=>navigation.navigate('Home')}/>
                 <TemplateButton label={'Não tem Cadastro?'}
                 onPress={()=>navigation.popTo('TypeSignUp')}/>
         </View>
@@ -28,23 +28,6 @@ const LoginScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    titleJornal: {
-        fontFamily: 'Lalezar_400Regular',
-        fontSize: 28,
-        fontWeight: '900',
-        textAlign: 'center',
-        color: 'white',
-    },
-    topContainer: {
-        position: 'absolute',
-        top: 0,
-        justifyContent: 'center',
-        alignContent: 'center',
-        padding: 1,
-        width: '110%',
-        height: '8.5%',
-        backgroundColor: '#e30000',
-    },
     container: {
         flex: 1,
         justifyContent: 'center',
