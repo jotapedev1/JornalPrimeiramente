@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
     View,
     Text,
@@ -10,23 +10,24 @@ import {
     Image,
     TouchableOpacity
 } from 'react-native';
+import {Platform} from "react-native";
+import InputButton from "../../Auth/components/inputButton"
+import SendButton from "../../Auth/components/SendButton";
+import TemplateButton from "../../Auth/components/TemplateButton";
 import JornalLogo from "../../../shared/components/JornalLogo";
+import {c} from "react/compiler-runtime";
+import {Lalezar_400Regular} from "@expo-google-fonts/lalezar";
 
-const HomeScreen = ({navigation}) => {
+const MenuScreen = ({navigation}) => {
     return (
         <View style={styles.container}>
             <JornalLogo/>
 
-            <Text style={[styles.title,{width: '100%', fontFamily: 'Lalezar_400Regular', marginTop: 10}]}>Edição 2025 - 5º Bimestre</Text>
-            <View style={{width: '90%', height: 250, alignSelf: 'center'}}>
-                <Image style={{width: '100%', height: '80%', borderRadius: 15, alignSelf: 'center', padding: 10}} source={require('../../../assets/imgs/signupimg.jpg')}/>
-                <Text style={{color: 'black', marginTop: 50, fontFamily: 'Inter', paddingLeft: 10}}></Text>
+           <Text>Menu Screen</Text>
 
-            </View>
-
-            <View style={{width: '100%', height: '10%', backgroundColor: '#c5c5c5',display: 'flex'}}>
-                <TouchableOpacity onPress={()=>navigation.navigate('Menu')}>
-                    <Image source={require('../../../assets/icons/burger-icon.png')} style={{height: 70, width: 100}}/>
+            <View style={{width: '100%', height: '10%', backgroundColor: '#c5c5c5',display: 'flex', justifyContent: 'flex-end', alignSelf: 'flex-end'}}>
+                <TouchableOpacity>
+                    <Image source={require('../../../assets/icons/burger-icon.png')}></Image>
                 </TouchableOpacity>
             </View>
         </View>
@@ -61,4 +62,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default HomeScreen;
+export default MenuScreen;

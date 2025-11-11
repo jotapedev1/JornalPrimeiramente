@@ -33,7 +33,7 @@ const SignUpParticipantScreen = ({ navigation }) => {
             <InputButton
                 label="Confirme sua senha"
             />
-            <SendButton label={'Cadastre-se'}></SendButton>
+            <SendButton label={'Cadastre-se'} onPress={()=>navigation.navigate('Home')}></SendButton>
             <TemplateButton label={'Já tem cadastro?'} onPress={()=> navigation.popTo('Login')}/>
 
         </View>
