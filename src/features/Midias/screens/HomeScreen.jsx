@@ -23,12 +23,26 @@ const HomeScreen = ({navigation}) => {
                 <Text style={{color: 'black', marginTop: 50, fontFamily: 'Inter', paddingLeft: 10}}></Text>
 
             </View>
-
-            <View style={{width: '100%', height: '10%', backgroundColor: '#c5c5c5',display: 'flex'}}>
-                <TouchableOpacity onPress={()=>navigation.navigate('Menu')}>
-                    <Image source={require('../../../assets/icons/burger-icon.png')} style={{height: 70, width: 100}}/>
-                </TouchableOpacity>
+            <View style={{display: 'fixed', bottom: 0, top: 340}}>
+                <View style={{width: '100%', height: '8%', display: 'flex',flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center'}}>
+                    <TouchableOpacity onPress={()=>navigation.popTo('Menu')} style={{width: 40, height: 40, display: 'flex'}}>
+                        <Image source={require('../../../assets/icons/burger-icon.png')} style={{height: 40, width: 40}}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>navigation.popTo('Browse')} style={{width: 40, height: 40, display: 'flex'}}>
+                        <Image source={require('../../../assets/icons/compass-icon.png')} style={{height: 40, width: 40}}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>navigation.popTo('Home')} style={{width: 40, height: 40, display: 'flex'}}>
+                        <Image source={require('../../../assets/icons/home-icon.png')} style={{height: 40, width: 40}}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>navigation.popTo('Notification')} style={{width: 40, height: 40, display: 'flex'}}>
+                        <Image source={require('../../../assets/icons/bell-icon.png')} style={{height: 40, width: 40}}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>navigation.popTo('Profile')} style={{width: 40, height: 40, display: 'flex'}}>
+                        <Image source={require('../../../assets/icons/profile-icon.png')} style={{height: 40, width: 40}}/>
+                    </TouchableOpacity>
+                </View>
             </View>
+
         </View>
     );
 };

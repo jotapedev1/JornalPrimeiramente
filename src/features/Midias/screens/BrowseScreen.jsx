@@ -18,18 +18,19 @@ import JornalLogo from "../../../shared/components/JornalLogo";
 import {c} from "react/compiler-runtime";
 import {Lalezar_400Regular} from "@expo-google-fonts/lalezar";
 
-const MenuScreen = ({navigation}) => {
+const BrowseScreen = ({navigation}) => {
     return (
         <View style={styles.container}>
             <JornalLogo/>
 
-           <Text style={{marginTop: 100}}>Menu Screen</Text>
+            <Text>Browse Screen</Text>
 
             <View style={{width: '100%', height: '10%', backgroundColor: '#c5c5c5',display: 'flex', justifyContent: 'flex-end', alignSelf: 'flex-end'}}>
                 <TouchableOpacity>
                     <Image source={require('../../../assets/icons/burger-icon.png')}></Image>
                 </TouchableOpacity>
             </View>
+
         </View>
     );
 };
@@ -62,4 +63,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default MenuScreen;
+export default BrowseScreen;
