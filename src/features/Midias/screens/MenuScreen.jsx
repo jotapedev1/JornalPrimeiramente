@@ -17,6 +17,7 @@ import TemplateButton from "../../Auth/components/TemplateButton";
 import JornalLogo from "../../../shared/components/JornalLogo";
 import {c} from "react/compiler-runtime";
 import {Lalezar_400Regular} from "@expo-google-fonts/lalezar";
+import BottomBar from "../../../shared/components/BottomBar";
 
 const MenuScreen = ({navigation}) => {
     return (
@@ -30,6 +31,8 @@ const MenuScreen = ({navigation}) => {
                     <Image source={require('../../../assets/icons/burger-icon.png')}></Image>
                 </TouchableOpacity>
             </View>
+
+            <BottomBar navigation={navigation}/>
         </View>
     );
 };

@@ -2,21 +2,12 @@ import React from 'react';
 import {
     View,
     Text,
-    TextInput,
-    Button,
     StyleSheet,
-    ActivityIndicator,
-    BackHandler,
     Image,
     TouchableOpacity
 } from 'react-native';
-import {Platform} from "react-native";
-import InputButton from "../../Auth/components/inputButton"
-import SendButton from "../../Auth/components/SendButton";
-import TemplateButton from "../../Auth/components/TemplateButton";
 import JornalLogo from "../../../shared/components/JornalLogo";
-import {c} from "react/compiler-runtime";
-import {Lalezar_400Regular} from "@expo-google-fonts/lalezar";
+import BottomBar from "../../../shared/components/BottomBar";
 
 const BrowseScreen = ({navigation}) => {
     return (
@@ -25,12 +16,8 @@ const BrowseScreen = ({navigation}) => {
 
             <Text>Browse Screen</Text>
 
-            <View style={{width: '100%', height: '10%', backgroundColor: '#c5c5c5',display: 'flex', justifyContent: 'flex-end', alignSelf: 'flex-end'}}>
-                <TouchableOpacity>
-                    <Image source={require('../../../assets/icons/burger-icon.png')}></Image>
-                </TouchableOpacity>
-            </View>
 
+            <BottomBar navigation={navigation}/>
         </View>
     );
 };

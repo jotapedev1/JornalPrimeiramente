@@ -17,6 +17,7 @@ import TemplateButton from "../../Auth/components/TemplateButton";
 import JornalLogo from "../../../shared/components/JornalLogo";
 import {c} from "react/compiler-runtime";
 import {Lalezar_400Regular} from "@expo-google-fonts/lalezar";
+import BottomBar from "../../../shared/components/BottomBar";
 
 const ProfileScreen = ({navigation}) => {
     return (
@@ -25,11 +26,9 @@ const ProfileScreen = ({navigation}) => {
 
             <Text>Profile Screen</Text>
 
-            <View style={{width: '100%', height: '10%', backgroundColor: '#c5c5c5',display: 'flex', justifyContent: 'flex-end', alignSelf: 'flex-end'}}>
-                <TouchableOpacity>
-                    <Image source={require('../../../assets/icons/burger-icon.png')}></Image>
-                </TouchableOpacity>
-            </View>
+
+
+            <BottomBar navigation={navigation}/>
         </View>
     );
 };
