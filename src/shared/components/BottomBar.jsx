@@ -37,10 +37,10 @@ const BottomBar = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    bottomBar: {position: 'absolute',bottom: 15, left: 0, right: 0, zIndex: 1000},
-    barItems: {width: '100%', height: '8%', display: 'flex',flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center'},
-    iconImg: {height: 40, width: 40},
-    icon:{width: 40, height: 40, display: 'flex'},
+    bottomBar: {zIndex: 1000, position: 'absolute',bottom: 0, left: 0, right: 0, borderTopColor: '#d5d5d5', borderTopWidth: 0.6, backgroundColor: 'white', paddingBottom: 80},
+    barItems: {zIndex: 1000, width: '100%', height: '8%', display: 'flex',flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', top: 30},
+    iconImg: {height: 30, width: 30},
+    icon:{width: 30, height: 30, display: 'flex'},
 });
 
 export default BottomBar;

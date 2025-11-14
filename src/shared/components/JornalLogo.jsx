@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
         width: '110%',
         height: '8.5%',
         backgroundColor: '#e30000',
+        zIndex: 1500
     },
 });
 
