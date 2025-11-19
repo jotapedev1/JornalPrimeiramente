@@ -25,6 +25,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         borderRadius: 30,
         backgroundColor: '#d9d9d9',
+        marginLeft: 10,
+        marginRight: 10
     },
     inputLabel: {
         fontSize: 13,

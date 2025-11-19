@@ -11,21 +11,23 @@ const JornalLogo = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     titleJornal: {
-        fontSize: 28,
+        fontSize: 30,
+        top: 3,
         fontWeight: '900',
-        textAlign: 'center',
         color: 'white',
         fontFamily: 'Lalezar-Regular',
     },
     topContainer: {
-        position: 'absolute',
-        top: 0,
+        position: 'relative',
+        //top: 60,
         justifyContent: 'center',
         alignContent: 'center',
-        width: '110%',
+        alignItems: 'center',
+        width: '100%',
         height: '8.5%',
         backgroundColor: '#e30000',
-        zIndex: 1500
+        zIndex: 1500,
+        marginBottom: 10
     },
 });
 

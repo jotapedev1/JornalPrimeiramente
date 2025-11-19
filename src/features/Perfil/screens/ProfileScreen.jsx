@@ -27,7 +27,7 @@ const ProfileScreen = ({navigation}) => {
                 <ScrollView>
                     <View style={{backgroundColor: 'white', width: '100%', height: 300, flexDirection: 'column', alignItems: 'center', borderBottomWidth: 0.6,
                         borderBottomColor: '#d5d5d5'}}>
-                        <Image source={require('../../../assets/imgs/signupimg.jpg')} style={{borderRadius: '100%', width: 150, height: 150, alignSelf: 'center', marginTop: 20}}></Image>
+                        <Image source={require('../../../assets/imgs/signupimg.jpg')} style={{borderRadius: '100%', width: 150, height: 150, alignSelf: 'center' }}></Image>
                         <Text style={{fontFamily: 'Lalezar_400Regular', fontSize: 30, marginTop: 10}}>Perfil</Text>
                         <Text style={{fontFamily: 'Inter-Regular', fontSize: 16, paddingHorizontal: 30, alignSelf: 'center'}}>Sou um perfil de teste, feito para testar.
                             Testando... 1, 2, 3...</Text>
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     },
     mainContent: {
         zIndex: 300,
-        marginTop: 65
+        marginTop: 20
     },
 });
 

@@ -1,4 +1,4 @@
-import {Text, View, StyleSheet, Pressable} from "react-native";
+import {Text, View, StyleSheet, Pressable, TouchableOpacity} from "react-native";
 import React from "react";
 
 const SendButton = ({ label, onPress }) => {
@@ -46,6 +46,6 @@ const styles = StyleSheet.create({
         top: 5,
         bottom: 5,
         marginTop: 5,
-        marginBottom: 5
+        marginBottom: 5,
     }
 });

@@ -24,13 +24,9 @@ const MenuScreen = ({navigation}) => {
         <View style={styles.container}>
             <JornalLogo/>
 
-           <Text style={{marginTop: 100}}>Menu Screen</Text>
+           <Text>Menu Screen</Text>
 
-            <View style={{width: '100%', height: '10%', backgroundColor: '#c5c5c5',display: 'flex', justifyContent: 'flex-end', alignSelf: 'flex-end'}}>
-                <TouchableOpacity>
-                    <Image source={require('../../../assets/icons/burger-icon.png')}></Image>
-                </TouchableOpacity>
-            </View>
+
 
             <BottomBar navigation={navigation}/>
         </View>
@@ -40,7 +36,6 @@ const MenuScreen = ({navigation}) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        height: '100%',
         backgroundColor: '#fff',
     },
     title: {

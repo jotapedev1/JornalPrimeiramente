@@ -13,6 +13,16 @@ import ProfileScreen from "../features/Perfil/screens/ProfileScreen";
 
 const Stack = createNativeStackNavigator();
 
+import { TransitionSpecs, HeaderStyleInterpolators } from '@react-navigation/stack';
+
+const transitionAnimation = {
+    gestureDirection: 'horizontal',
+    transitionSpec: {
+        open: TransitionSpecs.TransitionIOSSpec,
+        close: TransitionSpecs.TransitionIOSSpec,
+    },
+    headerStyleInterpolator: HeaderStyleInterpolators.forFade,
+}
 
 
 export default function AppNavigator() {
@@ -23,11 +33,16 @@ export default function AppNavigator() {
                 <Stack.Screen name="Login" component={LoginScreen}/>
                 <Stack.Screen name="SignUpParticipant" component={SignUpParticipantScreen}/>
                 <Stack.Screen name="SignUpReader" component={SignUpReaderScreen}/>
-                <Stack.Screen name="Home" component={HomeScreen}/>
-                <Stack.Screen name="Menu" component={MenuScreen}/>
-                <Stack.Screen name="Browse" component={BrowseScreen}/>
-                <Stack.Screen name="Notification" component={NotificationScreen}/>
-                <Stack.Screen name="Profile" component={ProfileScreen}/>
+                <Stack.Screen name="Home" component={HomeScreen}
+                options={{ headerShown: true }}/>
+                <Stack.Screen name="Menu" component={MenuScreen}
+                options={{ headerShown: true }}/>
+                <Stack.Screen name="Browse" component={BrowseScreen}
+                options={{ headerShown: true }}/>
+                <Stack.Screen name="Notification" component={NotificationScreen}
+                options={{ headerShown: true  }}/>
+                <Stack.Screen name="Profile" component={ProfileScreen}
+                options={{ headerShown: true }}/>
             </Stack.Navigator>
         </NavigationContainer>
     );

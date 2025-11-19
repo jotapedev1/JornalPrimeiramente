@@ -17,8 +17,7 @@ const HomeScreen = ({navigation}) => {
     return (
         <View style={styles.container}>
             <JornalLogo/>
-
-            <Text style={[styles.title,{width: '100%', fontFamily: 'Lalezar_400Regular', marginTop: 10}]}>Edição 2025 - 5º Bimestre</Text>
+            <Text style={[styles.title,{width: '100%', fontFamily: 'Lalezar_400Regular'}]}>Edição 2025 - 5º Bimestre</Text>
             <View style={{width: '90%', height: 250, alignSelf: 'center'}}>
                 <Image style={{width: '100%', height: '80%', borderRadius: 15, alignSelf: 'center', padding: 10}} source={require('../../../assets/imgs/signupimg.jpg')}/>
                 <Text style={{color: 'black', marginTop: 50, fontFamily: 'Inter', paddingLeft: 10}}></Text>
@@ -32,7 +31,6 @@ const HomeScreen = ({navigation}) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        height: '100%',
         backgroundColor: '#fff',
     },
     title: {
@@ -43,7 +41,6 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignSelf: 'flex-start',
         alignContent: 'flex-start',
-        paddingTop: 60,
         padding: 10,
     },
     errorText: {

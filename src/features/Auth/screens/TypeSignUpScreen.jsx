@@ -13,9 +13,9 @@ const TypeSignUpScreen = ({ navigation }) => {
 
             <Image source={require('../../../assets/imgs/signupimg.jpg')} style={styles.image1}/>
 
-            <View style={{alignItems: 'center', paddingVertical: 30, marginTop: 80}}>
+            <View style={{alignItems: 'center', paddingVertical: 10, marginBottom: 10}}>
                 <Text style={{fontWeight: 500}}>O jornal bimestral da Etec X.</Text>
-                <Text style={{fontFamily: 'Lalezar_400Regular', fontSize: 27, marginTop: 20}}>Escolha como se cadastrar:</Text>
+                <Text style={{fontFamily: 'Lalezar_400Regular', fontSize: 27}}>Escolha como se cadastrar:</Text>
                 <Text style={{fontWeight: 500, paddingLeft: 15, paddingRight: 15, textAlign: 'justify'}}>O Integrante faz parte da publicação do jornal e tem suas postagens vinculadas ao próprio perfil, enquanto o Leitor apenas lê as postagens. Os dois podem interagir com as postagens.</Text>
             </View>
 
@@ -32,8 +32,6 @@ const TypeSignUpScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        padding: 10,
         backgroundColor: '#fff',
     },
     title: {
@@ -50,10 +48,10 @@ const styles = StyleSheet.create({
         fontSize: 100
     },
     image1: {
-        width: '110%',
+        width: '100%',
         height: 200,
-        position: 'absolute',
-        top: 64,
+        position: 'relative',
+        bottom: 10,
     }
 });
 
