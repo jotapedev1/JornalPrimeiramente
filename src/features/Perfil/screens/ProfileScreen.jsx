@@ -43,7 +43,7 @@ const ProfileScreen = ({navigation}) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        height: '150%',
+        height: 'auto',
         backgroundColor: '#fff',
     },
     title: {
@@ -70,6 +70,5 @@ const styles = StyleSheet.create({
         marginTop: 20
     },
 });
-
 
 export default ProfileScreen;

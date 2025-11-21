@@ -2,21 +2,11 @@ import React from 'react';
 import {
     View,
     Text,
-    TextInput,
-    Button,
     StyleSheet,
-    ActivityIndicator,
-    BackHandler,
     Image,
-    TouchableOpacity
+    ScrollView
 } from 'react-native';
-import {Platform} from "react-native";
-import InputButton from "../../Auth/components/inputButton"
-import SendButton from "../../Auth/components/SendButton";
-import TemplateButton from "../../Auth/components/TemplateButton";
 import JornalLogo from "../../../shared/components/JornalLogo";
-import {c} from "react/compiler-runtime";
-import {Lalezar_400Regular} from "@expo-google-fonts/lalezar";
 import BottomBar from "../../../shared/components/BottomBar";
 
 const NotificationScreen = ({navigation}) => {
@@ -24,10 +14,20 @@ const NotificationScreen = ({navigation}) => {
         <View style={styles.container}>
             <JornalLogo/>
 
-            <Text>Notification Screen</Text>
+            <View style={styles.mainContent}>
+                <ScrollView>
+                    <View style={{backgroundColor: 'white', width: '100%', height: 85, flexDirection: 'row', borderBottomWidth: 0.6,
+                        borderBottomColor: '#d5d5d5'}}>
+                        <Image source={require('../../../assets/imgs/signupimg.jpg')} style={{borderRadius: '100%', width: 60, height: 60,  left: 14}}/>
+                        <Text style={{fontFamily: 'Lalezar_400Regular', fontSize: 20, flexDirection: 'row',  width: '100%', height: 100, left: 25}}>Perfil curtiu sua obra.
+                            <Text style={{fontFamily: 'Inter', fontSize: 13, width: 15, height: 15, alignItems: 'stretch', flexWrap: 'nowrap'}}>{"\n"}Sou um perfil de teste, feito para testar.</Text>
+                        </Text>
 
 
 
+                    </View>
+                </ScrollView>
+            </View>
 
             <BottomBar navigation={navigation}/>
         </View>
@@ -37,7 +37,7 @@ const NotificationScreen = ({navigation}) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        height: '100%',
+        height: '150%',
         backgroundColor: '#fff',
     },
     title: {
@@ -59,7 +59,10 @@ const styles = StyleSheet.create({
     button: {
         fontSize: 100,
     },
+    mainContent: {
+        zIndex: 300,
+        marginTop: 10
+    },
 });
-
 
 export default NotificationScreen;

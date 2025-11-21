@@ -22,12 +22,33 @@ import BottomBar from "../../../shared/components/BottomBar";
 const MenuScreen = ({navigation}) => {
     return (
         <View style={styles.container}>
-            <JornalLogo/>
 
-           <Text>Menu Screen</Text>
+            <View style={{display: 'absolute', width: '100%', height: 60, backgroundColor: '#e30000', justifyContent: 'center',
+                borderTopColor: 'white', borderTopWidth: 2 }}>
+                <Text style={{fontFamily: 'Lalezar_400Regular', color: 'white', fontSize: 30, alignSelf: 'center'}}>
+                    Menu</Text>
+            </View>
 
+           <View style={{display: 'absolute', width: '100%', height: 60, backgroundColor: '#e30000', justifyContent: 'center',
+            borderTopColor: 'white', borderTopWidth: 2 }}>
+            <Text style={{fontFamily: 'Lalezar_400Regular', color: 'white', fontSize: 30, alignSelf: 'center'}}>
+                Salvos</Text>
+           </View>
 
+            <View style={{display: 'absolute', width: '100%', height: 60, backgroundColor: '#e30000', justifyContent: 'center',
+                borderTopColor: 'white', borderTopWidth: 2 }}>
+                <Text style={{fontFamily: 'Lalezar_400Regular', color: 'white', fontSize: 30, alignSelf: 'center'}}>
+                    Edições</Text>
+            </View>
 
+            <View style={{display: 'absolute', width: '100%', height: 60, backgroundColor: '#e30000', justifyContent: 'center',
+                borderTopColor: 'white', borderTopWidth: 2 }}>
+                <Text style={{fontFamily: 'Lalezar_400Regular', color: 'white', fontSize: 30, alignSelf: 'center'}}>
+                    Configurações</Text>
+            </View>
+            <View style={{display: 'absolute', width: '100%', height: '100%', backgroundColor: '#e30000', justifyContent: 'center',
+                borderTopColor: 'white', borderTopWidth: 2 }}>
+            </View>
             <BottomBar navigation={navigation}/>
         </View>
     );

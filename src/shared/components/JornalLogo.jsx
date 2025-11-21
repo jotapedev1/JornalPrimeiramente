@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
         fontWeight: '900',
         color: 'white',
         fontFamily: 'Lalezar-Regular',
+        alignSelf: 'center'
     },
     topContainer: {
         position: 'relative',
@@ -27,7 +28,6 @@ const styles = StyleSheet.create({
         height: '8.5%',
         backgroundColor: '#e30000',
         zIndex: 1500,
-        marginBottom: 10
     },
 });
 
