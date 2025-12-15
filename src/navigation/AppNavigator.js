@@ -14,6 +14,7 @@ import ProfileScreen from "../features/Perfil/screens/ProfileScreen";
 const Stack = createNativeStackNavigator();
 
 import { TransitionSpecs, HeaderStyleInterpolators } from '@react-navigation/stack';
+import ArticleScreen from "../shared/components/ArticleScreen";
 
 const transitionAnimation = {
     gestureDirection: 'horizontal',
@@ -42,6 +43,8 @@ export default function AppNavigator() {
                 <Stack.Screen name="Notification" component={NotificationScreen}
                 options={{ headerShown: true  }}/>
                 <Stack.Screen name="Profile" component={ProfileScreen}
+                options={{ headerShown: true }}/>
+                <Stack.Screen name="ArticleScreen" component={ArticleScreen}
                 options={{ headerShown: true }}/>
             </Stack.Navigator>
         </NavigationContainer>
