@@ -1,12 +1,12 @@
 import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
 import JornalLogo from "./JornalLogo";
 
 const ArticleScreen = ({ route, navigation }) => {
-    const { title, author, image } = route.params;
+    const { title, author, image } = route?.params || {};
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
             <JornalLogo />
 
             <Text style={[styles.title, { fontFamily: 'Lalezar_400Regular' }]}>
@@ -14,13 +14,10 @@ const ArticleScreen = ({ route, navigation }) => {
             </Text>
 
             <View style={styles.imageContainer}>
-                <Image
-                    source={{ uri: image }}
-                    style={styles.image}
-                />
+                <Image source={{ uri: image }} style={styles.image} />
                 <Text style={styles.author}>Por: {author}</Text>
             </View>
-        </View>
+        </ScrollView>
     );
 };
 

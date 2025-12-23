@@ -25,18 +25,16 @@ const HomeScreen = ({navigation}) => {
                 <Text style={{color: 'black', marginTop: 50, fontFamily: 'Inter', paddingLeft: 10}}></Text>
             </View>
 
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 15 }}>
-                    <ArticleCard
-                        image="https://images.unsplash.com/photo-1540420773420-3366772f4999"
-                        author="Isabela Santos"
-                        title="Filosofia de Schopenhauer"
-                    />
-                    <ArticleCard
-                        image="https://images.unsplash.com/photo-1540420773420-3366772f4999"
-                        author="Isabela Santos"
-                        title="Filosofia de Schopenhauer"
-                        onPress={() => console.log('Card clicado')}
-                    />
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 15 }} >
+                <ArticleCard
+                    onPress={() =>
+                        navigation.navigate('ArticleScreen', {
+                            title: 'Filosofia de Schopenhauer',
+                            author: 'Isabela Santos',
+                            image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999',
+                        })
+                    }
+                />
             </View>
 
             <BottomBar navigation={navigation}/>

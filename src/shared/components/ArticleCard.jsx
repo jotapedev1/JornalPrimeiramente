@@ -1,15 +1,15 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import {View, Text, Image, StyleSheet, TouchableOpacity, Pressable} from 'react-native';
 
 export default function ArticleCard({ image, author, title, onPress }) {
     return (
-        <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('ArticleScreen')} activeOpacity={0.8}>
+        <Pressable onPress={onPress} style={styles.card}>
             <Image source={{ uri: image }} style={styles.image} />
 
             <View style={styles.content}>
-                <Text style={styles.author}>Por: {author} </Text>
-                <Text style={styles.title} numberOfLines={2}>{title} </Text>
+                <Text style={styles.title}>{title}</Text>
+                <Text style={styles.author}>{author}</Text>
             </View>
-        </TouchableOpacity>
+        </Pressable>
     );
 }
 const styles = StyleSheet.create({
