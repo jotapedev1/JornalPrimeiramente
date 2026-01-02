@@ -1,16 +1,20 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation } from "@react-navigation/native";
 
 export default function ArticleCard({ image, author, title, onPress }) {
-    return (
-        <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('ArticleScreen')} activeOpacity={0.8}>
-            <Image source={{ uri: image }} style={styles.image} />
+    const navigation = useNavigation();
+        return (
+            <TouchableOpacity style={styles.card}
+                              onPress={() => navigation.navigate('ArticleScreen')}
+                              activeOpacity={0.8}>
+                <Image source={{ uri: image }} style={styles.image} />
 
-            <View style={styles.content}>
-                <Text style={styles.author}>Por: {author} </Text>
-                <Text style={styles.title} numberOfLines={2}>{title} </Text>
-            </View>
-        </TouchableOpacity>
-    );
+                <View style={styles.content}>
+                    <Text style={styles.author}>Por: {author} </Text>
+                    <Text style={styles.title} numberOfLines={2}>{title} </Text>
+                </View>
+            </TouchableOpacity>
+        );
 }
 const styles = StyleSheet.create({
     card: {

@@ -14,7 +14,7 @@ import ProfileScreen from "../features/Perfil/screens/ProfileScreen";
 const Stack = createNativeStackNavigator();
 
 import { TransitionSpecs, HeaderStyleInterpolators } from '@react-navigation/stack';
-import ArticleScreen from "../shared/components/ArticleScreen";
+import ArticleScreen from "../features/Midias/screens/ArticleScreen";
 
 const transitionAnimation = {
     gestureDirection: 'horizontal',

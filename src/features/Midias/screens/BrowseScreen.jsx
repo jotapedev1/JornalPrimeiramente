@@ -15,8 +15,6 @@ const BrowseScreen = ({navigation}) => {
             <JornalLogo/>
 
             <Text>Browse Screen</Text>
-
-
             <BottomBar navigation={navigation}/>
         </View>
     );

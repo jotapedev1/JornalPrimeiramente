@@ -1,25 +1,27 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
-import JornalLogo from "./JornalLogo";
+import JornalLogo from "../../../shared/components/JornalLogo";
 
 const ArticleScreen = ({ route, navigation }) => {
-    const { title, author, image } = route.params;
+    //const { title, author, image } = route.params;
 
     return (
         <View style={styles.container}>
             <JornalLogo />
 
-            <Text style={[styles.title, { fontFamily: 'Lalezar_400Regular' }]}>
+            {/*<Text style={[styles.title, { fontFamily: 'Lalezar_400Regular' }]}>
                 {title}
             </Text>
+*/}
+            <Text>OLÁ, MUNDO!</Text>
 
-            <View style={styles.imageContainer}>
+   {/*         <View style={styles.imageContainer}>
                 <Image
                     source={{ uri: image }}
                     style={styles.image}
                 />
                 <Text style={styles.author}>Por: {author}</Text>
-            </View>
+            </View>*/}
         </View>
     );
 };

@@ -27,15 +27,14 @@ const HomeScreen = ({navigation}) => {
 
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 15 }}>
                     <ArticleCard
+                        title="Filosofia de Schopenhauer"
                         image="https://images.unsplash.com/photo-1540420773420-3366772f4999"
                         author="Isabela Santos"
-                        title="Filosofia de Schopenhauer"
                     />
                     <ArticleCard
+                        title="Filosofia de Schopenhauer"
                         image="https://images.unsplash.com/photo-1540420773420-3366772f4999"
                         author="Isabela Santos"
-                        title="Filosofia de Schopenhauer"
-                        onPress={() => console.log('Card clicado')}
                     />
             </View>
 
