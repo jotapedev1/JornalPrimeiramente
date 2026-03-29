@@ -1,31 +1,71 @@
-import React, { useState } from 'react';
-import {View, Text, StyleSheet, Image, } from 'react-native';
+// src/features/Home/screens/HomeScreen.js
+import React from 'react';
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import JornalLogo from "../../../shared/components/JornalLogo";
 import BottomBar from "../../../shared/components/BottomBar";
 import ArticleCard from "../../../shared/components/ArticleCard";
-import {articleData} from "../../../context/ArticleContext";
-const HomeScreen = ({navigation}) => {
+import { useArticles } from "../../../context/ArticleContext";
+
+const HomeScreen = ({ navigation }) => {
+    const {
+        getCurrentEdition,
+        getArticlesByEdition,
+        loading
+    } = useArticles();
+
+    const currentEdition = getCurrentEdition();
+
+    const editionArticles = currentEdition ? getArticlesByEdition(currentEdition.id) : [];
+
+    if (loading) {
+        return (
+            <View style={styles.container}>
+                <JornalLogo />
+                <Text style={styles.loadingText}>Carregando...</Text>
+                <BottomBar navigation={navigation} />
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
-            <JornalLogo/>
-            <Text style={[styles.title,{width: '100%', fontFamily: 'Lalezar_400Regular'}]}>Edição 2026 - 1º Bimestre</Text>
+            <JornalLogo />
 
-            <View style={{width: '90%', height: 250, alignSelf: 'center'}}>
-                <Image style={{width: '100%', height: '80%', borderRadius: 15, alignSelf: 'center', padding: 10}} source={require('../../../assets/imgs/signupimg.jpg')}/>
-            </View>
+            <ScrollView>
+                <Text style={[styles.title, { fontFamily: 'Lalezar_400Regular' }]}>
+                    {currentEdition?.title || 'Edição Atual'}
+                </Text>
 
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 15 }}>
-                {articleData.map((item, index) => (
-                    <ArticleCard
-                        key={item.id ?? index} // passing title as a "id" obrigatory
-                        article={item}
+                <View style={styles.coverContainer}>
+                    <Image
+                        style={styles.coverImage}
+                        source={currentEdition?.coverImage || require('../../../assets/imgs/signupimg.jpg')}
                     />
-                ))}
-            </View>
+                    {currentEdition?.description && (
+                        <Text style={styles.editionDescription}>
+                            {currentEdition.description}
+                        </Text>
+                    )}
+                </View>
 
-            <BottomBar navigation={navigation}/>
+                <Text style={styles.sectionTitle}>Artigos desta edição</Text>
 
+                <View>
+                    {editionArticles.length > 0 ? (
+                        editionArticles.map((item) => (
+                            <View key={item.id}>
+                                <ArticleCard article={item} />
+                            </View>
+                        ))
+                    ) : (
+                        <Text style={styles.emptyText}>
+                            Nenhum artigo encontrado para esta edição
+                        </Text>
+                    )}
+                </View>
+            </ScrollView>
+
+            <BottomBar navigation={navigation} />
         </View>
     );
 };
@@ -39,19 +79,47 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        alignSelf: 'flex-start',
-        alignContent: 'flex-start',
         padding: 10,
+        marginTop: 10,
     },
-    errorText: {
-        color: 'red',
+    coverContainer: {
+        width: '90%',
+        alignSelf: 'center',
+        marginVertical: 10,
+    },
+    coverImage: {
+        width: '100%',
+        height: 250,
+        borderRadius: 15,
+        resizeMode: 'cover',
+    },
+    editionDescription: {
         textAlign: 'center',
-        marginBottom: 10,
+        fontSize: 14,
+        color: '#666',
+        marginTop: 8,
+        paddingHorizontal: 10,
     },
-    button: {
-        fontSize: 100,
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: '600',
+        marginLeft: 16,
+        marginBottom: 15,
+        marginTop: 10,
+        color: '#333',
+    },
+    loadingText: {
+        textAlign: 'center',
+        marginTop: 20,
+        fontSize: 16,
+        color: '#666',
+    },
+    emptyText: {
+        textAlign: 'center',
+        fontSize: 14,
+        color: '#999',
+        marginTop: 20,
+        marginBottom: 20,
     },
 });
 

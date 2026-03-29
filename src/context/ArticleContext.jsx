@@ -1,36 +1,12 @@
 import React, { createContext, useState, useContext } from 'react';
-
-export const articleData = [
-    {
-        id: 1,
-        title: 'Obra X',
-        author: 'Fulano Ciclano',
-        desc: 'Descrição breve da obra, Descrição breve da obra, Descrição breve da obra, Descrição breve da obra, Descrição breve da obra, Descrição breve da obra',
-        image: require('../assets/imgs/signupimg.jpg'),
-        bookmarked: false
-    },
-    {
-        id: 2,
-        title: 'Obra Y',
-        author: 'Beltrano Silva',
-        desc: 'Outra descrição de obra interessante para testar os cards',
-        image: require('../assets/imgs/signupimg.jpg'),
-        bookmarked: false
-    },
-    {
-        id: 3,
-        title: 'Obra Z',
-        author: 'Ciclana Souza',
-        desc: 'Mais uma descrição para preencher espaço e testar o layout',
-        image: require('../assets/imgs/signupimg.jpg'),
-        bookmarked: false
-    },
-];
+import {articleData} from "../data/articleData";
+import {editionData} from "../data/editionData";
 
 const ArticleContext = createContext({});
 
 export const ArticleProvider = ({ children }) => {
     const [bookmarks, setBookmarks] = useState([]);
+    const [editions, setEditions] = useState(editionData)
 
     const toggleBookmark = (article) => {
         setBookmarks(prev => {
@@ -47,12 +23,40 @@ export const ArticleProvider = ({ children }) => {
         return bookmarks.some(item => item.id === articleId);
     };
 
+    const getArticlesByEdition = (editionId) => {
+        return articleData.filter(a => a.editionId === editionId);
+    }
+
+    const getEditionById = (editionId) => {
+        return editions.find(edition => edition.id === editionId);
+    };
+
+    const getAllEditions = () => {
+        return editions;
+    };
+
+    const getCurrentEdition = () => {
+        const now = new Date();
+        const currentMonth = now.getMonth() + 1;
+        const currentYear = now.getFullYear();
+
+        return editions.find(edition => {
+            if (edition.year !== currentYear) return false;
+            return currentMonth >= edition.monthStart && currentMonth <= edition.monthEnd;
+        }) || editions[0];
+    };
+
+
     return (
         <ArticleContext.Provider value={{
             articles: articleData,
             bookmarks,
             toggleBookmark,
             isBookmarked,
+            getArticlesByEdition,
+            getEditionById,
+            getAllEditions,
+            getCurrentEdition,
         }}>
             {children}
         </ArticleContext.Provider>

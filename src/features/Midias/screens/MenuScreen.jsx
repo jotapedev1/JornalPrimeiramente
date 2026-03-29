@@ -75,9 +75,9 @@ const styles = StyleSheet.create({
         fontSize: 100,
     },
     viewStyle: {
-    display: 'absolute', width: '100%', height: 60, backgroundColor: '#e30000', justifyContent: 'center',
+        display: 'absolute', width: '100%', height: 60, backgroundColor: '#e30000', justifyContent: 'center',
         borderTopColor: 'white', borderTopWidth: 2
-},
+    },
     textStyle: {fontFamily: 'Lalezar_400Regular', color: 'white', fontSize: 30, alignSelf: 'center'}
 
 });

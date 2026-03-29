@@ -18,6 +18,7 @@ import ArticleScreen from "../features/Midias/screens/ArticleScreen";
 import BookmarksScreen from "../features/Perfil/screens/BookmarksScreen";
 import ConfigurationScreen from "../features/Perfil/screens/ConfigurationScreen";
 import PasswordResetScreen from "../features/Auth/screens/PasswordResetScreen";
+import EditionArticlesScreen from "../features/Midias/screens/EditionArticlesScreen";
 
 const transitionAnimation = {
     gestureDirection: 'horizontal',
@@ -38,23 +39,25 @@ export default function AppNavigator() {
                 <Stack.Screen name="SignUpParticipant" component={SignUpParticipantScreen}/>
                 <Stack.Screen name="SignUpReader" component={SignUpReaderScreen}/>
                 <Stack.Screen name="Home" component={HomeScreen}
-                options={{ headerShown: true }}/>
+                              options={{ headerShown: true }}/>
                 <Stack.Screen name="Menu" component={MenuScreen}
-                options={{ headerShown: true }}/>
+                              options={{ headerShown: true }}/>
                 <Stack.Screen name="Browse" component={BrowseScreen}
-                options={{ headerShown: true }}/>
+                              options={{ headerShown: true, }}/>
                 <Stack.Screen name="Notification" component={NotificationScreen}
-                options={{ headerShown: true  }}/>
+                              options={{ headerShown: true }}/>
                 <Stack.Screen name="Profile" component={ProfileScreen}
-                options={{ headerShown: true }}/>
+                              options={{ headerShown: true }}/>
                 <Stack.Screen name="ArticleScreen" component={ArticleScreen}
-                options={{ headerShown: true }}/>
+                              options={{ headerShown: true }}/>
                 <Stack.Screen name="Configuration" component={ConfigurationScreen}
-                options={{headerShown: true}}/>
+                              options={{headerShown: true}}/>
                 <Stack.Screen name ="Bookmarks" component={BookmarksScreen}
-                options={{headerShown: true}}/>
+                              options={{headerShown: true}}/>
                 <Stack.Screen name="PasswordReset" component={PasswordResetScreen}
-                options={{headerShown: true}}/>
+                              options={{headerShown: true}}/>
+                <Stack.Screen name={"EditionArticles"} component={EditionArticlesScreen}
+                              options={{headerShown: true}}/>
             </Stack.Navigator>
         </NavigationContainer>
     );

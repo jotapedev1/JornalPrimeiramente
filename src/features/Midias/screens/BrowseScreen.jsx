@@ -4,18 +4,47 @@ import {
     Text,
     StyleSheet,
     Image,
-    TouchableOpacity
+    TouchableOpacity,
+    FlatList
 } from 'react-native';
 import JornalLogo from "../../../shared/components/JornalLogo";
 import BottomBar from "../../../shared/components/BottomBar";
+import EditionCard from "../components/EditionCard";
+import {useArticles} from "../../../context/ArticleContext";
 
 const BrowseScreen = ({navigation}) => {
+    const { getAllEditions } = useArticles();
+
+    // Pega todas as edições
+    const editions = getAllEditions();
+
     return (
         <View style={styles.container}>
-            <JornalLogo/>
+            <JornalLogo />
 
-            <Text>Browse Screen</Text>
-            <BottomBar navigation={navigation}/>
+            <Text style={[styles.title, { fontFamily: 'Lalezar_400Regular' }]}>
+                Todas as Edições
+            </Text>
+
+            <FlatList
+                data={editions}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
+                    <EditionCard
+                        edition={item}  // ← Passando a edição como prop
+                        navigation={navigation}
+                    />
+                )}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.listContent}
+                ListEmptyComponent={
+                    <Text style={styles.emptyText}>
+                        Nenhuma edição encontrada
+                    </Text>
+                }
+            />
+
+            <BottomBar navigation={navigation} />
         </View>
     );
 };
@@ -23,27 +52,23 @@ const BrowseScreen = ({navigation}) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        height: '100%',
         backgroundColor: '#fff',
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
         textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        alignSelf: 'flex-start',
-        alignContent: 'flex-start',
-        paddingTop: 60,
-        padding: 10,
+        paddingTop: 20,
+        paddingBottom: 10,
     },
-    errorText: {
-        color: 'red',
+    listContent: {
+        paddingBottom: 20,
+    },
+    emptyText: {
         textAlign: 'center',
-        marginBottom: 10,
-    },
-    button: {
-        fontSize: 100,
+        fontSize: 14,
+        color: '#999',
+        marginTop: 50,
     },
 });
 

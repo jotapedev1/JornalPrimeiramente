@@ -5,14 +5,13 @@ import JornalLogo from '../../../shared/components/JornalLogo';
 import LikeButton from '../../../shared/components/LikeButton';
 import BookmarkButton from '../../Perfil/components/BookmarkButton';
 import { useArticles } from '../../../context/ArticleContext';
-import {articleData} from "../../../context/ArticleContext";
 
 const ArticleScreen = ({ navigation, route }) => {
     const { articleId } = route.params || {};
-    const { isBookmarked, toggleBookmark } = useArticles();
+    const { isBookmarked, toggleBookmark, articles } = useArticles();
 
     // Encontra o artigo pelo ID ou pega o primeiro
-    const article = articleData.find(a => a.id === articleId) || articleData[0];
+    const article = articles.find(a => a.id === articleId) || articles[0];
 
     if (!article) {
         return (
