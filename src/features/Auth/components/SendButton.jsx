@@ -1,14 +1,23 @@
-import {Text, View, StyleSheet, Pressable, TouchableOpacity} from "react-native";
+import { Text, Pressable, StyleSheet } from "react-native";
 import React from "react";
 
-const SendButton = ({ label, onPress }) => {
+const SendButton = ({ label, onPress, disabled }) => {
     return (
-        <Pressable onPress={onPress}
+        <Pressable
+            onPress={onPress}
+            disabled={disabled}
             style={({ pressed }) => [
-            styles.sendView,
-            pressed ? styles.pressed : {},
-        ]}>
-                <Text style={styles.sendLabel}>{label}</Text>
+                styles.sendView,
+                pressed && !disabled && styles.pressed,
+                disabled && styles.disabled,
+            ]}
+        >
+            <Text style={[
+                styles.sendLabel,
+                disabled && styles.disabledLabel
+            ]}>
+                {label}
+            </Text>
         </Pressable>
     );
 }
@@ -24,10 +33,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         alignSelf: 'center',
-        top: 5,
-        bottom: 5,
         marginTop: 5,
-        marginBottom: 5
+        marginBottom: 5,
     },
     sendLabel: {
         fontSize: 15,
@@ -36,29 +43,12 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     pressed: {
-        width: 180,
-        height: 60,
         backgroundColor: 'gray',
-        borderRadius: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignSelf: 'center',
-        top: 5,
-        bottom: 5,
-        marginTop: 5,
-        marginBottom: 5,
     },
-    pressedPermanent: {
-        width: 180,
-        height: 60,
-        backgroundColor: 'gray',
-        borderRadius: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignSelf: 'center',
-        top: 5,
-        bottom: 5,
-        marginTop: 5,
-        marginBottom: 5,
+    disabled: {
+        backgroundColor: '#cccccc', // Cinza quando desabilitado
+    },
+    disabledLabel: {
+        color: '#666666', // Texto cinza quando desabilitado
     }
 });

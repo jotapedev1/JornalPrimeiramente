@@ -4,15 +4,18 @@ import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import JornalLogo from "../../../shared/components/JornalLogo";
 import BottomBar from "../../../shared/components/BottomBar";
 import ArticleCard from "../../../shared/components/ArticleCard";
-import { useArticles } from "../../../context/ArticleContext";
+import { useArticles } from '../../../context/ArticleContext';
 
 const HomeScreen = ({ navigation }) => {
     const {
         getCurrentEdition,
         getArticlesByEdition,
+        articles,
+        editions,
         loading
     } = useArticles();
 
+    // Pega os dados diretamente sem useEffect
     const currentEdition = getCurrentEdition();
 
     const editionArticles = currentEdition ? getArticlesByEdition(currentEdition.id) : [];
@@ -31,7 +34,7 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.container}>
             <JornalLogo />
 
-            <ScrollView>
+            <ScrollView showsVerticalScrollIndicator={false}>
                 <Text style={[styles.title, { fontFamily: 'Lalezar_400Regular' }]}>
                     {currentEdition?.title || 'Edição Atual'}
                 </Text>
@@ -48,7 +51,9 @@ const HomeScreen = ({ navigation }) => {
                     )}
                 </View>
 
-                <Text style={styles.sectionTitle}>Artigos desta edição</Text>
+                <Text style={styles.sectionTitle}>
+                    Artigos desta edição ({editionArticles.length})
+                </Text>
 
                 <View>
                     {editionArticles.length > 0 ? (
@@ -58,9 +63,11 @@ const HomeScreen = ({ navigation }) => {
                             </View>
                         ))
                     ) : (
-                        <Text style={styles.emptyText}>
-                            Nenhum artigo encontrado para esta edição
-                        </Text>
+                        <View>
+                            <Text style={styles.emptyText}>
+                                Nenhum artigo encontrado para esta edição
+                            </Text>
+                        </View>
                     )}
                 </View>
             </ScrollView>
@@ -120,6 +127,12 @@ const styles = StyleSheet.create({
         color: '#999',
         marginTop: 20,
         marginBottom: 20,
+    },
+    debugText: {
+        textAlign: 'center',
+        fontSize: 12,
+        color: 'red',
+        marginTop: 5,
     },
 });
 

@@ -3,8 +3,6 @@ import {
     View,
     Text,
     StyleSheet,
-    Image,
-    TouchableOpacity,
     FlatList
 } from 'react-native';
 import JornalLogo from "../../../shared/components/JornalLogo";

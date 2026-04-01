@@ -21,15 +21,11 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         fontWeight: 500,
         color: '#0098ff',
-        top: 10
     },
     pressed: {
-        fontWeight: 500,
-        top: 10,
-        bottom: 10,
         alignItems: 'center',
         justifyContent: 'center',
         alignSelf: 'center',
-        color: '#d5fdff',
+        color: '#002e30',
     }
 });

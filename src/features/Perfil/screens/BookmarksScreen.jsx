@@ -1,25 +1,54 @@
 import React from 'react';
 import {
     View,
-    StyleSheet, ScrollView,
+    StyleSheet,
+    ScrollView,
+    Text,
 } from 'react-native';
 import ArticleCard from "../../../shared/components/ArticleCard";
-import {articleData} from "../../../context/ArticleContext";
+import { useArticles } from "../../../context/ArticleContext";
 
-const BookmarksScreen = ({navigation, article}) => {
+const BookmarksScreen = ({ navigation }) => {
+    const {
+        bookmarks, // Pega os artigos salvos do contexto
+        loading,
+    } = useArticles();
+
+    if (loading) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.loadingText}>Carregando...</Text>
+            </View>
+        );
+    }
+
+    if (!bookmarks || bookmarks.length === 0) {
+        return (
+            <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>Nenhum artigo salvo ainda</Text>
+                <Text style={styles.emptySubText}>
+                    Toque no ícone de bookmark nos artigos para salvá-los
+                </Text>
+            </View>
+        );
+    }
 
     return (
         <ScrollView style={styles.container}>
-            <View style={{width: '100%', height: 15, backgroundColor: 'red'}}/>
-            {articleData.map((item, index) => (
-                <ArticleCard
-                    key={item.id ?? index} // passing title as a "id" obrigatory
-                    article={item}
-                />
-            ))}
+            <View style={styles.header}>
+                <Text style={styles.headerTitle}>Meus Salvos</Text>
+                <Text style={styles.headerCount}>{bookmarks.length} artigos</Text>
+            </View>
+
+            <View style={styles.articlesContainer}>
+                {bookmarks.map((item, index) => (
+                    <ArticleCard
+                        key={item.id ?? index}
+                        article={item}
+                    />
+                ))}
+            </View>
         </ScrollView>
-
-
     );
 }
 
@@ -27,6 +56,50 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
+    },
+    header: {
+        padding: 20,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#f0f0f0',
+    },
+    headerTitle: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    headerCount: {
+        fontSize: 14,
+        color: '#666',
+        marginTop: 5,
+    },
+    articlesContainer: {
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+    },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        padding: 20,
+    },
+    emptyText: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#333',
+        marginBottom: 10,
+    },
+    emptySubText: {
+        fontSize: 14,
+        color: '#666',
+        textAlign: 'center',
+    },
+    loadingText: {
+        textAlign: 'center',
+        marginTop: 20,
+        fontSize: 16,
+        color: '#666',
     },
     card: {
         flexDirection: 'row',

@@ -5,7 +5,8 @@ export const articleData = [
         author: 'Fulano Ciclano',
         desc: 'Descrição breve da obra, Descrição breve da obra, Descrição breve da obra, Descrição breve da obra, Descrição breve da obra, Descrição breve da obra',
         image: require('../assets/imgs/signupimg.jpg'),
-        bookmarked: false
+        bookmarked: false,
+        editionId: 226,
     },
     {
         id: 2,
@@ -13,7 +14,8 @@ export const articleData = [
         author: 'Beltrano Silva',
         desc: 'Outra descrição de obra interessante para testar os cards',
         image: require('../assets/imgs/signupimg.jpg'),
-        bookmarked: false
+        bookmarked: false,
+        editionId: 226,
     },
     {
         id: 3,
@@ -21,6 +23,7 @@ export const articleData = [
         author: 'Ciclana Souza',
         desc: 'Mais uma descrição para preencher espaço e testar o layout',
         image: require('../assets/imgs/signupimg.jpg'),
-        bookmarked: false
+        bookmarked: false,
+        editionId: 226,
     },
 ];

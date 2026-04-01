@@ -1,7 +1,7 @@
 PODS:
-  - EXConstants (18.0.11):
+  - EXConstants (18.0.13):
     - ExpoModulesCore
-  - Expo (54.0.27):
+  - Expo (54.0.33):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -26,15 +26,15 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoAsset (12.0.11):
+  - ExpoAsset (12.0.12):
     - ExpoModulesCore
-  - ExpoFileSystem (19.0.20):
+  - ExpoFileSystem (19.0.21):
     - ExpoModulesCore
-  - ExpoFont (14.0.10):
+  - ExpoFont (14.0.11):
     - ExpoModulesCore
   - ExpoKeepAwake (15.0.8):
     - ExpoModulesCore
-  - ExpoModulesCore (3.0.28):
+  - ExpoModulesCore (3.0.29):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1340,7 +1340,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-  - react-native-safe-area-context (5.6.1):
+  - react-native-safe-area-context (5.6.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1352,8 +1352,8 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-safe-area-context/common (= 5.6.1)
-    - react-native-safe-area-context/fabric (= 5.6.1)
+    - react-native-safe-area-context/common (= 5.6.2)
+    - react-native-safe-area-context/fabric (= 5.6.2)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -1364,7 +1364,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-safe-area-context/common (5.6.1):
+  - react-native-safe-area-context/common (5.6.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1386,7 +1386,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-safe-area-context/fabric (5.6.1):
+  - react-native-safe-area-context/fabric (5.6.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1759,7 +1759,7 @@ PODS:
     - React-utils (= 0.81.5)
     - ReactNativeDependencies
   - ReactNativeDependencies (0.81.5)
-  - RNGestureHandler (2.29.1):
+  - RNGestureHandler (2.30.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2068,13 +2068,13 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  EXConstants: 42beb731d147822313b2340b8bb9ebe7a38a3762
-  Expo: 75d43a6426a4268510a460c77e2cce8929d108d3
-  ExpoAsset: 315c4209dbe6f59377d3fc296ea8f483e259a830
-  ExpoFileSystem: 8551b04526dab27aba9ee54f3393ea7d6f369d9f
-  ExpoFont: 26bbea90749b8dd0b69effc9fab54248e684f290
+  EXConstants: 3feb66fd1d94202fc1f0946d74e029d8b224b60e
+  Expo: 7f5e64b5d18096dcec86814764b526b0cb97811c
+  ExpoAsset: d999f3bbd998a750f3b74cb913229848901b926b
+  ExpoFileSystem: aefcd337b94b874f88752ebefc52813b84992fad
+  ExpoFont: c625dbd97ed57e9089b172b2a7bb99003d074664
   ExpoKeepAwake: 44bf6715bc1d2ddb17afe19d927cd039cda123f0
-  ExpoModulesCore: 351e7b1f211709444abdd466354cb0bbc8cbda76
+  ExpoModulesCore: 77496909fd3c800f97f7f2007dd26aeac4bb3798
   FBLazyVector: e95a291ad2dadb88e42b06e0c5fb8262de53ec12
   hermes-engine: 9f4dfe93326146a1c99eb535b1cb0b857a3cd172
   RCTDeprecation: 943572d4be82d480a48f4884f670135ae30bf990
@@ -2110,7 +2110,7 @@ SPEC CHECKSUMS:
   React-logger: c3e2f8a2e284341205f61eef3d4677ab5a309dfd
   React-Mapbuffer: 603c18db65844bb81dbe62fee8fcc976eaeb7108
   React-microtasksnativemodule: d77e0c426fce34c23227394c96ca1033b30c813c
-  react-native-safe-area-context: add9b4ba236fe95ec600604d0fc72f395433dd59
+  react-native-safe-area-context: 53f796cb6c814661bbe99fbdfd0585d07b996cdd
   React-NativeModulesApple: 1664340b8750d64e0ef3907c5e53d9481f74bcbd
   React-oscompat: ce47230ed20185e91de62d8c6d139ae61763d09c
   React-perflogger: b1af3cfb3f095f819b2814910000392a8e17ba9f
@@ -2142,7 +2142,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 4c44b74b77fc41ae25b9e2c7e9bd6e2bc772c23f
   ReactCommon: e6e232202a447d353e5531f2be82f50f47cbaa9a
   ReactNativeDependencies: 71ce9c28beb282aa720ea7b46980fff9669f428a
-  RNGestureHandler: 8d650b1fabb2a5b1d7069bfc42c325b7e450c918
+  RNGestureHandler: 40c2d1c168e54715fe52e0fb16cb38c54611e4f3
   RNScreens: dd61bc3a3e6f6901ad833efa411917d44827cf51
   Yoga: 5934998fbeaef7845dbf698f698518695ab4cd1a
 
