@@ -9,12 +9,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RestController("/user")
-@Data
+@RestController
+@RequestMapping("/user")
 public class UserController {
 
-    @Autowired
     private final UserService userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
 
     @PostMapping
     public UserModel create(@RequestBody UserModel user) {

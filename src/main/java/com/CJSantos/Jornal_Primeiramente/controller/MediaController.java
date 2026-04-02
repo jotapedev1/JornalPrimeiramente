@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@Data
-@RestController("/media")
+@RestController
+@RequestMapping("/media")
 public class MediaController {
 
-    @Autowired
-    private MediaService mediaService;
+    private final MediaService mediaService;
+    public MediaController(MediaService mediaService) {
+        this.mediaService = mediaService;
+    }
 
     @PostMapping
     public MediaModel createMedia(@RequestBody MediaModel media){

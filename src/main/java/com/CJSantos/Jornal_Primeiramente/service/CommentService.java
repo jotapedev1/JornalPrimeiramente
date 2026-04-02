@@ -11,8 +11,10 @@ import java.util.UUID;
 @Service
 public class CommentService {
 
-    @Autowired
-    private CommentRepository commentRepository;
+    private final CommentRepository commentRepository;
+    public CommentService(CommentRepository commentRepository) {
+        this.commentRepository = commentRepository;
+    }
 
     public CommentModel createComment(CommentModel comment) {
         if (comment.getCommentContent() == null || comment.getCommentContent().isEmpty()) {
@@ -25,6 +27,10 @@ public class CommentService {
     public CommentModel getCommentById(UUID commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
+    }
+
+    public List<CommentModel> getAllComments() {
+        return commentRepository.findAll();
     }
 
     public CommentModel updateComment(UUID commentId, CommentModel updatedComment) {

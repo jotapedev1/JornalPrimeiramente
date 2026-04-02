@@ -11,11 +11,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Data
 public class MediaService {
 
-    @Autowired
     private final MediaRepository mediaRepository;
+    public MediaService(MediaRepository mediaRepository) {
+        this.mediaRepository = mediaRepository;
+    }
 
     public MediaModel createMedia(MediaModel media){
         if(media.getMediaType() == null){
