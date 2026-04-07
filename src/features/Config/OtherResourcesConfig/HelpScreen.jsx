@@ -8,6 +8,19 @@ import InputButton from "../../Auth/components/inputButton";
 import SendButton from "../../Auth/components/SendButton";
 
 const HelpScreen = ({navigation}) => {
+    const [disabledButton, setDisabledButton] = useState(false);
+    const [inputValue, setInputValue] = useState('');
+
+    const handleDisabledButton = () =>{
+        setDisabledButton(true);
+    }
+
+    const handlePress = () => {
+        alert("Pedido enviado.");
+        setInputValue("");
+    }
+
+    const isButtonDisabled = inputValue.trim().length === 0;
 
     return (
         <View style={styles.container}>
@@ -18,7 +31,8 @@ const HelpScreen = ({navigation}) => {
                 <Text style={styles.mainText}>
                     Conte-nos seu problema
                 </Text>
-                <InputButton/>
+                <InputButton value={inputValue} onChangeText={setInputValue}/>
+                <SendButton label={"Enviar"} disabled={isButtonDisabled} onPress={handlePress}/>
             </View>
         </View>
     )

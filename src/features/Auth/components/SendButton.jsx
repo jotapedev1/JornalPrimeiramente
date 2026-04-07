@@ -8,8 +8,13 @@ const SendButton = ({ label, onPress, disabled }) => {
             disabled={disabled}
             style={({ pressed }) => [
                 styles.sendView,
-                pressed && !disabled && styles.pressed,
-                disabled && styles.disabled,
+                {
+                    backgroundColor: disabled
+                        ? '#cccccc'
+                        : pressed
+                            ? 'gray'
+                            : 'black'
+                }
             ]}
         >
             <Text style={[
@@ -41,12 +46,6 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         fontWeight: 500,
         color: 'white',
-    },
-    pressed: {
-        backgroundColor: 'gray',
-    },
-    disabled: {
-        backgroundColor: '#cccccc', // Cinza quando desabilitado
     },
     disabledLabel: {
         color: '#666666', // Texto cinza quando desabilitado

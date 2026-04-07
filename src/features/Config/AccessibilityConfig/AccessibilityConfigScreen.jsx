@@ -50,6 +50,13 @@ const styles = StyleSheet.create({
         padding: 10,
         paddingLeft: 15
     },
+    mainText: {
+        fontFamily: 'Inter-Regular',
+        fontSize: 16,
+        paddingLeft: 30,
+        alignSelf: 'flex-start',
+        paddingTop: 13,
+    },
     errorText: {
         color: 'red',
         textAlign: 'center',
@@ -58,13 +65,6 @@ const styles = StyleSheet.create({
     button: {
         fontSize: 100,
     },
-    mainText: {
-        fontFamily: 'Inter-Regular',
-        fontSize: 16,
-        paddingLeft: 30,
-        alignSelf: 'flex-start',
-        paddingTop: 13,
-    }
 });
 
 

@@ -21,16 +21,20 @@ const AccountInfoScreen = ({navigation}) => {
         return (
             <View style={[styles.container, {top: 20}]}>
                 <View>
-                    <Text>Nome de usuário: </Text>
+                    <Text style={styles.title}>Nome de usuário: </Text>
+                    <Text style={styles.mainText}>João Santos </Text>
                 </View>
                 <View>
-                    <Text>E-mail: </Text>
+                    <Text style={styles.title}>E-mail: </Text>
+                    <Text style={styles.mainText}>joao.santos@gemail.com </Text>
                 </View>
                 <View>
-                    <Text>Conta criada em: </Text>
+                    <Text style={styles.title}>Conta criada em: </Text>
+                    <Text style={styles.mainText}>14/03/2026</Text>
                 </View>
                 <View>
-                    <Text>Data de nascimento: </Text>
+                    <Text style={styles.title}>Data de nascimento: </Text>
+                    <Text style={styles.mainText}>13/02/2006 </Text>
                 </View>
             </View>
         )
@@ -54,15 +58,21 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     title: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
         textAlign: 'center',
         display: 'flex',
         flexDirection: 'column',
         alignSelf: 'flex-start',
-        alignContent: 'flex-start',
-        paddingTop: 60,
         padding: 10,
+        paddingLeft: 15
+    },
+    mainText: {
+        fontFamily: 'Inter-Regular',
+        fontSize: 16,
+        paddingLeft: 30,
+        alignSelf: 'flex-start',
+        paddingBottom: 15
     },
     errorText: {
         color: 'red',
