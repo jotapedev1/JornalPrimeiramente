@@ -1,57 +1,48 @@
 package com.CJSantos.Jornal_Primeiramente.controller;
 
+import com.CJSantos.Jornal_Primeiramente.dto.CommentRequest;
 import com.CJSantos.Jornal_Primeiramente.model.CommentModel;
-import com.CJSantos.Jornal_Primeiramente.model.UserModel;
 import com.CJSantos.Jornal_Primeiramente.service.CommentService;
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/media")
+@RequiredArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
-    public CommentController(CommentService commentService) {
-        this.commentService = commentService;
+
+    @PostMapping("/{mediaId}/comment")
+    public ResponseEntity<CommentModel> createComment(
+            @PathVariable UUID mediaId,
+            @RequestParam UUID userId,
+            @RequestBody CommentRequest request
+    ) {
+        CommentModel comment = commentService.createComment(
+                userId,
+                mediaId,
+                request.getContent()
+        );
+
+        return ResponseEntity.ok(comment);
+    }
+    @GetMapping("/{mediaId}/comments")
+    public ResponseEntity<List<CommentModel>> getComments(
+            @PathVariable UUID mediaId
+    ) {
+        return ResponseEntity.ok(commentService.getComments(mediaId));
     }
 
-    @PostMapping
-    public CommentModel createComment(@RequestBody CommentModel comment){
-        return commentService.createComment(comment);
+    @DeleteMapping("/comment/{commentId}")
+    public ResponseEntity<String> deleteComment(
+            @PathVariable UUID commentId, UUID userID
+    ) {
+        commentService.deleteComment(commentId, userID);
+        return ResponseEntity.ok("Comment deleted");
     }
-
-    @GetMapping
-    public List<CommentModel> getAllComments() {
-        return commentService.getAllComments();
-    }
-
-    @GetMapping("/{id}")
-    public CommentModel  getCommentById(@PathVariable UUID id){
-        return commentService.getCommentById(id);
-    }
-
-    @GetMapping("/user-comment/{userId}")
-    public List<CommentModel> getCommentByUser(@PathVariable UUID userId){
-        return commentService.getCommentByUser(userId);
-    }
-
-    @GetMapping("media-comment/{mediaId}")
-    public List<CommentModel> getCommentByMedia(@PathVariable UUID mediaId){
-        return commentService.getCommentByMedia(mediaId);
-    }
-
-    @PutMapping("/{id}")
-    public CommentModel updateComment(@PathVariable UUID id, @RequestBody CommentModel updatedComment) {
-        return commentService.updateComment(id, updatedComment);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteComment(@PathVariable UUID id) {
-        commentService.deleteComment(id);
-    }
-
 }

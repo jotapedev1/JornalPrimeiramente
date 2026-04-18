@@ -15,8 +15,12 @@ import java.util.UUID;
 @NoArgsConstructor
 
 @Entity
-@Table(name="like")
-public class SaveModel {
+@Table(
+        name="save",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"saveUserId", "saveMediaId"}
+        )
+)public class SaveModel {
     @Id
     @GeneratedValue(strategy= GenerationType.UUID)
     private UUID saveId;

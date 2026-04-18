@@ -11,4 +11,6 @@ public interface CommentRepository extends JpaRepository<CommentModel, UUID> {
     List<CommentModel> getMediaById(UUID mediaId);
 
     List<CommentModel> getUserById(UUID userId);
+
+    List<CommentModel> findByCommentMedia_MediaId(UUID mediaId);
 }
