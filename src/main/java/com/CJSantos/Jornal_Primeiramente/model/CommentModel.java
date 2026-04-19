@@ -20,6 +20,7 @@ public class CommentModel {
     @Id
     @GeneratedValue(strategy= GenerationType.UUID)
     private UUID commentId;
+
     private LocalDateTime commentCreatedAt;
     private String commentContent;
 

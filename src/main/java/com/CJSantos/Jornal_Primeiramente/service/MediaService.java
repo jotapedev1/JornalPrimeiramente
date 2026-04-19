@@ -55,7 +55,7 @@ public class MediaService {
     }
 
     public List<MediaModel> getMediaByUser(UUID userId) {
-        return mediaRepository.findByUserUserId(userId);
+        return mediaRepository.findByUser_UserId(userId);
     }
 
     public void deleteMedia(UUID id){

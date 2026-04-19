@@ -33,7 +33,7 @@ public class UserModel {
     @Enumerated(EnumType.STRING)
     private Role userRole;
 
-    @OneToMany(mappedBy = "mediaAuthor")
+    @OneToMany(mappedBy = "user")
     private List<MediaModel> medias;
 
     @OneToMany(mappedBy = "commentUser")

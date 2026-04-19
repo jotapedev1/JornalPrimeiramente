@@ -27,7 +27,7 @@ public class MediaModel {
 
     @ManyToOne
     @JoinColumn(name="mediaAuthorId", nullable = false)
-    private UserModel mediaAuthor;
+    private UserModel user;
 
     //deleting media deletes all comments
     @OneToMany(mappedBy = "commentMedia", cascade = CascadeType.ALL, orphanRemoval = true)

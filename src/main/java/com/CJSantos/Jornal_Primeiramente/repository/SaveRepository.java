@@ -10,7 +10,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface SaveRepository extends JpaRepository<SaveModel, UUID> {
-    List<SaveModel> getAllSavedByUser(UUID userId, UUID mediaId);
-
     Optional<SaveModel> findBySaveUserAndSaveMedia(UserModel user, MediaModel media);
 }
