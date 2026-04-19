@@ -21,7 +21,7 @@ public class UserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID userId;
-    private String userName, userEmail, userPassword;
+    private String userName, userEmail, userPassword, userHash;
 
     private LocalDateTime userCreatedAt;
 

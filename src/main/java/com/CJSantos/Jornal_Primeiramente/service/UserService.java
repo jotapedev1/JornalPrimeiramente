@@ -4,6 +4,8 @@ import com.CJSantos.Jornal_Primeiramente.model.UserModel;
 import com.CJSantos.Jornal_Primeiramente.repository.UserRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,7 +20,13 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    @Autowired
+    private PasswordEncoder passwordEncoder; //PasswordEncoder it's an interface from the security dependency we have
+
     public UserModel createUser(UserModel user) {
+        String hashedPassword = passwordEncoder.encode(user.getUserPassword());
+        user.setUserHash(hashedPassword);
+
         //no email already registred
         if (userRepository.findByUserEmail(user.getUserEmail()) != null) {
             throw new RuntimeException("Email já existe");
@@ -48,5 +56,4 @@ public class UserService {
     public void deleteUser(UUID id) {
         userRepository.deleteById(id);
     }
-
 }

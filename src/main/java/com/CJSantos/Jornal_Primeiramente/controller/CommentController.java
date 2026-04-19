@@ -1,7 +1,7 @@
 package com.CJSantos.Jornal_Primeiramente.controller;
 
 import com.CJSantos.Jornal_Primeiramente.dto.CommentRequest;
-import com.CJSantos.Jornal_Primeiramente.model.CommentModel;
+import com.CJSantos.Jornal_Primeiramente.dto.CommentResponse;
 import com.CJSantos.Jornal_Primeiramente.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,31 +18,26 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/{mediaId}/comment")
-    public ResponseEntity<CommentModel> createComment(
+    public ResponseEntity<CommentResponse> createComment(
             @PathVariable UUID mediaId,
             @RequestParam UUID userId,
             @RequestBody CommentRequest request
     ) {
-        CommentModel comment = commentService.createComment(
-                userId,
-                mediaId,
-                request.getContent()
-        );
-
-        return ResponseEntity.ok(comment);
+        CommentResponse response = commentService.createComment(userId, mediaId, request);
+        return ResponseEntity.ok(response);
     }
+
     @GetMapping("/{mediaId}/comments")
-    public ResponseEntity<List<CommentModel>> getComments(
-            @PathVariable UUID mediaId
-    ) {
+    public ResponseEntity<List<CommentResponse>> getComments(@PathVariable UUID mediaId) {
         return ResponseEntity.ok(commentService.getComments(mediaId));
     }
 
     @DeleteMapping("/comment/{commentId}")
     public ResponseEntity<String> deleteComment(
-            @PathVariable UUID commentId, UUID userID
+            @PathVariable UUID commentId,
+            @RequestParam UUID userId
     ) {
-        commentService.deleteComment(commentId, userID);
+        commentService.deleteComment(commentId, userId);
         return ResponseEntity.ok("Comment deleted");
     }
 }
