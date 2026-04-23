@@ -1,4 +1,4 @@
-import {Image, Pressable, StyleSheet, Text, TouchableOpacity} from "react-native";
+import {Image, StyleSheet, TouchableOpacity} from "react-native";
 import {useState} from "react";
 
 const BookmarkButton = ({height, width}) => {

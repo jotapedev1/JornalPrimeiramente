@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import LoginScreen from "../features/Auth/screens/LoginScreen";
 import SignUpParticipantScreen from "../features/Auth/screens/SignUpParticipantScreen";
@@ -10,10 +10,7 @@ import MenuScreen from "../features/Midias/screens/MenuScreen";
 import BrowseScreen from "../features/Midias/screens/BrowseScreen";
 import NotificationScreen from "../features/Perfil/screens/NotificationScreen";
 import ProfileScreen from "../features/Perfil/screens/ProfileScreen";
-
-const Stack = createNativeStackNavigator();
-
-import { TransitionSpecs, HeaderStyleInterpolators } from '@react-navigation/stack';
+import {HeaderStyleInterpolators, TransitionSpecs} from '@react-navigation/stack';
 import ArticleScreen from "../features/Midias/screens/ArticleScreen";
 import BookmarksScreen from "../features/Perfil/screens/BookmarksScreen";
 import ConfigurationScreen from "../features/Config/ConfigurationScreen";
@@ -33,6 +30,9 @@ import PrivacyPolicyScreen from "../features/Config/OtherResourcesConfig/Privacy
 import TermsOfServiceScreen from "../features/Config/OtherResourcesConfig/TermsOfServiceScreen";
 import VersionNotesScreen from "../features/Config/OtherResourcesConfig/VersionNotesScreen";
 import OtherResourcesScreen from "../features/Config/OtherResourcesScreen";
+import PublishingScreen from "../features/Perfil/screens/PublishingScreen";
+
+const Stack = createNativeStackNavigator();
 
 const transitionAnimation = {
     gestureDirection: 'horizontal',
@@ -75,6 +75,8 @@ export default function AppNavigator() {
                               options={{ headerShown: true }}/>
                 <Stack.Screen name ="Bookmarks" component={BookmarksScreen}
                               options={{headerShown: true}}/>
+                <Stack.Screen name ="Publishing" component={PublishingScreen}
+                              options={{headerShown: true, title: 'Publicar'}}/>
 
                 {/*CONFIGURATION SCREENS*/}
                 <Stack.Screen name="Configuration" component={ConfigurationScreen}

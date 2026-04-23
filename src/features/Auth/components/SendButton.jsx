@@ -1,4 +1,4 @@
-import { Text, Pressable, StyleSheet } from "react-native";
+import {Pressable, StyleSheet, Text} from "react-native";
 import React from "react";
 
 const SendButton = ({ label, onPress, disabled }) => {

@@ -1,12 +1,12 @@
-import {Text, TextInput, View, StyleSheet} from "react-native";
+import { Text, TextInput, View, StyleSheet } from "react-native";
 import React from "react";
 
-const InputButton = ({ label, placeholder, value, onChangeText}) => {
+const InputButton = ({ label, placeholder, value, onChangeText }) => {
     return (
         <View style={styles.inputView}>
             <Text style={styles.inputLabel}>{label}</Text>
             <TextInput style={styles.input} placeholder={placeholder || ''}
-            value={value} onChangeText={onChangeText}></TextInput>
+                value={value} onChangeText={onChangeText}></TextInput>
         </View>
     );
 }
