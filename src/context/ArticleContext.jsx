@@ -2,10 +2,11 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { articleData } from "../data/articleData.js";
 import { editionData } from "../data/editionData.js";
+import axios from "axios";
 
 const ArticleContext = createContext({});
 
-export const ArticleProvider = ({ children }) => {
+const ArticleProvider = ({ children }) => {
     const [articles, setArticles] = useState([]);
     const [bookmarks, setBookmarks] = useState([]);
     const [editions, setEditions] = useState([]);
@@ -31,15 +32,25 @@ export const ArticleProvider = ({ children }) => {
         setLoading(false);
     };
 
-    const toggleBookmark = (article) => {
-        setBookmarks(prev => {
-            const exists = prev.some(item => item.id === article.id);
+    const toggleBookmark = async (article) => {
+        try {
+            const response = await axios.post(`http://localhost:8080/${article.id}/save`, {
+                mediaId: article.id,
+                // userId: user.id, BRING USER TO ARTICLE CONTEXT
+                // Add other fields your backend expects
+            });
+            setBookmarks(prev => {
+                const exists = prev.some(item => item.id === article.id);
             if (exists) {
                 return prev.filter(item => item.id !== article.id);
             } else {
                 return [...prev, article];
             }
-        });
+            });
+                return response;
+        }catch (error){
+                return console.log('Error: ', error);
+        }
     };
 
     const isBookmarked = (articleId) => {
@@ -91,6 +102,7 @@ export const ArticleProvider = ({ children }) => {
         </ArticleContext.Provider>
     );
 };
+export default ArticleProvider
 
 export const useArticles = () => {
     const context = useContext(ArticleContext);

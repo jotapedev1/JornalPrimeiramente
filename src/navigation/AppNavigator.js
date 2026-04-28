@@ -2,9 +2,8 @@ import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import LoginScreen from "../features/Auth/screens/LoginScreen";
-import SignUpParticipantScreen from "../features/Auth/screens/SignUpParticipantScreen";
 import TypeSignUpScreen from "../features/Auth/screens/TypeSignUpScreen";
-import SignUpReaderScreen from "../features/Auth/screens/SignUpReaderScreen";
+import SignUpScreen from "../features/Auth/screens/SignUpScreen";
 import HomeScreen from "../features/Midias/screens/HomeScreen";
 import MenuScreen from "../features/Midias/screens/MenuScreen";
 import BrowseScreen from "../features/Midias/screens/BrowseScreen";
@@ -51,8 +50,7 @@ export default function AppNavigator() {
                 {/*AUTHENTICATION SCREENS*/}
                 <Stack.Screen name="TypeSignUp" component={TypeSignUpScreen}/>
                 <Stack.Screen name="Login" component={LoginScreen}/>
-                <Stack.Screen name="SignUpParticipant" component={SignUpParticipantScreen}/>
-                <Stack.Screen name="SignUpReader" component={SignUpReaderScreen}/>
+                <Stack.Screen name="SignUp" component={SignUpScreen}/>
                 <Stack.Screen name="PasswordReset" component={PasswordResetScreen}
                               options={{headerShown: true}}/>
 

@@ -24,10 +24,13 @@ const TypeSignUpScreen = ({ navigation }) => {
 
 
 
-            <SendButton label={'Leitor'} onPress={()=>navigation.navigate('SignUpReader')}/>
+            <SendButton label={'Cadastre-se'} onPress={()=>navigation.navigate('SignUp')}/>
 
             <TemplateButton label={'Já tem login?'}
-                            onPress={()=>navigation.navigate('Login')}/>
+                            onPress={()=>{
+                                navigation.navigate('Login');
+                            }}
+            />
         </View>
     );
 };

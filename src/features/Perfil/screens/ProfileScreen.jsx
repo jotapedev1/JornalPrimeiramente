@@ -57,13 +57,13 @@ const ProfileScreen = ({navigation}) => {
             <View style={styles.mainContent}>
                 <ScrollView>
                     <View style={styles.profileDiv}>
-                        <Image source={require('../../../assets/imgs/signupimg.jpg')} style={styles.profilePic}></Image>
+                        <Image source={require('../../../assets/imgs/profilepic_placeholder.png')} style={styles.profilePic}></Image>
                         <Text style={styles.profileTitle}>Perfil</Text>
                         <Text style={styles.profileDesc}>Sou um perfil de teste, feito para testar. Testando... 1, 2, 3...</Text>
                     </View>
                     <View style={styles.profileDiv}>
                         <Text style={styles.title}>Artigos Curtidos</Text>
-                        
+
                     </View>
                     <View style={{paddingBottom: 200}}>
                         <TouchableOpacity onPress={handlePublishingButton} style={{borderRadius: 25, width: 50, height: 50, alignSelf: 'center', backgroundColor: 'red', marginTop: 15, justifyContent: 'center', alignItems: 'center'}}>

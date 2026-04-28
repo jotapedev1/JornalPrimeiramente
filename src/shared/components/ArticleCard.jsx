@@ -1,8 +1,8 @@
-// src/shared/components/ArticleCard.js
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import BookmarkButton from '../../features/Perfil/components/BookmarkButton';
 import { useArticles } from '../../context/ArticleContext';
+import axios from "axios";
 
 const ArticleCard = ({ article }) => {
     const navigation = useNavigation();
@@ -11,6 +11,7 @@ const ArticleCard = ({ article }) => {
     const handlePress = () => {
         navigation.navigate('ArticleScreen', { articleId: article.id });
     };
+
 
     return (
         <TouchableOpacity onPress={handlePress} activeOpacity={0.7}>
@@ -27,7 +28,8 @@ const ArticleCard = ({ article }) => {
                         <View style={styles.bookmarkContainer}>
                             <BookmarkButton
                                 isBookmarked={article.id}
-                                onPress={() => toggleBookmark(article)}
+                                onPress={() =>
+                                    (toggleBookmark(article))}
                                 height={25}
                                 width={25}
                             />
@@ -48,7 +50,7 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         margin: 16,
         overflow: 'hidden',
-        alignSelf: 'center'
+        alignSelf: 'center',
     },
     shadow: {
         elevation: 4,
