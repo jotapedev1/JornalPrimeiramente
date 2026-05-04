@@ -16,21 +16,31 @@ import java.util.UUID;
 @NoArgsConstructor
 
 @Entity
-@Table(name="user")
+@Table(name = "\"user\"")  // ← ASPAS DUPLAS na tabela
 public class UserModel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "\"user_id\"")  // ← ASPAS DUPLAS
     private UUID userId;
-    private String userName, userEmail, userPassword, userHash;
 
+    @Column(name = "\"user_name\"")  // ← ASPAS DUPLAS
+    private String userName;
+
+    @Column(name = "\"user_email\"")  // ← ASPAS DUPLAS
+    private String userEmail;
+
+    @Column(name = "\"user_password\"")  // ← ASPAS DUPLAS
+    private String userPassword;
+
+    @Column(name = "\"user_hash\"")  // ← ASPAS DUPLAS
+    private String userHash;
+
+    @Column(name = "\"user_created_at\"")  // ← ASPAS DUPLAS
     private LocalDateTime userCreatedAt;
 
-    @PrePersist
-    public void prePersist() {
-        this.userCreatedAt = LocalDateTime.now();
-    }
-
     @Enumerated(EnumType.STRING)
+    @Column(name = "\"user_role\"")  // ← ASPAS DUPLAS
     private Role userRole;
 
     @OneToMany(mappedBy = "user")
@@ -44,4 +54,9 @@ public class UserModel {
 
     @OneToMany(mappedBy = "saveUser")
     private List<SaveModel> saves;
+
+    @PrePersist
+    public void prePersist() {
+        this.userCreatedAt = LocalDateTime.now();
+    }
 }

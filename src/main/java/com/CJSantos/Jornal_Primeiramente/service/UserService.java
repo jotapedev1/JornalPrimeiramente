@@ -2,9 +2,7 @@ package com.CJSantos.Jornal_Primeiramente.service;
 
 import com.CJSantos.Jornal_Primeiramente.model.UserModel;
 import com.CJSantos.Jornal_Primeiramente.repository.UserRepository;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,21 +14,22 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
-    @Autowired
-    private PasswordEncoder passwordEncoder; //PasswordEncoder it's an interface from the security dependency we have
 
     public UserModel createUser(UserModel user) {
         String hashedPassword = passwordEncoder.encode(user.getUserPassword());
         user.setUserHash(hashedPassword);
 
-        //no email already registred
         if (userRepository.findByUserEmail(user.getUserEmail()) != null) {
-            throw new RuntimeException("Email já existe");
+            throw new RuntimeException("Email already exists");
         }
+
         user.setUserCreatedAt(LocalDateTime.now());
         return userRepository.save(user);
     }
@@ -41,15 +40,21 @@ public class UserService {
 
     public UserModel getUserById(UUID id) {
         return userRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public UserModel updateUser(UUID id, UserModel updatedUser) { //updated being used as a temp var
+    public UserModel getUserByEmail(String email) {
+        UserModel user = userRepository.findByUserEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found with email: " + email);
+        }
+        return user;
+    }
+
+    public UserModel updateUser(UUID id, UserModel updatedUser) {
         UserModel user = getUserById(id);
-        //set the email and name for the new ones
         user.setUserEmail(updatedUser.getUserEmail());
         user.setUserName(updatedUser.getUserName());
-
         return userRepository.save(user);
     }
 
