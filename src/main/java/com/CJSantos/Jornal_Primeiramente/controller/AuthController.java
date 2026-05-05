@@ -20,10 +20,10 @@ import java.util.Map;
 public class AuthController {
 
     @Autowired
-    private AuthenticationManager authenticationManager; //AuthenticationManager it's an interface to authenticate the object
+    private AuthenticationManager authenticationManager;
 
     @Autowired
-    private JwtUtil jwtUtil; //class for token generation
+    private JwtUtil jwtUtil;
 
     @Autowired
     private UserService userService;
@@ -61,21 +61,45 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
+            try {
+                UserModel existingUser = userService.getUserByEmail(request.getEmail());
+                if (existingUser != null) {
+                    return ResponseEntity.badRequest().body(Map.of("error", "Email already registered"));
+                }
+            } catch (RuntimeException e) {
+                // Email não encontrado, pode prosseguir com o cadastro
+            }
+
             UserModel newUser = new UserModel();
             newUser.setUserName(request.getName());
             newUser.setUserEmail(request.getEmail());
             newUser.setUserPassword(request.getPassword());
-            newUser.setUserRole(Role.USER); // Default role is USER
+            newUser.setUserRole(Role.USER);
+
 
             UserModel createdUser = userService.createUser(newUser);
 
-            return ResponseEntity.ok(Map.of(
-                    "message", "User created successfully",
-                    "userId", createdUser.getUserId()
-            ));
+            String token = jwtUtil.generateToken(
+                    createdUser.getUserEmail(),
+                    createdUser.getUserId(),
+                    createdUser.getUserRole().name()
+            );
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("userId", createdUser.getUserId());
+            response.put("email", createdUser.getUserEmail());
+            response.put("userName", createdUser.getUserName());
+            response.put("role", createdUser.getUserRole().name());
+            response.put("isAdmin", createdUser.getUserRole() == Role.ADMIN);
+            response.put("message", "User created and logged in successfully");
+
+            return ResponseEntity.ok(response);
 
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Internal server error: " + e.getMessage()));
         }
     }
 }
@@ -85,12 +109,11 @@ public class AuthController {
 class LoginRequest {
     private String email;
     private String password;
-    // getters and setters
 }
+
 @Data
 class RegisterRequest {
     private String name;
     private String email;
     private String password;
-    // getters and setters
 }

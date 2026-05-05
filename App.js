@@ -2,12 +2,15 @@
     import AppNavigator from "./src/navigation/AppNavigator";
     import { useFonts, Lalezar_400Regular } from '@expo-google-fonts/lalezar';
     import ArticleProvider from "./src/context/ArticleContext";
+    import {AuthProvider} from "./src/context/AuthContext";
 
      export default function App(){
         const [fontsLoaded] = useFonts({Lalezar_400Regular});
          return (
-         <ArticleProvider>
-             <AppNavigator/>
-         </ArticleProvider>
+             <AuthProvider>
+                 <ArticleProvider>
+                     <AppNavigator/>
+                 </ArticleProvider>
+             </AuthProvider>
          );
      }

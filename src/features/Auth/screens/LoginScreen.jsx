@@ -1,65 +1,70 @@
-import React, { useState } from 'react';
-import {View, Text, StyleSheet, Alert} from 'react-native';
-import InputButton from "../components/inputButton"
+// screens/auth/LoginScreen.js
+import React, { useContext, useState } from 'react';
+import { View, Text, StyleSheet, Alert, Platform } from 'react-native';
+import InputButton from "../components/inputButton";
 import SendButton from "../components/SendButton";
 import TemplateButton from "../components/TemplateButton";
 import JornalLogo from "../../../shared/components/JornalLogo";
-import axios from "axios";
+import { AuthContext } from "../../../context/AuthContext";
 
 const LoginScreen = ({ navigation }) => {
-    const [formData, setFormData] = useState({});
-    const [inputValue, setInputValue] = useState('');
-    const [inputValue2, setInputValue2] = useState('');
+    const { loginWithCredentials } = useContext(AuthContext);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const isButtonDisabled = inputValue.trim().length === 0 ||
-        inputValue2.trim().length === 0;
+    const isButtonDisabled = email.trim().length === 0 || password.trim().length === 0;
 
     const handleSubmit = async () => {
-        try{
-            // const response = await axios.post('http://localhost:8080/user', formData);
-            console.log('pedido de login enviado!');
-            return true;
-        }catch (error){
-            console.log('Error: ', error);
+        setLoading(true);
+        try {
+            const result = await loginWithCredentials(email, password);
+
+        } catch (error) {
+            console.log('Erro ao logar:', error);
+            Alert.alert('Erro', 'Ocorreu um erro ao tentar fazer login');
+        } finally {
+            setLoading(false);
         }
-    }
+    };
 
     return (
         <View style={styles.container}>
-                <JornalLogo/>
+            <JornalLogo />
+            <Text style={styles.title}>Login</Text>
 
-                <Text style={[styles.title,{width: '100%', textAlign: 'center', fontFamily: 'Lalezar_400Regular', top: 10}]}>Login</Text>
-                <InputButton
-                    label="E-mail:"
-                    placeholder="Digite seu e-mail"
-                    onChangeText={(value) => {
-                        setInputValue(value);
-                        setFormData({...formData, userEmail: value})
-                    }}
+            <InputButton
+                label="E-mail:"
+                placeholder="Digite seu e-mail"
+                onChangeText={setEmail}
+                value={email}
+            />
+
+            <InputButton
+                label="Senha:"
+                placeholder="Digite sua senha"
+                secureTextEntry={true}
+                onChangeText={setPassword}
+                value={password}
+            />
+
+            <SendButton
+                label={loading ? 'Entrando...' : 'Entrar'}
+                onPress={handleSubmit}
+                disabled={isButtonDisabled || loading}
+            />
+
+            <View style={styles.footer}>
+                <TemplateButton
+                    label={'Não tem Cadastro?'}
+                    onPress={() => navigation.navigate('TypeSignUp')}
                 />
-                <InputButton
-                    label="Senha:"
-                    placeholder="Digite sua senha"
-                    onChangeText={(value) => {
-                        setInputValue2(value);
-                        setFormData({...formData, userPassword: value})
-                    }}
+
+                <TemplateButton
+                    label={'Esqueceu a senha?'}
+                    onPress={() => navigation.navigate('PasswordReset')}
                 />
-
-                <SendButton label={'Entrar'} onPress={()=>handleSubmit().then(navigation.navigate('Home'))}
-                // disabled={isButtonDisabled}
-                    />
-
-                <View>
-                <TemplateButton label={'Não tem Cadastro?'}
-                onPress={()=>navigation.popTo('TypeSignUp')}/>
-                </View>
-
-                <View>
-                    <TemplateButton label={'Esqueceu a senha?'}
-                    onPress={()=>navigation.popTo('PasswordReset')}/>
-                </View>
-
+            </View>
         </View>
     );
 };
@@ -73,16 +78,14 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         textAlign: 'center',
+        width: '100%',
+        fontFamily: 'Lalezar_400Regular',
+        marginVertical: 20,
     },
-    errorText: {
-        color: 'red',
-        textAlign: 'center',
-        marginBottom: 10,
-    },
-    button: {
-       fontSize: 100
+    footer: {
+        marginTop: 20,
+        gap: 10,
     },
 });
-
 
 export default LoginScreen;

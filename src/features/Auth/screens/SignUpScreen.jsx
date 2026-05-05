@@ -1,108 +1,129 @@
-import React, { useState } from 'react';
-import {View, Text, TextInput, Button, StyleSheet, ActivityIndicator, BackHandler, Alert} from 'react-native';
-import {Platform} from "react-native";
-import {Lalezar_400Regular} from "@expo-google-fonts/lalezar";
+import React, { useState, useContext } from 'react';
+import {View, Text, StyleSheet, Alert, Platform} from 'react-native';
 import InputButton from "../components/inputButton";
 import SendButton from "../components/SendButton";
 import TemplateButton from "../components/TemplateButton";
 import JornalLogo from "../../../shared/components/JornalLogo";
 import {AuthContext} from "../../../context/AuthContext";
 import axios from "axios";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignUpScreen = ({ navigation }) => {
-    const [formData, setFormData] = useState({});
-    const [inputValue, setInputValue] = useState('');
-    const [inputValue2, setInputValue2] = useState('');
-    const [inputValue3, setInputValue3] = useState('');
-    const [inputValue4, setInputValue4] = useState('');
-    const [inputValue5, setInputValue5] = useState('');
+    const { register } = useContext(AuthContext); // Pega a função de login do contexto
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [confirmEmail, setConfirmEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const isButtonDisabled = inputValue.trim().length === 0 ||
-        inputValue2.trim().length === 0 ||
-        inputValue3.trim().length === 0 ||
-        inputValue4.trim().length === 0 ||
-        inputValue5.trim().length === 0;
+    // Configuração da URL base para diferentes plataformas
+    const getBaseUrl = () => {
+        if (Platform.OS === 'android') {
+            return 'http://10.0.2.2:8080'; // Android Emulator
+        }
+        return 'http://localhost:8080'; // iOS ou Web
+    };
+
+    const isButtonDisabled =
+        fullName.trim().length === 0 ||
+        email.trim().length === 0 ||
+        confirmEmail.trim().length === 0 ||
+        password.trim().length === 0 ||
+        confirmPassword.trim().length === 0 ||
+        email.trim() !== confirmEmail.trim() ||
+        password.trim() !== confirmPassword.trim();
 
     const handleSubmit = async () => {
-        if (inputValue2 !== inputValue3) {
-            return Alert.alert('As senhas não coincidem');
+        if (password !== confirmPassword) {
+            Alert.alert('Erro', 'As senhas não coincidem');
+            return false;
         }
 
-        if (inputValue4 !== inputValue5) {
-            return Alert.alert('Os emails não coincidem');
+        if (email !== confirmEmail) {
+            Alert.alert('Erro', 'Os e-mails não coincidem');
+            return false;
         }
 
-        try{
-            const response = await axios.post('http://localhost:8080/user', formData);
-            console.log('usuário registrado!');
-            return response;
-        }catch (error){
-            console.log('Error: ', error);
+        if (fullName.trim().split(' ').length < 2) {
+            Alert.alert('Erro', 'Digite seu nome completo');
+            return false;
         }
-    }
+
+        setLoading(true);
+        try {
+            const result = await register(fullName, email, password);
+
+        } catch (error) {
+            console.error('Erro no registro:', error);
+            Alert.alert('Erro', 'Ocorreu um erro ao tentar criar sua conta');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <View style={styles.container}>
             <JornalLogo/>
 
-            <Text style={[styles.title,{ width: '100%', textAlign: 'center', fontFamily: 'Lalezar_400Regular'}]}>Cadastre-se</Text>
+            <Text style={styles.title}>Cadastre-se</Text>
 
-            {inputValue.trim().length > 0 && inputValue.trim().split(' ').length < 2
-                && <Text style={styles.errorText}>Digite seu nome completo</Text>}
+            {fullName.trim().length > 0 && fullName.trim().split(' ').length < 2 && (
+                <Text style={styles.errorText}>Digite seu nome completo</Text>
+            )}
             <InputButton
                 label="Nome Completo:"
                 placeholder="Digite seu nome completo"
-                onChangeText={(value)=>{
-                    setInputValue(value);
-                    setFormData({...formData, userName: value})
-                }}
-                value={inputValue}
+                onChangeText={setFullName}
+                value={fullName}
             />
-
 
             <InputButton
                 label="E-mail:"
                 placeholder="Digite seu e-mail"
-                onChangeText={(value)=>{
-                    setInputValue2(value);
-                    setFormData({...formData, userEmail: value})
-                }}
-                value={inputValue2}
+                onChangeText={setEmail}
+                value={email}
             />
-            {inputValue2.trim() !== inputValue3.trim()
-                && inputValue3 !== '' && <Text style={styles.errorText}>E-mails não coincidem</Text>}
+
+            {email.trim() !== confirmEmail.trim() && confirmEmail !== '' && (
+                <Text style={styles.errorText}>E-mails não coincidem</Text>
+            )}
             <InputButton
                 label="Confirme seu e-mail"
-                onChangeText={(value)=>{
-                    setInputValue3(value);
-                }}
-                value={inputValue3}
+                placeholder="Confirme seu e-mail"
+                onChangeText={setConfirmEmail}
+                value={confirmEmail}
             />
 
             <InputButton
                 label="Senha:"
                 placeholder="Digite sua senha"
-                onChangeText={(value)=>{
-                    setInputValue4(value);
-                    setFormData({...formData, userPassword: value})
-                }}
-                value={inputValue4}
+                secureTextEntry={true}
+                onChangeText={setPassword}
+                value={password}
             />
-            {inputValue4.trim() !== inputValue5.trim()
-                && inputValue5 !== '' && <Text style={styles.errorText}>Senhas não coincidem</Text>}
+
+            {password.trim() !== confirmPassword.trim() && confirmPassword !== '' && (
+                <Text style={styles.errorText}>Senhas não coincidem</Text>
+            )}
             <InputButton
                 label="Confirme sua senha"
-                onChangeText={(value)=>{
-                    setInputValue5(value);
-                }}
-                value={inputValue5}
+                placeholder="Confirme sua senha"
+                secureTextEntry={true}
+                onChangeText={setConfirmPassword}
+                value={confirmPassword}
             />
-            <SendButton label={'Cadastre-se'} onPress={async () => {
-                const success = await handleSubmit();
-                if (success) navigation.navigate('Home');
-            }} disabled={isButtonDisabled}></SendButton>
-            <TemplateButton label={'Já tem cadastro?'} onPress={()=> navigation.popTo('Login')}/>
 
+            <SendButton
+                label={loading ? 'Cadastrando...' : 'Cadastre-se'}
+                onPress={handleSubmit}
+                disabled={isButtonDisabled || loading}
+            />
+
+            <TemplateButton
+                label={'Já tem cadastro?'}
+                onPress={() => navigation.navigate('Login')}
+            />
         </View>
     );
 };
@@ -116,6 +137,9 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         textAlign: 'center',
+        width: '100%',
+        fontFamily: 'Lalezar_400Regular',
+        top: 10,
     },
     errorText: {
         color: 'red',
@@ -124,8 +148,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         fontSize: 12
     },
-
 });
-
 
 export default SignUpScreen;
