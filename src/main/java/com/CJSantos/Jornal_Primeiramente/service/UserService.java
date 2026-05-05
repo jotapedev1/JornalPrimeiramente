@@ -13,34 +13,20 @@ import java.util.UUID;
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    public UserModel createUser(UserModel user) {
-        String hashedPassword = passwordEncoder.encode(user.getUserPassword());
-        user.setUserHash(hashedPassword);
-
-        if (userRepository.findByUserEmail(user.getUserEmail()) != null) {
-            throw new RuntimeException("Email already exists");
-        }
-
-        user.setUserCreatedAt(LocalDateTime.now());
-        return userRepository.save(user);
-    }
-
+    // Public methods
     public List<UserModel> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.findAll();  // Fixed from findOne
     }
 
     public UserModel getUserById(UUID id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 
     public UserModel getUserByEmail(String email) {
@@ -51,14 +37,42 @@ public class UserService {
         return user;
     }
 
+    public UserModel createUser(UserModel user) {
+        // Check if email already exists
+        if (userRepository.findByUserEmail(user.getUserEmail()) != null) {
+            throw new RuntimeException("Email already registered");
+        }
+
+        // Hash the password
+        if (user.getUserPassword() != null && !user.getUserPassword().isEmpty()) {
+            String hashedPassword = passwordEncoder.encode(user.getUserPassword());
+            user.setUserHash(hashedPassword);
+        }
+
+        user.setUserCreatedAt(LocalDateTime.now());
+        return userRepository.save(user);
+    }
+
     public UserModel updateUser(UUID id, UserModel updatedUser) {
         UserModel user = getUserById(id);
-        user.setUserEmail(updatedUser.getUserEmail());
-        user.setUserName(updatedUser.getUserName());
+
+        if (updatedUser.getUserEmail() != null) {
+            user.setUserEmail(updatedUser.getUserEmail());
+        }
+        if (updatedUser.getUserName() != null) {
+            user.setUserName(updatedUser.getUserName());
+        }
+        if (updatedUser.getUserRole() != null) {
+            user.setUserRole(updatedUser.getUserRole());
+        }
+
         return userRepository.save(user);
     }
 
     public void deleteUser(UUID id) {
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("User not found with id: " + id);
+        }
         userRepository.deleteById(id);
     }
 }

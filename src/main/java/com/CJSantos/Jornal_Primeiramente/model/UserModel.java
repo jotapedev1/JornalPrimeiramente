@@ -30,6 +30,7 @@ public class UserModel {
     @Column(name = "\"user_email\"")  // ← ASPAS DUPLAS
     private String userEmail;
 
+    @Transient
     @Column(name = "\"user_password\"")  // ← ASPAS DUPLAS
     private String userPassword;
 

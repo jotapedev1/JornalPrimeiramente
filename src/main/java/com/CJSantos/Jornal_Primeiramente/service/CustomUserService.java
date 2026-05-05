@@ -1,7 +1,6 @@
 package com.CJSantos.Jornal_Primeiramente.service;
 
 import com.CJSantos.Jornal_Primeiramente.model.UserModel;
-import com.CJSantos.Jornal_Primeiramente.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -16,20 +15,40 @@ import java.util.Collections;
 public class CustomUserService implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        UserModel user = userRepository.findByUserEmail(email);
+        // Fetch user from database
+        UserModel userModel = userService.getUserByEmail(email);
 
-        if (user == null) {
+        if (userModel == null) {
             throw new UsernameNotFoundException("User not found with email: " + email);
         }
 
+        //logging
+        System.out.println("Loading user: " + userModel.getUserEmail());
+        System.out.println("Password hash: " + userModel.getUserHash());
+        System.out.println("Role: " + userModel.getUserRole());
+
+        // Check for null values
+        if (userModel.getUserEmail() == null || userModel.getUserEmail().isEmpty()) {
+            throw new UsernameNotFoundException("User email is null or empty");
+        }
+
+        if (userModel.getUserHash() == null || userModel.getUserHash().isEmpty()) {
+            throw new UsernameNotFoundException("User password is null or empty for email: " + email);
+        }
+
+        if (userModel.getUserRole() == null) {
+            throw new UsernameNotFoundException("User role is null for email: " + email);
+        }
+
+        // Create Spring Security User object
         return new User(
-                user.getUserEmail(),
-                user.getUserHash(),
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getUserRole().name()))
+                userModel.getUserEmail(),
+                userModel.getUserHash(),
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + userModel.getUserRole().name()))
         );
     }
 }

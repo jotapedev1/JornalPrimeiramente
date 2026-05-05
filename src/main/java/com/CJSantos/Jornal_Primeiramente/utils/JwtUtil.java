@@ -14,10 +14,11 @@ import java.util.UUID;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret.key}")
     private String secret;
 
-    private static final long EXPIRATION = 86400000; // 24 hours
+    @Value("${jwt.expiration.ms}")
+    private Long EXPIRATION ; // 24 hours
 
     public String generateToken(String email, UUID userId, String role) {
         Map<String, Object> claims = new HashMap<>();
