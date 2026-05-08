@@ -17,7 +17,7 @@ public class SaveController {
 
     private final SaveService saveService;
 
-    @PostMapping("/{mediaId}/save")
+    @PostMapping("/{mediaId}")
     public ResponseEntity<String> toggleSave(
             @PathVariable UUID mediaId,
             @RequestParam UUID userId

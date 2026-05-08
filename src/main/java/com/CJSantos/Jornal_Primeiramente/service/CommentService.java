@@ -4,11 +4,13 @@ import com.CJSantos.Jornal_Primeiramente.dto.CommentRequest;
 import com.CJSantos.Jornal_Primeiramente.dto.CommentResponse;
 import com.CJSantos.Jornal_Primeiramente.model.CommentModel;
 import com.CJSantos.Jornal_Primeiramente.model.MediaModel;
+import com.CJSantos.Jornal_Primeiramente.model.Role;
 import com.CJSantos.Jornal_Primeiramente.model.UserModel;
 import com.CJSantos.Jornal_Primeiramente.repository.CommentRepository;
 import com.CJSantos.Jornal_Primeiramente.repository.MediaRepository;
 import com.CJSantos.Jornal_Primeiramente.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,9 +28,11 @@ public class CommentService {
         //search user by id
         UserModel user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
         //search media by id
         MediaModel media = mediaRepository.findById(mediaId)
                 .orElseThrow(() -> new RuntimeException("Media not found"));
+
         //create new comment
         CommentModel comment = new CommentModel();
         comment.setCommentUser(user);
@@ -59,15 +63,29 @@ public class CommentService {
                 .toList();
     }
 
-    public void deleteComment(UUID commentId, UUID userId) {
-        //search comment by id
+    public void deleteComment(UUID mediaId, UUID commentId, UserModel currentUser) {
+        // 1. Verificar se a mídia existe
+        MediaModel media = mediaRepository.findById(mediaId)
+                .orElseThrow(() -> new RuntimeException("Media not found"));
+
+        // 2. Verificar se o comentário existe
         CommentModel comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
-        //if userId not equal the created userId you cant delete that comment
-        if (!comment.getCommentUser().getUserId().equals(userId)) {
-            throw new RuntimeException("You cannot delete this comment");
+
+        // 3. Verificar se o comentário pertence à mídia
+        if (!comment.getCommentMedia().getMediaId().equals(mediaId)) {
+            throw new RuntimeException("Comment does not belong to this media");
         }
 
+        // 4. Verificar permissão (apenas autor do comentário ou ADMIN)
+        boolean isAuthor = comment.getCommentUser().getUserId().equals(currentUser.getUserId());
+        boolean isAdmin = currentUser.getUserRole() == Role.ADMIN;
+
+        if (!isAuthor && !isAdmin) {
+            throw new RuntimeException("You don't have permission to delete this comment");
+        }
+
+        // 5. Deletar o comentário
         commentRepository.delete(comment);
     }
 }

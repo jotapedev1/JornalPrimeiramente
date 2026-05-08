@@ -35,11 +35,12 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Public routes
-                        .requestMatchers("/auth/login", "/auth/register").permitAll()
-                        // User profile routes (authenticated users)
-                        .requestMatchers("/user/profile/**").authenticated()
-                        // All other requests need authentication
-                        .anyRequest().authenticated()
+//                        .requestMatchers("/auth/login", "/auth/register").permitAll()
+//                        // User profile routes (authenticated users)
+//                        .requestMatchers("/user/profile/**").authenticated()
+//                        // All other requests need authentication
+//                        .requestMatchers("/api/editions/edition").authenticated()
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

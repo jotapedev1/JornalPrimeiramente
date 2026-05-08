@@ -34,7 +34,7 @@ public class LikeService {
 
         if (existingLike.isPresent()) {
             likeRepository.delete(existingLike.get());
-            return false; // its NOT liked
+            return false; // it's NOT liked
         }
 
         LikeModel like = new LikeModel();

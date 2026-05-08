@@ -18,7 +18,7 @@ public class LikeController {
 
     private final LikeService likeService;
 
-    @PostMapping("/{mediaId}/like")
+    @PostMapping("/{mediaId}")
     public ResponseEntity<String> toggleLike(
             @PathVariable UUID mediaId,
             @RequestParam UUID userId

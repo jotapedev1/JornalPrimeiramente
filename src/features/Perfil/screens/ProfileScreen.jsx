@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
     Animated,
     Dimensions,
@@ -9,14 +9,43 @@ import {
     Text,
     TouchableOpacity,
     TouchableWithoutFeedback,
-    View
+    View,
+    ActivityIndicator,
+    Alert,
 } from 'react-native';
 import JornalLogo from "../../../shared/components/JornalLogo";
 import BottomBar from "../../../shared/components/BottomBar";
+import { AuthContext } from "../../../context/AuthContext";
 
-const ProfileScreen = ({navigation}) => {
+const ProfileScreen = ({ navigation }) => {
+    const { user, token, isAdmin, logout, api } = useContext(AuthContext);
     const [modalVisible, setModalVisible] = useState(false);
     const [slideAnim, setSlideAnim] = useState(new Animated.Value(0));
+    const [userPosts, setUserPosts] = useState([]);
+    const [likedArticles, setLikedArticles] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const loadUserData = async () => {
+        try {
+            // Carregar artigos do usuário e artigos curtidos
+            const [postsResponse, likesResponse] = await Promise.all([
+                api.get(`/user/${user?.userId}/posts`),
+                api.get(`/user/${user?.userId}/likes`)
+            ]);
+
+            setUserPosts(postsResponse.data);
+            setLikedArticles(likesResponse.data);
+            return true;
+        } catch (error) {
+            console.log('Erro ao carregar dados do usuário:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadUserData();
+    }, []);
 
     const handlePublishingButton = () => {
         setModalVisible(true);
@@ -32,7 +61,7 @@ const ProfileScreen = ({navigation}) => {
             toValue: 0,
             duration: 200,
             useNativeDriver: true
-        }).start(()=>setModalVisible(false));
+        }).start(() => setModalVisible(false));
     }
 
     const handleOptionPress = (option) => {
@@ -49,95 +78,201 @@ const ProfileScreen = ({navigation}) => {
         navigation.navigate('Publishing', { publishType });
     }
 
+    const handleLogout = () => {
+        Alert.alert(
+            'Sair',
+            'Tem certeza que deseja sair?',
+            [
+                { text: 'Cancelar', style: 'cancel' },
+                {
+                    text: 'Sair',
+                    style: 'destructive',
+                    onPress: async () => {
+                        await logout();
+                        navigation.replace('Login');
+                    }
+                }
+            ]
+        );
+    };
+
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#1a1a1a" />
+            </View>
+        );
+    }
 
     return (
-
         <View style={styles.container}>
-            <JornalLogo/>
+            <JornalLogo />
             <View style={styles.mainContent}>
                 <ScrollView>
+                    {/* Seção do Perfil */}
                     <View style={styles.profileDiv}>
-                        <Image source={require('../../../assets/imgs/profilepic_placeholder.png')} style={styles.profilePic}></Image>
-                        <Text style={styles.profileTitle}>Perfil</Text>
-                        <Text style={styles.profileDesc}>Sou um perfil de teste, feito para testar. Testando... 1, 2, 3...</Text>
-                    </View>
-                    <View style={styles.profileDiv}>
-                        <Text style={styles.title}>Artigos Curtidos</Text>
+                        <Image
+                            source={require('../../../assets/imgs/profilepic_placeholder.png')}
+                            style={styles.profilePic}
+                        />
 
-                    </View>
-                    <View style={{paddingBottom: 200}}>
-                        <TouchableOpacity onPress={handlePublishingButton} style={{borderRadius: 25, width: 50, height: 50, alignSelf: 'center', backgroundColor: 'red', marginTop: 15, justifyContent: 'center', alignItems: 'center'}}>
-                            <Image source={require('../../../assets/icons/plus-icon.png')}
-                                   style={{height: 20, width: 20}}/>
+                        {/* Nome do usuário */}
+                        <Text style={styles.profileName}>
+                            {user?.userName || user?.nome || 'Usuário'}
+                        </Text>
+
+                        {/* Email do usuário */}
+                        <Text style={styles.profileEmail}>
+                            {user?.email || user?.userEmail || 'Email não informado'}
+                        </Text>
+
+
+                        {/* Bio/Descrição (se tiver) */}
+                        <Text style={styles.profileDesc}>
+                            {user?.bio || user?.description || 'Sem bio'}
+                        </Text>
+
+                        {/* Botão de logout */}
+                        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                            <Text style={styles.logoutButtonText}>Sair da conta</Text>
                         </TouchableOpacity>
                     </View>
 
+                    {/* Estatísticas do usuário */}
+                    <View style={styles.statsContainer}>
+                        <View style={styles.statItem}>
+                            <Text style={styles.statNumber}>{userPosts.length}</Text>
+                            <Text style={styles.statLabel}>Publicações</Text>
+                        </View>
+                        <View style={styles.statDivider} />
+                        <View style={styles.statItem}>
+                            <Text style={styles.statNumber}>{likedArticles.length}</Text>
+                            <Text style={styles.statLabel}>Curtidas</Text>
+                        </View>
+                    </View>
+
+                    {/* Seção de Artigos Curtidos */}
+                    <View style={styles.sectionContainer}>
+                        <Text style={styles.sectionTitle}>Artigos Curtidos</Text>
+                        {likedArticles.length > 0 ? (
+                            likedArticles.map((article, index) => (
+                                <TouchableOpacity
+                                    key={index}
+                                    style={styles.articleCard}
+                                    onPress={() => navigation.navigate('ArticleDetail', { articleId: article.id })}
+                                >
+                                    <Text style={styles.articleTitle}>{article.title}</Text>
+                                    <Text style={styles.articleDate}>
+                                        {new Date(article.createdAt).toLocaleDateString('pt-BR')}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))
+                        ) : (
+                            <Text style={styles.emptyText}>Nenhum artigo curtido ainda</Text>
+                        )}
+                    </View>
+
+                    {/* Seção de Publicações do Usuário */}
+                    <View style={styles.sectionContainer}>
+                        <Text style={styles.sectionTitle}>Minhas Publicações</Text>
+                        {userPosts.length > 0 ? (
+                            userPosts.map((post, index) => (
+                                <TouchableOpacity
+                                    key={index}
+                                    style={styles.articleCard}
+                                    onPress={() => navigation.navigate('ArticleDetail', { articleId: post.id })}
+                                >
+                                    <Text style={styles.articleTitle}>{post.title}</Text>
+                                    <Text style={styles.articleDate}>
+                                        {new Date(post.createdAt).toLocaleDateString('pt-BR')}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))
+                        ) : (
+                            <Text style={styles.emptyText}>Nenhuma publicação ainda</Text>
+                        )}
+                    </View>
+
+                    {/* Botão de publicação - SÓ APARECE SE FOR ADMIN */}
+                    {isAdmin && (
+                        <View style={{ paddingBottom: 200 }}>
+                            <TouchableOpacity
+                                onPress={handlePublishingButton}
+                                style={styles.publishButton}
+                            >
+                                <Image
+                                    source={require('../../../assets/icons/plus-icon.png')}
+                                    style={styles.publishIcon}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    )}
                 </ScrollView>
             </View>
 
-            <Modal
-                transparent={true}
-                visible={modalVisible}
-                animationType="none"
-                onRequestClose={closeModal}
-            >
-                <TouchableWithoutFeedback onPress={closeModal}>
-                    <View style={styles.modalOverlay}>
-                        <TouchableWithoutFeedback>
-                            <Animated.View
-                                style={[
-                                    styles.modalContent,
-                                    {
-                                        transform: [{
-                                            translateY: slideAnim.interpolate({
-                                                inputRange: [0, 1],
-                                                outputRange: [500, 0]
-                                            })
-                                        }]
-                                    }
-                                ]}
-                            >
-                                <View style={styles.modalHeader}>
-                                    <View style={styles.modalIndicator} />
-                                    <Text style={styles.modalTitle}>Adicionar</Text>
-                                </View>
-
-                                <TouchableOpacity
-                                    style={styles.optionButton}
-                                    onPress={() => handleOptionPress('Aviso')}
+            {/* Modal de publicação - SÓ APARECE SE FOR ADMIN */}
+            {isAdmin && (
+                <Modal
+                    transparent={true}
+                    visible={modalVisible}
+                    animationType="none"
+                    onRequestClose={closeModal}
+                >
+                    <TouchableWithoutFeedback onPress={closeModal}>
+                        <View style={styles.modalOverlay}>
+                            <TouchableWithoutFeedback>
+                                <Animated.View
+                                    style={[
+                                        styles.modalContent,
+                                        {
+                                            transform: [{
+                                                translateY: slideAnim.interpolate({
+                                                    inputRange: [0, 1],
+                                                    outputRange: [500, 0]
+                                                })
+                                            }]
+                                        }
+                                    ]}
                                 >
-                                    <View style={[styles.optionIcon, {backgroundColor: '#FF9800'}]}>
-                                        <Text style={styles.optionIconText}>📢</Text>
+                                    <View style={styles.modalHeader}>
+                                        <View style={styles.modalIndicator} />
+                                        <Text style={styles.modalTitle}>Adicionar</Text>
                                     </View>
-                                    <Text style={styles.optionText}>Aviso</Text>
-                                    <Text style={styles.optionArrow}>→</Text>
-                                </TouchableOpacity>
 
-                                <TouchableOpacity
-                                    style={styles.optionButton}
-                                    onPress={() => handleOptionPress('Edição')}
-                                >
-                                    <View style={[styles.optionIcon, {backgroundColor: '#2196F3'}]}>
-                                        <Text style={styles.optionIconText}>📰</Text>
-                                    </View>
-                                    <Text style={styles.optionText}>Edição</Text>
-                                    <Text style={styles.optionArrow}>→</Text>
-                                </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={styles.optionButton}
+                                        onPress={() => handleOptionPress('Aviso')}
+                                    >
+                                        <View style={[styles.optionIcon, { backgroundColor: '#FF9800' }]}>
+                                            <Text style={styles.optionIconText}>📢</Text>
+                                        </View>
+                                        <Text style={styles.optionText}>Aviso</Text>
+                                        <Text style={styles.optionArrow}>→</Text>
+                                    </TouchableOpacity>
 
-                                <TouchableOpacity style={styles.cancelButton} onPress={closeModal}>
-                                    <Text style={styles.cancelButtonText}>Cancelar</Text>
-                                </TouchableOpacity>
-                            </Animated.View>
-                        </TouchableWithoutFeedback>
-                    </View>
-                </TouchableWithoutFeedback>
-            </Modal>
+                                    <TouchableOpacity
+                                        style={styles.optionButton}
+                                        onPress={() => handleOptionPress('Edição')}
+                                    >
+                                        <View style={[styles.optionIcon, { backgroundColor: '#2196F3' }]}>
+                                            <Text style={styles.optionIconText}>📰</Text>
+                                        </View>
+                                        <Text style={styles.optionText}>Edição</Text>
+                                        <Text style={styles.optionArrow}>→</Text>
+                                    </TouchableOpacity>
 
+                                    <TouchableOpacity style={styles.cancelButton} onPress={closeModal}>
+                                        <Text style={styles.cancelButtonText}>Cancelar</Text>
+                                    </TouchableOpacity>
+                                </Animated.View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Modal>
+            )}
 
-            <BottomBar navigation={navigation}/>
+            <BottomBar navigation={navigation} />
         </View>
-
-
     );
 };
 
@@ -145,6 +280,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         height: 'auto',
+        backgroundColor: '#fff',
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
         backgroundColor: '#fff',
     },
     title: {
@@ -155,45 +296,153 @@ const styles = StyleSheet.create({
         padding: 10,
         fontFamily: 'Lalezar_400Regular',
     },
-    errorText: {
-        color: 'red',
-        textAlign: 'center',
-        marginBottom: 10,
-    },
-    button: {
-        fontSize: 100,
-    },
     mainContent: {
         zIndex: 300,
         marginTop: 20
     },
-    pdf: {
-        flex: 1,
-        width: Dimensions.get('window').width
-    },
-    profileDiv:{
+    profileDiv: {
         backgroundColor: 'white',
-        width: '100%', height: 280,
+        width: '100%',
+        minHeight: 280,
         flexDirection: 'column',
         alignItems: 'center',
         borderBottomWidth: 0.6,
-        borderBottomColor: '#d5d5d5'
+        borderBottomColor: '#d5d5d5',
+        paddingBottom: 20,
     },
     profilePic: {
-        borderRadius: '100%',
-        width: 150, height: 150,
-        alignSelf: 'center'
+        borderRadius: 75,
+        width: 150,
+        height: 150,
+        marginTop: 20,
     },
-    profileTitle: {
+    profileName: {
         fontFamily: 'Lalezar_400Regular',
-        fontSize: 30, marginTop: 10
+        fontSize: 28,
+        marginTop: 10,
+        color: '#333',
+    },
+    profileEmail: {
+        fontFamily: 'Inter-Regular',
+        fontSize: 14,
+        color: '#666',
+        marginTop: 5,
+    },
+    roleBadge: {
+        backgroundColor: '#4CAF50',
+        paddingHorizontal: 12,
+        paddingVertical: 4,
+        borderRadius: 20,
+        marginTop: 10,
+    },
+    adminBadge: {
+        backgroundColor: '#FF9800',
+    },
+    roleText: {
+        color: '#fff',
+        fontFamily: 'Inter-Regular',
+        fontSize: 12,
+        fontWeight: 'bold',
     },
     profileDesc: {
         fontFamily: 'Inter-Regular',
-        fontSize: 16,
-        paddingHorizontal: 50,
+        fontSize: 14,
+        paddingHorizontal: 30,
+        textAlign: 'center',
+        marginTop: 10,
+        color: '#666',
+    },
+    logoutButton: {
+        marginTop: 15,
+        paddingHorizontal: 20,
+        paddingVertical: 8,
+        borderRadius: 20,
+        backgroundColor: '#f5f5f5',
+    },
+    logoutButtonText: {
+        color: '#FF5722',
+        fontFamily: 'Inter-Regular',
+        fontSize: 14,
+    },
+    statsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        paddingVertical: 20,
+        borderBottomWidth: 0.6,
+        borderBottomColor: '#e0e0e0',
+    },
+    statItem: {
+        alignItems: 'center',
+    },
+    statNumber: {
+        fontSize: 22,
+        fontFamily: 'Lalezar_400Regular',
+        color: '#333',
+    },
+    statLabel: {
+        fontSize: 12,
+        fontFamily: 'Inter-Regular',
+        color: '#666',
+        marginTop: 4,
+    },
+    statDivider: {
+        width: 1,
+        backgroundColor: '#e0e0e0',
+    },
+    sectionContainer: {
+        padding: 15,
+        borderBottomWidth: 0.6,
+        borderBottomColor: '#f0f0f0',
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontFamily: 'Lalezar_400Regular',
+        color: '#333',
+        marginBottom: 10,
+    },
+    articleCard: {
+        backgroundColor: '#f9f9f9',
+        padding: 12,
+        borderRadius: 8,
+        marginBottom: 8,
+    },
+    articleTitle: {
+        fontSize: 14,
+        fontFamily: 'Inter-Regular',
+        color: '#333',
+    },
+    articleDate: {
+        fontSize: 10,
+        fontFamily: 'Inter-Regular',
+        color: '#999',
+        marginTop: 4,
+    },
+    emptyText: {
+        textAlign: 'center',
+        color: '#999',
+        fontFamily: 'Inter-Regular',
+        fontSize: 14,
+        paddingVertical: 20,
+    },
+    publishButton: {
+        borderRadius: 25,
+        width: 50,
+        height: 50,
         alignSelf: 'center',
-        textAlign: 'center'
+        backgroundColor: '#d90000',
+        marginTop: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    publishIcon: {
+        height: 20,
+        width: 20,
+        tintColor: '#fff',
     },
     modalOverlay: {
         flex: 1,

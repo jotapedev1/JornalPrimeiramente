@@ -2,42 +2,63 @@ package com.CJSantos.Jornal_Primeiramente.controller;
 
 import com.CJSantos.Jornal_Primeiramente.dto.CommentRequest;
 import com.CJSantos.Jornal_Primeiramente.dto.CommentResponse;
+import com.CJSantos.Jornal_Primeiramente.model.UserModel;
 import com.CJSantos.Jornal_Primeiramente.service.CommentService;
+import com.CJSantos.Jornal_Primeiramente.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/media")
+@RequestMapping("/comments")
 @RequiredArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
+    private final UserService userService;
 
-    @PostMapping("/{mediaId}/comment")
+    @PostMapping("/{mediaId}")
     public ResponseEntity<CommentResponse> createComment(
             @PathVariable UUID mediaId,
-            @RequestParam UUID userId,
-            @RequestBody CommentRequest request
+            @RequestBody CommentRequest request,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-        CommentResponse response = commentService.createComment(userId, mediaId, request);
-        return ResponseEntity.ok(response);
+        UserModel currentUser = userService.getUserByEmail(userDetails.getUsername());
+        CommentResponse comment = commentService.createComment(currentUser.getUserId(), mediaId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(comment);
     }
 
-    @GetMapping("/{mediaId}/comments")
+
+    @GetMapping("/{mediaId}")
     public ResponseEntity<List<CommentResponse>> getComments(@PathVariable UUID mediaId) {
+        List<CommentResponse> comments = commentService.getComments(mediaId);
         return ResponseEntity.ok(commentService.getComments(mediaId));
     }
 
-    @DeleteMapping("/comment/{commentId}")
-    public ResponseEntity<String> deleteComment(
+    @DeleteMapping("/{mediaId}/comment/{commentId}")
+    public ResponseEntity<?> deleteComment(
+            @PathVariable UUID mediaId,
             @PathVariable UUID commentId,
-            @RequestParam UUID userId
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-        commentService.deleteComment(commentId, userId);
-        return ResponseEntity.ok("Comment deleted");
+        try {
+            UserModel currentUser = userService.getUserByEmail(userDetails.getUsername());
+            commentService.deleteComment(mediaId, commentId, currentUser);
+            return ResponseEntity.ok(Map.of(
+                    "message", "Comment deleted successfully",
+                    "commentId", commentId,
+                    "mediaId", mediaId
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 }

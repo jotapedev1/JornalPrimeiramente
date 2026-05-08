@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
     Alert,
     Dimensions,
@@ -10,12 +10,14 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-
+import {Picker, PickerIOS} from "@react-native-picker/picker";
 import {keepLocalCopy, pick} from '@react-native-documents/picker';
 import JornalLogo from "../../../shared/components/JornalLogo";
 import BottomBar from "../../../shared/components/BottomBar";
+import {AuthContext} from "../../../context/AuthContext";
 
 const PublishScreen = ({ navigation, route }) => {
+    const { api } = useContext(AuthContext);
     const { publishType } = route.params; // 'Aviso' ou 'Edicao'
 
     const [title, setTitle] = useState('');
@@ -40,8 +42,7 @@ const PublishScreen = ({ navigation, route }) => {
         content: '',
         author: '',
         category: '',
-        tags: '',
-        featuredImage: null
+        featuredPdf: null
     });
     const [editingArticleId, setEditingArticleId] = useState(null);
     const [isArticleFormExpanded, setIsArticleFormExpanded] = useState(false); // Novo estado para controlar expansão
@@ -176,9 +177,8 @@ const PublishScreen = ({ navigation, route }) => {
             title: '',
             content: '',
             author: '',
-            category: '',
-            tags: '',
-            featuredImage: null
+            type: '',
+            featuredPdf: null
         });
         setEditingArticleId(null);
     };
@@ -190,9 +190,7 @@ const PublishScreen = ({ navigation, route }) => {
         }
 
         const articleData = {
-            ...currentArticle,
-            tags: currentArticle.tags.split(',').map(tag => tag.trim()).filter(tag => tag !== ''),
-            updatedAt: new Date().toISOString()
+            ...currentArticle
         };
 
         if (editingArticleId) {
@@ -208,7 +206,6 @@ const PublishScreen = ({ navigation, route }) => {
             const newArticle = {
                 id: Date.now(),
                 ...articleData,
-                createdAt: new Date().toISOString()
             };
             setArticles([...articles, newArticle]);
             Alert.alert('Sucesso', 'Artigo adicionado à edição!');
@@ -243,8 +240,7 @@ const PublishScreen = ({ navigation, route }) => {
             content: article.content,
             author: article.author,
             category: article.category || '',
-            tags: article.tags.join(', '),
-            featuredImage: article.featuredImage
+            featuredPdf: article.featuredPdf
         });
         setEditingArticleId(article.id);
         setIsArticleFormExpanded(true); // Expande o formulário ao editar
@@ -296,21 +292,31 @@ const PublishScreen = ({ navigation, route }) => {
         navigation.goBack();
     };
 
-    const submitEdicao = () => {
+    const submitEdicao = async () => {
         const edicaoData = {
             type: 'edicao',
             title,
-            content,
             editionNumber,
             publicationDate,
             isSpecialEdition,
-            pdfFile,
             articles: articles,
             createdAt: new Date().toISOString()
         };
         console.log('Enviando Edição com artigos:', edicaoData);
-        Alert.alert('Sucesso', `Edição publicada com ${articles.length} artigo(s)!`);
-        navigation.goBack();
+
+        try{
+            const result = await api.post('/media');
+
+            if(result.success){
+                Alert.alert('Sucesso', `Edição publicada com ${articles.length} artigo(s)!`);
+            }
+        }catch(error){
+            console.log("Erro: ", error.name);
+            console.log(error.message);
+            console.log(error.code);
+            console.log(error.cause);
+            return Alert.alert("Algo deu errado... Tente novamente daqui a pouco!");
+        }
     };
 
     const getTitle = () => {
@@ -372,15 +378,6 @@ const PublishScreen = ({ navigation, route }) => {
                                 <Text style={styles.articleCategoryText}>
                                     {article.category}
                                 </Text>
-                            </View>
-                        )}
-                        {article.tags && article.tags.length > 0 && (
-                            <View style={styles.tagsContainer}>
-                                {article.tags.map((tag, idx) => (
-                                    <View key={idx} style={styles.tagBadge}>
-                                        <Text style={styles.tagText}>#{tag}</Text>
-                                    </View>
-                                ))}
                             </View>
                         )}
                         <Text
@@ -451,22 +448,14 @@ const PublishScreen = ({ navigation, route }) => {
                 />
 
                 <Text style={styles.label}>Categoria</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Ex: Notícias, Esportes, Cultura"
-                    placeholderTextColor="#999"
-                    value={currentArticle.category}
-                    onChangeText={(text) => setCurrentArticle({...currentArticle, category: text})}
-                />
-
-                <Text style={styles.label}>Tags (separadas por vírgula)</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="exemplo, tags, separadas, por, virgula"
-                    placeholderTextColor="#999"
-                    value={currentArticle.tags}
-                    onChangeText={(text) => setCurrentArticle({...currentArticle, tags: text})}
-                />
+                <Picker style={styles.input}
+                    selectedValue={currentArticle.category} onValueChange={(categoryOption) => setCurrentArticle({...currentArticle, category: categoryOption})}>
+                    <Picker.Item label="Article" value="ARTICLE" />
+                    <Picker.Item label="Poetry" value="POETRY" />
+                    <Picker.Item label="Drawing" value="DRAWING" />
+                    <Picker.Item label="Text" value="TEXT" />
+                    <Picker.Item label="Warning" value="WARNING" />
+                </Picker>
 
                 {pdfFile && pdfFile.name && (
                     <View style={styles.pdfInfoContainer}>
@@ -973,24 +962,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontFamily: 'Inter-Regular',
         color: '#5c6bc0',
-    },
-    tagsContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        marginBottom: 10,
-    },
-    tagBadge: {
-        backgroundColor: '#f0f0f0',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 12,
-        marginRight: 6,
-        marginBottom: 4,
-    },
-    tagText: {
-        fontSize: 11,
-        fontFamily: 'Inter-Regular',
-        color: '#666',
     },
     articleContent: {
         fontSize: 14,

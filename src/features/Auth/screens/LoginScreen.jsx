@@ -20,6 +20,13 @@ const LoginScreen = ({ navigation }) => {
         try {
             const result = await loginWithCredentials(email, password);
 
+            if (result.success) {
+                navigation.replace('Home'); // Use replace ao invés de navigate
+            } else {
+                Alert.alert('Erro no login', result.msg || 'Email ou senha inválidos');
+            }
+
+            return result.success;
         } catch (error) {
             console.log('Erro ao logar:', error);
             Alert.alert('Erro', 'Ocorreu um erro ao tentar fazer login');

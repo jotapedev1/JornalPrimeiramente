@@ -16,20 +16,35 @@ import java.util.UUID;
 @NoArgsConstructor
 
 @Entity
-@Table(name="media")
+@Table(name = "media")
 public class MediaModel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID mediaId;
-    private String mediaTitle, mediaDescription, mediaUrl;
+
+    private String mediaTitle;
+    private String mediaDescription;
+    private String mediaUrl;
+
+    @Enumerated(EnumType.STRING)
     private Media mediaType;
+
     private LocalDateTime mediaCreatedAt;
 
     @ManyToOne
-    @JoinColumn(name="mediaAuthorId", nullable = false)
+    @JoinColumn(name = "mediaAuthorId", nullable = false)
     private UserModel user;
 
-    //deleting media deletes all comments
+    // Relacionamento com edição (um artigo pertence a uma edição)
+    @ManyToOne
+    @JoinColumn(name = "edition_id")
+    private EditionModel edition;
+
+    // Campos adicionais para artigos
+    private String articleAuthor;
+    private Media articleCategory;
+
+    // Deleting media deletes all comments
     @OneToMany(mappedBy = "commentMedia", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentModel> comments;
 
@@ -38,4 +53,9 @@ public class MediaModel {
 
     @OneToMany(mappedBy = "saveMedia")
     private List<SaveModel> saves;
+
+    @PrePersist
+    protected void onCreate() {
+        mediaCreatedAt = LocalDateTime.now();
+    }
 }

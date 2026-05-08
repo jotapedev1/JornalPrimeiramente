@@ -30,6 +30,9 @@ import TermsOfServiceScreen from "../features/Config/OtherResourcesConfig/TermsO
 import VersionNotesScreen from "../features/Config/OtherResourcesConfig/VersionNotesScreen";
 import OtherResourcesScreen from "../features/Config/OtherResourcesScreen";
 import PublishingScreen from "../features/Perfil/screens/PublishingScreen";
+import {ActivityIndicator, View} from "react-native";
+import {useContext, useEffect, useState} from "react";
+import {AuthContext} from "../context/AuthContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -42,11 +45,37 @@ const transitionAnimation = {
     headerStyleInterpolator: HeaderStyleInterpolators.forFade,
 }
 
+function LoadingScreen() {
+    return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+
+            <ActivityIndicator size="large" color="#1a1a1a" />
+        </View>
+    );
+}
+
 
 export default function AppNavigator() {
+    const { isAuthenticated, loading } = useContext(AuthContext);
+    const [initialRoute, setInitialRoute ] = useState(null);
+
+    useEffect(() => {
+        //Aguarda o carregamento do contexto para decidir a rota inicial
+        if(!loading){
+            setInitialRoute(isAuthenticated ? 'Home' : 'TypeSignUp');
+        }
+    }, [loading, isAuthenticated]);
+
+    if(loading || !initialRoute){
+        return <LoadingScreen/>;
+    }
+
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="TypeSignUp">
+            <Stack.Navigator initialRouteName={initialRoute}
+            screenOptions={{
+                headerBackTitleVisible: false,}}>
+
                 {/*AUTHENTICATION SCREENS*/}
                 <Stack.Screen name="TypeSignUp" component={TypeSignUpScreen}/>
                 <Stack.Screen name="Login" component={LoginScreen}/>

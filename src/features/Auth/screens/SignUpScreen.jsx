@@ -53,7 +53,16 @@ const SignUpScreen = ({ navigation }) => {
         setLoading(true);
         try {
             const result = await register(fullName, email, password);
+            console.log(result.data);
 
+            if (result.success) {
+                navigation.replace('Home'); // Use replace ao invés de navigate
+            } else {
+                // ❌ Mostra o erro retornado pelo backend
+                Alert.alert('Erro no cadastro', result.msg || 'Alguns campos inválidos');
+            }
+
+            return result.success;
         } catch (error) {
             console.error('Erro no registro:', error);
             Alert.alert('Erro', 'Ocorreu um erro ao tentar criar sua conta');
