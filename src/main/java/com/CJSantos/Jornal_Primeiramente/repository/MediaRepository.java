@@ -9,5 +9,8 @@ import java.util.UUID;
 
 @Repository
 public interface MediaRepository extends JpaRepository<MediaModel, UUID> {
+
     List<MediaModel> findByUser_UserId(UUID userId);
+
+    List<MediaModel> findAllByMediaIdIn(List<UUID> ids);
 }

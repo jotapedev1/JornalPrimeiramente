@@ -25,11 +25,21 @@ public class MediaModel {
     private String mediaTitle;
     private String mediaDescription;
     private String mediaUrl;
+    private String mediaAuthor;
 
     @Enumerated(EnumType.STRING)
     private Media mediaType;
 
     private LocalDateTime mediaCreatedAt;
+
+    @Column(columnDefinition = "bytea", name = "media_file")
+    private byte[] mediaFile;
+
+    private String mediaFileName;
+
+    private String mediaFileType;
+
+    private Long mediaFileSize;
 
     @ManyToOne
     @JoinColumn(name = "mediaAuthorId", nullable = false)
@@ -39,10 +49,6 @@ public class MediaModel {
     @ManyToOne
     @JoinColumn(name = "edition_id")
     private EditionModel edition;
-
-    // Campos adicionais para artigos
-    private String articleAuthor;
-    private Media articleCategory;
 
     // Deleting media deletes all comments
     @OneToMany(mappedBy = "commentMedia", cascade = CascadeType.ALL, orphanRemoval = true)

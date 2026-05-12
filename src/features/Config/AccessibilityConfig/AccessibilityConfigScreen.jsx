@@ -4,7 +4,7 @@ import {
     Text,
     StyleSheet, TouchableOpacity,
 } from 'react-native';
-import InputButton from "../../Auth/components/inputButton";
+import InputButton from "../../Auth/components/InputButton";
 import SendButton from "../../Auth/components/SendButton";
 import TemplateButton from "../../Auth/components/TemplateButton";
 import ToggleBox from "../../Perfil/components/ToggleBox";

@@ -1,12 +1,12 @@
 import { Text, TextInput, View, StyleSheet } from "react-native";
-import React from "react";
+import React, {useState} from "react";
 
-const InputButton = ({ label, placeholder, value, onChangeText }) => {
+const InputButton = ({ label, placeholder, value, onChangeText,  }) => {
     return (
         <View style={styles.inputView}>
             <Text style={styles.inputLabel}>{label}</Text>
             <TextInput style={styles.input} placeholder={placeholder || ''}
-                value={value} onChangeText={onChangeText}></TextInput>
+                value={value} onChangeText={onChangeText} autoCapitalize="none"></TextInput>
         </View>
     );
 }
@@ -27,7 +27,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: '#e6e6e6',
         marginLeft: 10,
-        marginRight: 10
+        marginRight: 10,
+        fontSize: 16
     },
     inputLabel: {
         fontSize: 13,

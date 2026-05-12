@@ -45,7 +45,7 @@ public class EditionService {
             if (article.getMediaTitle() == null || article.getMediaTitle().trim().isEmpty()) {
                 throw new RuntimeException("Todos os artigos devem ter título");
             }
-            if (article.getArticleAuthor() == null || article.getArticleAuthor().trim().isEmpty()) {
+            if (article.getMediaAuthor() == null || article.getMediaAuthor().trim().isEmpty()) {
                 throw new RuntimeException("Todos os artigos devem ter autor");
             }
             article.setEdition(savedEdition);
@@ -103,7 +103,7 @@ public class EditionService {
         if (article.getMediaTitle() == null || article.getMediaTitle().trim().isEmpty()) {
             throw new RuntimeException("O título do artigo é obrigatório");
         }
-        if (article.getArticleAuthor() == null || article.getArticleAuthor().trim().isEmpty()) {
+        if (article.getMediaAuthor() == null || article.getMediaAuthor().trim().isEmpty()) {
             throw new RuntimeException("O autor do artigo é obrigatório");
         }
 

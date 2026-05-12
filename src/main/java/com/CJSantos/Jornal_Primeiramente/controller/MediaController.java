@@ -7,12 +7,18 @@ import com.CJSantos.Jornal_Primeiramente.model.UserModel;
 import com.CJSantos.Jornal_Primeiramente.service.EditionService;
 import com.CJSantos.Jornal_Primeiramente.service.MediaService;
 import com.CJSantos.Jornal_Primeiramente.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Nullable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -31,6 +37,84 @@ public class MediaController {
         this.userService = userService;
     }
 
+    // Criar mídia com arquivo PDF
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createMediaWithFile(
+            @RequestPart("media") String mediaJson,
+            @RequestPart(value = "file", required = false)
+            MultipartFile file,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        try {
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            MediaModel media =
+                    mapper.readValue(mediaJson, MediaModel.class);
+
+            UserModel author =
+                    userService.getUserByEmail(userDetails.getUsername());
+
+            media.setUser(author);
+
+            MediaModel savedMedia =
+                    mediaService.createMediaWithFile(media, file);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                    "message", "Mídia criada com sucesso",
+                    "mediaId", savedMedia.getMediaId(),
+                    "fileName", savedMedia.getMediaFileName(),
+                    "fileSize", savedMedia.getMediaFileSize()
+            ));
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // Download do arquivo PDF
+    @GetMapping("/{mediaId}/download")
+    public ResponseEntity<byte[]> downloadMediaFile(@PathVariable UUID mediaId) {
+        try {
+            MediaModel media = mediaService.getMediaById(mediaId);
+            byte[] fileContent = mediaService.getMediaFile(mediaId);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", media.getMediaFileName());
+            headers.setContentLength(media.getMediaFileSize());
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(fileContent);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // Visualizar PDF no navegador (inline)
+    @GetMapping("/{mediaId}/view")
+    public ResponseEntity<byte[]> viewMediaFile(@PathVariable UUID mediaId) {
+        try {
+            MediaModel media = mediaService.getMediaById(mediaId);
+            byte[] fileContent = mediaService.getMediaFile(mediaId);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData(media.getMediaFileName(), media.getMediaFileName());
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(fileContent);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // Criar mídia sem arquivo (texto)
     @PostMapping
     public MediaModel createMedia(@RequestBody MediaModel media) {
         return mediaService.createMedia(media);
@@ -61,6 +145,7 @@ public class MediaController {
         mediaService.deleteMedia(id);
     }
 
+    // Endpoint para publicar edição ou aviso
     @PostMapping("/publish")
     public ResponseEntity<?> publish(
             @RequestBody Map<String, Object> request,
@@ -75,7 +160,7 @@ public class MediaController {
                 MediaModel aviso = new MediaModel();
                 aviso.setMediaTitle((String) request.get("title"));
                 aviso.setMediaDescription((String) request.get("content"));
-                aviso.setMediaType(com.CJSantos.Jornal_Primeiramente.model.Media.WARNING);
+                aviso.setMediaType(Media.WARNING);
                 aviso.setUser(author);
 
                 String priority = (String) request.get("priority");
@@ -90,25 +175,27 @@ public class MediaController {
                 ));
 
             } else if ("edicao".equals(type)) {
-                // Criar edição
+
                 EditionModel edition = new EditionModel();
                 edition.setTitle((String) request.get("title"));
                 edition.setEditionNumber((String) request.get("editionNumber"));
                 edition.setPublicationDate((String) request.get("publicationDate"));
-                edition.setIsSpecialEdition((Boolean) request.getOrDefault("isSpecialEdition", false));
+                edition.setIsSpecialEdition(
+                        (Boolean) request.getOrDefault("isSpecialEdition", false)
+                );
 
-                // Processar artigos
                 @SuppressWarnings("unchecked")
-                List<Map<String, Object>> articlesData = (List<Map<String, Object>>) request.get("articles");
+                List<String> articleIds =
+                        (List<String>) request.get("articleIds");
 
-                for (Map<String, Object> articleData : articlesData) {
-                    MediaModel article = new MediaModel();
-                    article.setMediaTitle((String) articleData.get("title"));
-                    article.setMediaDescription((String) articleData.get("content"));
-                    article.setArticleAuthor((String) articleData.get("author"));
-                    article.setArticleCategory((String) articleData.get("category"));
-                    article.setMediaType(Media.ARTICLE);
-                    article.setUser(author);
+                if (articleIds == null || articleIds.isEmpty()) {
+                    return ResponseEntity.badRequest()
+                            .body(Map.of("error", "Nenhum artigo enviado"));
+                }
+
+                for (String articleId : articleIds) {
+                    MediaModel article =
+                            mediaService.getMediaById(UUID.fromString(articleId));
 
                     edition.addArticle(article);
                 }
@@ -116,8 +203,10 @@ public class MediaController {
                 EditionModel saved = editionService.createEdition(edition);
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-                        "message", "Edição publicada com " + saved.getArticles().size() + " artigo(s)",
-                        "editionId", saved.getEditionId()
+                        "message",
+                        "Edição publicada com " + saved.getArticles().size() + " artigo(s)",
+                        "editionId",
+                        saved.getEditionId()
                 ));
             }
 

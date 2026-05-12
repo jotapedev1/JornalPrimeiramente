@@ -298,7 +298,8 @@ const styles = StyleSheet.create({
     },
     mainContent: {
         zIndex: 300,
-        marginTop: 20
+        marginTop: 20,
+        marginBottom: 200,
     },
     profileDiv: {
         backgroundColor: 'white',

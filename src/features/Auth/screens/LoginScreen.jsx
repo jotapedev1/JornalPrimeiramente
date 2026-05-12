@@ -1,11 +1,12 @@
 // screens/auth/LoginScreen.js
 import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, Alert, Platform } from 'react-native';
-import InputButton from "../components/inputButton";
+import InputButton from "../components/InputButton";
 import SendButton from "../components/SendButton";
 import TemplateButton from "../components/TemplateButton";
 import JornalLogo from "../../../shared/components/JornalLogo";
 import { AuthContext } from "../../../context/AuthContext";
+import PasswordInputButton from "../components/PasswordInputButton";
 
 const LoginScreen = ({ navigation }) => {
     const { loginWithCredentials } = useContext(AuthContext);
@@ -47,10 +48,9 @@ const LoginScreen = ({ navigation }) => {
                 value={email}
             />
 
-            <InputButton
+            <PasswordInputButton
                 label="Senha:"
                 placeholder="Digite sua senha"
-                secureTextEntry={true}
                 onChangeText={setPassword}
                 value={password}
             />

@@ -19,7 +19,7 @@ const TypeSignUpScreen = ({ navigation }) => {
                 <Text style={{fontWeight: 500, paddingLeft: 15, paddingRight: 15, textAlign: 'justify'}}>
                     O Integrante faz parte da publicação do jornal e tem suas postagens vinculadas
                     ao próprio perfil, enquanto o Leitor apenas lê as postagens. Os dois podem
-                    interagir com as postagens. O participante terá um login pré-cadastrado que será passado ao usuário.</Text>
+                    interagir com as postagens. O integrante terá um login pré-cadastrado que será passado ao usuário.</Text>
             </View>
 
 

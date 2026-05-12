@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -74,7 +76,8 @@ public class AuthController {
             newUser.setUserName(request.getName());
             newUser.setUserEmail(request.getEmail());
             newUser.setUserPassword(request.getPassword());
-            newUser.setUserRole(Role.USER);
+            Role userRole = Role.valueOf(request.getRole());
+            newUser.setUserRole(userRole);
 
 
             UserModel createdUser = userService.createUser(newUser);
@@ -90,7 +93,7 @@ public class AuthController {
             response.put("userId", createdUser.getUserId());
             response.put("email", createdUser.getUserEmail());
             response.put("userName", createdUser.getUserName());
-            response.put("role", createdUser.getUserRole().name());
+            response.put("role", createdUser.getUserRole().toString());
             response.put("isAdmin", createdUser.getUserRole() == Role.ADMIN);
             response.put("message", "User created and logged in successfully");
 
@@ -100,6 +103,32 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "Internal server error: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/verify-password")
+    public ResponseEntity<?> verifyPassword(
+            @RequestBody Map<String, String> request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            String password = request.get("password");
+
+            if (password == null || password.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("valid", false, "error", "Senha não fornecida"));
+            }
+
+            // Pega o usuário atual autenticado
+            UserModel currentUser = userService.getUserByEmail(userDetails.getUsername());
+
+            // Verifica se a senha está correta
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(currentUser.getUserEmail(), password)
+            );
+
+            return ResponseEntity.ok(Map.of("valid", true));
+
+        } catch (Exception e) {
+            return ResponseEntity.ok(Map.of("valid", false, "error", "Senha incorreta"));
         }
     }
 }
@@ -116,4 +145,5 @@ class RegisterRequest {
     private String name;
     private String email;
     private String password;
+    private String role;
 }

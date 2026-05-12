@@ -1,12 +1,12 @@
 import React, { useState, useContext } from 'react';
 import {View, Text, StyleSheet, Alert, Platform} from 'react-native';
-import InputButton from "../components/inputButton";
-import SendButton from "../components/SendButton";
+import InputButton from "../components/InputButton";
 import TemplateButton from "../components/TemplateButton";
 import JornalLogo from "../../../shared/components/JornalLogo";
 import {AuthContext} from "../../../context/AuthContext";
-import axios from "axios";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import PasswordInputButton from "../components/PasswordInputButton";
+import DropDownPicker from "react-native-dropdown-picker";
+import SendButton from "../components/SendButton";
 
 const SignUpScreen = ({ navigation }) => {
     const { register } = useContext(AuthContext); // Pega a função de login do contexto
@@ -15,7 +15,16 @@ const SignUpScreen = ({ navigation }) => {
     const [confirmEmail, setConfirmEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [role, setRole] = useState(null);
     const [loading, setLoading] = useState(false);
+
+    //picker states
+    const [open, setOpen] = useState(false);
+    const [value, setValue] = useState(null);
+    const [items, setItems] = useState([
+        { label: 'Leitor', value: 'READER' },
+        { label: 'Integrante', value: 'PARTICIPANT' },
+    ]);
 
     // Configuração da URL base para diferentes plataformas
     const getBaseUrl = () => {
@@ -50,9 +59,14 @@ const SignUpScreen = ({ navigation }) => {
             return false;
         }
 
+        if (!role) {
+            Alert.alert('Erro', 'Escolha seu papel');
+            return false;
+        }
+
         setLoading(true);
         try {
-            const result = await register(fullName, email, password);
+            const result = await register(fullName, email, password, role);
             console.log(result.data);
 
             if (result.success) {
@@ -62,7 +76,7 @@ const SignUpScreen = ({ navigation }) => {
                 Alert.alert('Erro no cadastro', result.msg || 'Alguns campos inválidos');
             }
 
-            return result.success;
+            return true;
         } catch (error) {
             console.error('Erro no registro:', error);
             Alert.alert('Erro', 'Ocorreu um erro ao tentar criar sua conta');
@@ -104,10 +118,9 @@ const SignUpScreen = ({ navigation }) => {
                 value={confirmEmail}
             />
 
-            <InputButton
+            <PasswordInputButton
                 label="Senha:"
                 placeholder="Digite sua senha"
-                secureTextEntry={true}
                 onChangeText={setPassword}
                 value={password}
             />
@@ -115,13 +128,27 @@ const SignUpScreen = ({ navigation }) => {
             {password.trim() !== confirmPassword.trim() && confirmPassword !== '' && (
                 <Text style={styles.errorText}>Senhas não coincidem</Text>
             )}
-            <InputButton
+            <PasswordInputButton
                 label="Confirme sua senha"
                 placeholder="Confirme sua senha"
-                secureTextEntry={true}
                 onChangeText={setConfirmPassword}
                 value={confirmPassword}
             />
+
+            {/*   SET USER TYPE HERE   */}
+            <DropDownPicker open={open}
+                            value={role}
+                            items={items}
+                            setOpen={setOpen}
+                            setValue={setRole}
+                            setItems={setItems}
+                            placeholder={"Selecione o seu tipo de usuário"}
+                            listMode="SCROLLVIEW"
+                            style={styles.dropdown}
+                            dropDownContainerStyle={styles.dropdown}
+                            zIndex={3000}
+                            zIndexInverse={1000}/>
+
 
             <SendButton
                 label={loading ? 'Cadastrando...' : 'Cadastre-se'}
@@ -157,6 +184,17 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         fontSize: 12
     },
+    dropdown: {
+        borderColor: '#e6e6e6',
+        marginLeft: 10,
+        marginRight: 10,
+        paddingHorizontal: 10,
+        borderRadius: 10,
+        backgroundColor: '#e6e6e6',
+        borderWidth: 1,
+        width: '95%',
+        marginBottom: 15,
+    }
 });
 
 export default SignUpScreen;

@@ -10,11 +10,11 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import {Picker, PickerIOS} from "@react-native-picker/picker";
 import {keepLocalCopy, pick} from '@react-native-documents/picker';
 import JornalLogo from "../../../shared/components/JornalLogo";
 import BottomBar from "../../../shared/components/BottomBar";
 import {AuthContext} from "../../../context/AuthContext";
+import DropDownPicker from "react-native-dropdown-picker";
 
 const PublishScreen = ({ navigation, route }) => {
     const { api } = useContext(AuthContext);
@@ -30,10 +30,21 @@ const PublishScreen = ({ navigation, route }) => {
     // Campos específicos para Edição (agora com artigos)
     const [editionNumber, setEditionNumber] = useState('');
     const [publicationDate, setPublicationDate] = useState('');
-    const [isSpecialEdition, setIsSpecialEdition] = useState(false);
     const [pdfFile, setPdfFile] = useState(null);
     const [pdfFileName, setPdfFileName] = useState('');
     const [isLoadingPdf, setIsLoadingPdf] = useState(false);
+
+    //picker states
+    const [open, setOpen] = useState(false);
+    const [value, setValue] = useState(null);
+    const [items, setItems] = useState([
+        { label: 'Artigo', value: 'ARTICLE' },
+        { label: 'Poesia', value: 'POETRY' },
+        { label: 'Ilustração', value: 'DRAWING' },
+        { label: 'Texto', value: 'TEXT' },
+        { label: 'Aviso', value: 'WARNING' },
+    ]);
+
 
     // Lista de artigos da edição
     const [articles, setArticles] = useState([]);
@@ -41,7 +52,7 @@ const PublishScreen = ({ navigation, route }) => {
         title: '',
         content: '',
         author: '',
-        category: '',
+        category: null,
         featuredPdf: null
     });
     const [editingArticleId, setEditingArticleId] = useState(null);
@@ -190,7 +201,8 @@ const PublishScreen = ({ navigation, route }) => {
         }
 
         const articleData = {
-            ...currentArticle
+            ...currentArticle,
+            featuredPdf: pdfFile
         };
 
         if (editingArticleId) {
@@ -293,29 +305,83 @@ const PublishScreen = ({ navigation, route }) => {
     };
 
     const submitEdicao = async () => {
-        const edicaoData = {
-            type: 'edicao',
-            title,
-            editionNumber,
-            publicationDate,
-            isSpecialEdition,
-            articles: articles,
-            createdAt: new Date().toISOString()
-        };
-        console.log('Enviando Edição com artigos:', edicaoData);
 
-        try{
-            const result = await api.post('/media');
+        try {
 
-            if(result.success){
-                Alert.alert('Sucesso', `Edição publicada com ${articles.length} artigo(s)!`);
+            // 1. Upload individual dos artigos
+            const uploadedArticleIds = [];
+
+            for (const article of articles) {
+
+                const formData = new FormData();
+
+                formData.append(
+                    'media',
+                    JSON.stringify({
+                        mediaTitle: article.title,
+                        mediaDescription: article.content,
+                        mediaAuthor: article.author,
+                        mediaType: article.category || 'ARTICLE'
+                    })
+                );
+
+                // Se tiver PDF
+                if (article.featuredPdf) {
+
+                    formData.append('file', {
+                        uri: article.featuredPdf.uri,
+                        type: article.featuredPdf.type || 'application/pdf',
+                        name: article.featuredPdf.name || 'document.pdf'
+                    });
+                }
+
+                const uploadResponse = await api.post(
+                    '/media/upload',
+                    formData,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }
+                );
+
+                uploadedArticleIds.push(uploadResponse.data.mediaId);
             }
-        }catch(error){
-            console.log("Erro: ", error.name);
-            console.log(error.message);
-            console.log(error.code);
-            console.log(error.cause);
-            return Alert.alert("Algo deu errado... Tente novamente daqui a pouco!");
+
+            // 2. Criar edição com os UUIDs
+            const edicaoData = {
+                type: 'edicao',
+                title,
+                editionNumber,
+                publicationDate,
+                articleIds: uploadedArticleIds
+            };
+
+            const response = await api.post(
+                '/media/publish',
+                edicaoData
+            );
+
+            if (response.data) {
+
+                Alert.alert(
+                    'Sucesso',
+                    `Edição publicada com ${articles.length} artigo(s)!`
+                );
+
+                navigation.goBack();
+            }
+
+        } catch(error) {
+
+            console.log("Erro:", error);
+            console.log("Response:", error.response?.data);
+
+            Alert.alert(
+                "Erro",
+                error.response?.data?.error ||
+                "Erro ao publicar edição"
+            );
         }
     };
 
@@ -448,14 +514,28 @@ const PublishScreen = ({ navigation, route }) => {
                 />
 
                 <Text style={styles.label}>Categoria</Text>
-                <Picker style={styles.input}
-                    selectedValue={currentArticle.category} onValueChange={(categoryOption) => setCurrentArticle({...currentArticle, category: categoryOption})}>
-                    <Picker.Item label="Article" value="ARTICLE" />
-                    <Picker.Item label="Poetry" value="POETRY" />
-                    <Picker.Item label="Drawing" value="DRAWING" />
-                    <Picker.Item label="Text" value="TEXT" />
-                    <Picker.Item label="Warning" value="WARNING" />
-                </Picker>
+                <DropDownPicker
+                    open={open}
+                    value={currentArticle.category}
+                    items={items}
+                    setOpen={setOpen}
+                    setValue={(callback) => {
+                        const value = callback(currentArticle.category);
+
+                        setCurrentArticle({
+                            ...currentArticle,
+                            category: value
+                        });
+                    }}
+                    setItems={setItems}
+                    placeholder="Selecione o tipo da mídia"
+                    listMode="SCROLLVIEW"
+                    style={styles.dropdown}
+                    dropDownContainerStyle={styles.dropdown}
+                    zIndex={3000}
+                    zIndexInverse={1000}
+                />
+
 
                 {pdfFile && pdfFile.name && (
                     <View style={styles.pdfInfoContainer}>
@@ -557,16 +637,6 @@ const PublishScreen = ({ navigation, route }) => {
                         }}
                     />
 
-                    <View style={styles.switchContainer}>
-                        <Text style={styles.label}>Edição Especial</Text>
-                        <Switch
-                            value={isSpecialEdition}
-                            onValueChange={setIsSpecialEdition}
-                            trackColor={{ false: '#767577', true: '#81b0ff' }}
-                            thumbColor={isSpecialEdition ? '#ececec' : '#f3f3f3'}
-                        />
-                    </View>
-
                     {/* Seção de Artigos - Formulário expansível */}
                     <View style={styles.articlesSection}>
                         {renderArticleForm()}
@@ -649,6 +719,15 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: 'Inter-Regular',
         backgroundColor: '#f9f9f9',
+    },
+    dropdown: {
+        borderColor: '#e6e6e6',
+        paddingRight: 10,
+        borderRadius: 10,
+        backgroundColor: '#e6e6e6',
+        borderWidth: 1,
+        width: '95%',
+        marginBottom: 15,
     },
     textArea: {
         height: 120,

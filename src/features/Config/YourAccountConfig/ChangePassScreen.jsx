@@ -6,8 +6,9 @@ import {
     StyleSheet,
     Alert,
 } from 'react-native';
-import InputButton from "../../Auth/components/inputButton";
+import InputButton from "../../Auth/components/InputButton";
 import SendButton from "../../Auth/components/SendButton";
+import PasswordInputButton from "../../Auth/components/PasswordInputButton";
 
 const ChangePassScreen = ({ navigation }) => {
     const [inputValue, setInputValue] = useState('');
@@ -44,7 +45,8 @@ const ChangePassScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View>
-                <InputButton
+                <Text style={styles.title}>Alterar senha</Text>
+                <PasswordInputButton
                     label={"Insira sua senha atual"}
                     placeholder={"Senha atual"}
                     value={inputValue}
@@ -52,7 +54,7 @@ const ChangePassScreen = ({ navigation }) => {
                     secureTextEntry={true}
                 />
 
-                <InputButton
+                <PasswordInputButton
                     label={"Insira uma nova senha"}
                     placeholder={"Nova Senha"}
                     value={inputValue2}
@@ -60,7 +62,7 @@ const ChangePassScreen = ({ navigation }) => {
                     secureTextEntry={true}
                 />
 
-                <InputButton
+                <PasswordInputButton
                     label={"Confirme sua nova senha"}
                     placeholder={"Confirmar Senha"}
                     value={inputValue3}
@@ -82,14 +84,13 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        padding: 20,
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
         textAlign: 'center',
-        paddingTop: 60,
         padding: 10,
+        fontFamily: 'Lalezar_400Regular',
     },
     errorText: {
         color: 'red',
@@ -99,6 +100,9 @@ const styles = StyleSheet.create({
     button: {
         fontSize: 100,
     },
+    mainContent: {
+        marginTop: 10
+    }
 });
 
 export default ChangePassScreen;

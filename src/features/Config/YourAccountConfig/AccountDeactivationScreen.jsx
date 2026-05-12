@@ -33,11 +33,8 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        alignSelf: 'center',
-        alignContent: 'flex-start',
         padding: 10,
+        fontFamily: 'Lalezar_400Regular',
     },
     errorText: {
         color: 'red',
@@ -53,8 +50,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 50,
         alignSelf: 'center',
         textAlign: 'center',
-        paddingTop:10,
-        paddingBottom: 30
+        paddingBottom: 20
     }
 });
 

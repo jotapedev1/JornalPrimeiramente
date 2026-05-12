@@ -10,13 +10,6 @@ import {
     Image,
     TouchableOpacity
 } from 'react-native';
-import {Platform} from "react-native";
-import InputButton from "../../Auth/components/inputButton"
-import SendButton from "../../Auth/components/SendButton";
-import TemplateButton from "../../Auth/components/TemplateButton";
-import JornalLogo from "../../../shared/components/JornalLogo";
-import {c} from "react/compiler-runtime";
-import {Lalezar_400Regular} from "@expo-google-fonts/lalezar";
 import BottomBar from "../../../shared/components/BottomBar";
 
 const MenuScreen = ({navigation}) => {

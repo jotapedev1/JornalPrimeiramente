@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {View, Text,  StyleSheet } from 'react-native';
-import InputButton from "../components/inputButton"
+import InputButton from "../components/InputButton"
 import SendButton from "../components/SendButton";
 import TemplateButton from "../components/TemplateButton";
 import JornalLogo from "../../../shared/components/JornalLogo";
