@@ -1,13 +1,12 @@
 package com.CJSantos.Jornal_Primeiramente.service;
 
 import com.CJSantos.Jornal_Primeiramente.model.MediaModel;
+import com.CJSantos.Jornal_Primeiramente.model.UserModel;
 import com.CJSantos.Jornal_Primeiramente.repository.MediaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.sql.Blob;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -22,25 +21,28 @@ public class MediaService {
     }
 
     // Criar mídia com arquivo PDF
-    public MediaModel createMediaWithFile(MediaModel media, MultipartFile file) throws IOException {
+    public MediaModel createMediaWithFile(MediaModel media, MultipartFile file, UserModel user) throws IOException {
         if (media.getMediaType() == null) {
             throw new RuntimeException("Preencha o tipo de mídia");
         }
 
         if (file != null && !file.isEmpty()) {
-            if (!file.getContentType().equals("application/pdf")) {
+
+            if (!"application/pdf".equals(file.getContentType())) {
                 throw new RuntimeException("Apenas arquivos PDF são permitidos");
             }
+
             if (file.getSize() > 15 * 1024 * 1024) {
                 throw new RuntimeException("Arquivo muito grande. Limite de 15MB");
             }
-            // Para byte[] - direto, sem SerialBlob
+
             media.setMediaFile(file.getBytes());
             media.setMediaFileName(file.getOriginalFilename());
             media.setMediaFileType(file.getContentType());
             media.setMediaFileSize(file.getSize());
         }
 
+        media.setUser(user);
         media.setMediaCreatedAt(LocalDateTime.now());
         return mediaRepository.save(media);
     }

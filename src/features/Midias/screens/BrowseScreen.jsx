@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
     View,
     Text,
@@ -16,6 +16,10 @@ const BrowseScreen = ({navigation}) => {
     // Pega todas as edições
     const editions = getAllEditions();
 
+    useEffect(() => {
+        getAllEditions();
+    }, []);
+
     return (
         <View style={styles.container}>
             <JornalLogo />
@@ -26,7 +30,7 @@ const BrowseScreen = ({navigation}) => {
 
             <FlatList
                 data={editions}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item) => item.editionId.toString()}
                 renderItem={({ item }) => (
                     <EditionCard
                         edition={item}  // ← Passando a edição como prop

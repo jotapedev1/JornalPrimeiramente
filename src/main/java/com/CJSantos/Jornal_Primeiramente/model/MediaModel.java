@@ -1,5 +1,6 @@
 package com.CJSantos.Jornal_Primeiramente.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -46,8 +47,9 @@ public class MediaModel {
     private UserModel user;
 
     // Relacionamento com edição (um artigo pertence a uma edição)
-    @ManyToOne
-    @JoinColumn(name = "edition_id")
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "edition_id", nullable = false)
     private EditionModel edition;
 
     // Deleting media deletes all comments

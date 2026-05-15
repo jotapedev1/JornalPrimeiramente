@@ -1,5 +1,6 @@
 package com.CJSantos.Jornal_Primeiramente.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,30 +35,34 @@ public class EditionModel {
     @Column(name = "publication_date")
     private String publicationDate;
 
-    //TODO: REMOVE THIS ATTRIBUTE
-    @Column(name = "is_special_edition")
-    private Boolean isSpecialEdition = false;
-
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    // Relacionamento um-para-muitos com MediaModel (os artigos da edição)
-    @OneToMany(mappedBy = "edition", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<MediaModel> articles = new ArrayList<>();
+    // Uma edição possui várias mídias
+    @OneToMany(
+            mappedBy = "edition",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    @JsonManagedReference
+    private List<MediaModel> media = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
 
-    public void addArticle(MediaModel article) {
-        articles.add(article);
-        article.setEdition(this);
-        article.setMediaType(Media.ARTICLE); // Define o tipo como ARTIGO
+    // Adiciona mídia à edição
+    public void addMedia(MediaModel mediaItem) {
+        media.add(mediaItem);
+        mediaItem.setEdition(this);
     }
 
-    public void removeArticle(MediaModel article) {
-        articles.remove(article);
-        article.setEdition(null);
+    // Remove mídia da edição
+    public void removeMedia(MediaModel mediaItem) {
+        media.remove(mediaItem);
+        mediaItem.setEdition(null);
     }
+
 }

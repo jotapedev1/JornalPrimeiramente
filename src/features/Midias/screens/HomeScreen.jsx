@@ -1,30 +1,71 @@
-// src/features/Home/screens/HomeScreen.js
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    Image,
+    ScrollView,
+    ActivityIndicator,
+    RefreshControl
+} from 'react-native';
+
 import JornalLogo from "../../../shared/components/JornalLogo";
 import BottomBar from "../../../shared/components/BottomBar";
 import ArticleCard from "../../../shared/components/ArticleCard";
+
 import { useArticles } from '../../../context/ArticleContext';
 
 const HomeScreen = ({ navigation }) => {
     const {
+        loading,
         getCurrentEdition,
-        getArticlesByEdition,
-        articles,
-        editions,
-        loading
+        getAllEditions,
+        getMediaByEdition
     } = useArticles();
 
-    // Pega os dados diretamente sem useEffect
-    const currentEdition = getCurrentEdition();
+    const [currentEdition, setCurrentEdition] = useState(null);
 
-    const editionArticles = currentEdition ? getArticlesByEdition(currentEdition.id) : [];
+    const [editionArticles, setEditionArticles] = useState([]);
+
+    const loadHomeData = async () => {
+        const editions =
+            await getAllEditions();
+
+        if (!editions || editions.length === 0) {
+            setCurrentEdition(null);
+            setEditionArticles([]);
+
+            return;
+        }
+        const current =
+            getCurrentEdition(editions);
+
+        setCurrentEdition(current);
+
+        if (current?.editionId) {
+            const media = await getMediaByEdition(current.editionId);
+
+            setEditionArticles(media);
+        }
+    };
+
+    useEffect(() => {
+        loadHomeData();
+    }, []);
 
     if (loading) {
         return (
-            <View style={styles.container}>
+            <View style={styles.loadingContainer}>
                 <JornalLogo />
-                <Text style={styles.loadingText}>Carregando...</Text>
+
+                <ActivityIndicator
+                    size="large"
+                    color="#000"
+                    style={{ marginTop: 40 }}
+                />
+                <Text style={styles.loadingText}>
+                    Carregando...
+                </Text>
                 <BottomBar navigation={navigation} />
             </View>
         );
@@ -33,108 +74,219 @@ const HomeScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <JornalLogo />
-
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <Text style={[styles.title, { fontFamily: 'Lalezar_400Regular' }]}>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loading}
+                        onRefresh={loadHomeData}
+                    />
+                }
+            >
+                <Text
+                    style={[
+                        styles.title,
+                        { fontFamily: 'Lalezar_400Regular' }
+                    ]}
+                >
                     {currentEdition?.title || 'Edição Atual'}
                 </Text>
 
+                <View style={styles.editionInfoContainer}>
+
+                    <Text style={styles.editionNumber}>
+                        Edição #{currentEdition?.editionNumber || '--'}
+                    </Text>
+
+                    <Text style={styles.publicationDate}>
+                        {currentEdition?.publicationDate || ''}
+                    </Text>
+
+                </View>
+
                 <View style={styles.coverContainer}>
+
                     <Image
                         style={styles.coverImage}
-                        source={currentEdition?.coverImage || require('../../../assets/imgs/signupimg.jpg')}
+                        source={
+                            currentEdition?.coverImage
+                                ? { uri: currentEdition.coverImage }
+                                : require('../../../assets/imgs/signupimg.jpg')
+                        }
                     />
+
                     {currentEdition?.description && (
                         <Text style={styles.editionDescription}>
                             {currentEdition.description}
                         </Text>
                     )}
+
                 </View>
 
-                <Text style={styles.sectionTitle}>
-                    Artigos desta edição ({editionArticles.length})
-                </Text>
+                <View style={styles.sectionHeader}>
 
-                <View>
+                    <Text style={styles.sectionTitle}>
+                        Artigos desta edição
+                    </Text>
+
+                    <Text style={styles.articleCounter}>
+                        {editionArticles.length}
+                    </Text>
+
+                </View>
+
+                <View style={styles.articlesContainer}>
+
                     {editionArticles.length > 0 ? (
+
                         editionArticles.map((item) => (
-                            <View key={item.id}>
+
+                            <View
+                                key={item.mediaId}
+                            >
                                 <ArticleCard article={item} />
                             </View>
                         ))
+
                     ) : (
-                        <View>
+
+                        <View style={styles.emptyContainer}>
+
                             <Text style={styles.emptyText}>
-                                Nenhum artigo encontrado para esta edição
+                                Nenhum artigo encontrado
                             </Text>
+
+                            <Text style={styles.emptySubText}>
+                                Esta edição ainda não possui conteúdos publicados.
+                            </Text>
+
                         </View>
                     )}
+
                 </View>
+
             </ScrollView>
 
             <BottomBar navigation={navigation} />
+
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        paddingBottom: 120
+        paddingBottom: 100
     },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
+
+    loadingContainer: {
+        flex: 1,
+        backgroundColor: '#fff'
+    },
+
+    loadingText: {
         textAlign: 'center',
-        padding: 10,
-        marginTop: 10,
+        marginTop: 15,
+        fontSize: 16,
+        color: '#666'
     },
+
+    title: {
+        fontSize: 28,
+        textAlign: 'center',
+        marginTop: 15,
+        color: '#222'
+    },
+
+    editionInfoContainer: {
+        alignItems: 'center',
+        marginTop: 5,
+        marginBottom: 15
+    },
+
+    editionNumber: {
+        fontSize: 16,
+        color: '#444',
+        fontWeight: '600'
+    },
+
+    publicationDate: {
+        fontSize: 13,
+        color: '#888',
+        marginTop: 4
+    },
+
     coverContainer: {
-        width: '90%',
+        width: '92%',
         alignSelf: 'center',
-        marginVertical: 10,
+        marginBottom: 20
     },
+
     coverImage: {
         width: '100%',
         height: 250,
-        borderRadius: 15,
-        resizeMode: 'cover',
+        borderRadius: 18,
+        resizeMode: 'cover'
     },
+
     editionDescription: {
         textAlign: 'center',
         fontSize: 14,
         color: '#666',
-        marginTop: 8,
-        paddingHorizontal: 10,
+        marginTop: 10,
+        lineHeight: 20,
+        paddingHorizontal: 5
     },
+
+    sectionHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 18,
+        marginBottom: 15
+    },
+
     sectionTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#222'
+    },
+
+    articleCounter: {
+        backgroundColor: '#f0f0f0',
+        paddingHorizontal: 12,
+        paddingVertical: 5,
+        borderRadius: 20,
+        color: '#444',
+        fontWeight: '600'
+    },
+
+    articlesContainer: {
+        paddingBottom: 30
+    },
+
+    emptyContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 50,
+        paddingHorizontal: 20
+    },
+
+    emptyText: {
         fontSize: 18,
         fontWeight: '600',
-        marginLeft: 16,
-        marginBottom: 15,
-        marginTop: 10,
-        color: '#333',
+        color: '#666'
     },
-    loadingText: {
-        textAlign: 'center',
-        marginTop: 20,
-        fontSize: 16,
-        color: '#666',
-    },
-    emptyText: {
-        textAlign: 'center',
+
+    emptySubText: {
         fontSize: 14,
         color: '#999',
-        marginTop: 20,
-        marginBottom: 20,
-    },
-    debugText: {
         textAlign: 'center',
-        fontSize: 12,
-        color: 'red',
-        marginTop: 5,
-    },
+        marginTop: 10,
+        lineHeight: 20
+    }
 });
 
 export default HomeScreen;

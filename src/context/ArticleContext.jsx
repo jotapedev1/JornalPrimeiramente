@@ -1,97 +1,158 @@
-// src/context/ArticleContext.js
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { articleData } from "../data/articleData.js";
-import { editionData } from "../data/editionData.js";
-import axios from "axios";
+import React, {
+    createContext,
+    useState,
+    useContext,
+    useEffect
+} from 'react';
+
+import axios from 'axios';
+import { AuthContext } from './AuthContext';
 
 const ArticleContext = createContext({});
 
 const ArticleProvider = ({ children }) => {
+
+    const { api } = useContext(AuthContext);
     const [articles, setArticles] = useState([]);
     const [bookmarks, setBookmarks] = useState([]);
     const [editions, setEditions] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        loadInitialData();
+        getAllEditions();
     }, []);
 
-    const loadInitialData = () => {
-        if (articleData && articleData.length > 0) {
-            setArticles(articleData);
-        } else {
-            console.error('articleData is empty or undefined');
-        }
+    // =========================
+    // CARREGAR EDIÇÕES
+    // =========================
 
-        if (editionData && editionData.length > 0) {
-            setEditions(editionData);
-        } else {
-            console.error('editionData is empty or undefined');
-        }
+    const getAllEditions = async () => {
 
-        setLoading(false);
-    };
+        setLoading(true);
 
-    const toggleBookmark = async (article) => {
         try {
-            const response = await axios.post(`http://localhost:8080/${article.id}/save`, {
-                mediaId: article.id,
-                // userId: user.id, BRING USER TO ARTICLE CONTEXT
-                // Add other fields your backend expects
-            });
-            setBookmarks(prev => {
-                const exists = prev.some(item => item.id === article.id);
-            if (exists) {
-                return prev.filter(item => item.id !== article.id);
-            } else {
-                return [...prev, article];
-            }
-            });
-                return response;
-        }catch (error){
-                return console.log('Error: ', error);
+
+            const response = await api.get('/edition');
+
+            console.log("Editions response:", response.data);
+
+            const editionsData =
+                Array.isArray(response.data)
+                    ? response.data
+                    : [];
+
+            setEditions(editionsData);
+
+            return editionsData;
+        } catch(error) {
+            console.log(
+                "Error loading editions:",
+                error.response?.data || error.message
+            );
+            setEditions([]);
+            return [];
+        } finally {
+
+            setLoading(false);
         }
     };
 
-    const isBookmarked = (articleId) => {
-        return bookmarks.some(item => item.id === articleId);
+    // =========================
+    // BOOKMARK
+    // =========================
+
+    const toggleBookmark = async (media) => {
+
+        try {
+
+            await api.post(`/${media.mediaId}/save`, {
+                mediaId: media.mediaId,
+            });
+
+            setBookmarks(prev => {
+
+                const exists = prev.some(
+                    item => item.mediaId === media.mediaId
+                );
+
+                if (exists) {
+
+                    return prev.filter(
+                        item => item.mediaId !== media.mediaId
+                    );
+                }
+
+                return [...prev, media];
+            });
+
+        } catch (error) {
+
+            console.log('Erro bookmark:', error);
+        }
     };
 
-    const getArticlesByEdition = (editionId) => {
-        return articles.filter(a => a.editionId === editionId);
+    const isBookmarked = (mediaId) => {
+
+        return bookmarks.some(
+            item => item.mediaId === mediaId
+        );
     };
 
-    const getEditionById = (editionId) => {
-        return editions.find(edition => edition.id === editionId);
+    // =========================
+    // BUSCAS
+    // =========================
+
+    const getEditionById = async (editionId) => {
+        try {
+            setLoading(true);
+            const response = await api.get(`/edition/${editionId}`);
+
+            return response.data;
+        } catch (error) {
+            console.log("Error getting edition:", error.response?.data || error.message);
+
+            return null;
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const getAllEditions = () => {
-        return editions;
+    const getMediaByEdition = async (editionId) => {
+        try {
+            setLoading(true);
+            const response = await api.get(`/edition/${editionId}`);
+
+            return response.data?.media || [];
+        } catch (error) {
+            console.log("Error getting media by edition:", error.response?.data || error.message);
+            return [];
+        } finally {
+            setLoading(false);
+        }
     };
 
     const getCurrentEdition = () => {
-        const now = new Date();
-        const currentMonth = now.getMonth() + 1;
-        const currentYear = now.getFullYear();
 
-        const current = editions.find(edition => {
-            if (edition.year !== currentYear) return false;
-            return currentMonth >= edition.monthStart && currentMonth <= edition.monthEnd;
-        });
+        if (editions.length === 0) {
+            return null;
+        }
 
-        // Se não encontrar, retorna a primeira edição
-        return current || editions[0];
+        // mais recente
+        return editions[0];
     };
 
     const value = {
+
         articles,
-        bookmarks,
         editions,
+        bookmarks,
         loading,
+
         toggleBookmark,
         isBookmarked,
-        getArticlesByEdition,
+
         getEditionById,
+        getMediaByEdition,
         getAllEditions,
         getCurrentEdition,
     };
@@ -102,12 +163,18 @@ const ArticleProvider = ({ children }) => {
         </ArticleContext.Provider>
     );
 };
-export default ArticleProvider
+
+export default ArticleProvider;
 
 export const useArticles = () => {
+
     const context = useContext(ArticleContext);
+
     if (!context) {
-        throw new Error('useArticles must be used within ArticleProvider');
+        throw new Error(
+            'useArticles must be used within ArticleProvider'
+        );
     }
+
     return context;
 };

@@ -18,12 +18,7 @@ public interface EditionRepository extends JpaRepository<EditionModel, UUID> {
 
     List<EditionModel> findByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
 
-    //TODO REMOVE THIS FUNCTION
-    List<EditionModel> findByIsSpecialEdition(boolean isSpecial);
-
     @Query(value = "SELECT * FROM edition ORDER BY created_at DESC LIMIT :limit", nativeQuery = true)
     List<EditionModel> findTopNOrderByCreatedAtDesc(@Param("limit") int limit);
 
-    //TODO REMOVE THIS FUNCTION
-    boolean existsByEditionNumber(String editionNumber);
 }

@@ -70,4 +70,8 @@ public class JwtUtil {
         String role = extractRole(token);
         return "ADMIN".equals(role);
     }
+
+    public String getUsernameFromToken(String token){
+        return extractClaims(token).getSubject();
+    }
 }

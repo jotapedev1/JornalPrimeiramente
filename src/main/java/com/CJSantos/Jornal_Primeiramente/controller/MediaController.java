@@ -59,7 +59,7 @@ public class MediaController {
             media.setUser(author);
 
             MediaModel savedMedia =
-                    mediaService.createMediaWithFile(media, file);
+                    mediaService.createMediaWithFile(media, file, author);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                     "message", "Mídia criada com sucesso",
@@ -180,31 +180,28 @@ public class MediaController {
                 edition.setTitle((String) request.get("title"));
                 edition.setEditionNumber((String) request.get("editionNumber"));
                 edition.setPublicationDate((String) request.get("publicationDate"));
-                edition.setIsSpecialEdition(
-                        (Boolean) request.getOrDefault("isSpecialEdition", false)
-                );
 
                 @SuppressWarnings("unchecked")
-                List<String> articleIds =
-                        (List<String>) request.get("articleIds");
+                List<String> mediaIds =
+                        (List<String>) request.get("mediaIds");
 
-                if (articleIds == null || articleIds.isEmpty()) {
+                if (mediaIds == null || mediaIds.isEmpty()) {
                     return ResponseEntity.badRequest()
                             .body(Map.of("error", "Nenhum artigo enviado"));
                 }
 
-                for (String articleId : articleIds) {
-                    MediaModel article =
-                            mediaService.getMediaById(UUID.fromString(articleId));
+                for (String mediaId : mediaIds) {
+                    MediaModel media =
+                            mediaService.getMediaById(UUID.fromString(mediaId));
 
-                    edition.addArticle(article);
+                    edition.addMedia(media);
                 }
 
-                EditionModel saved = editionService.createEdition(edition);
+                EditionModel saved = editionService.createEdition(edition, author);
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                         "message",
-                        "Edição publicada com " + saved.getArticles().size() + " artigo(s)",
+                        "Edição publicada com " + saved.getMedia().size() + " artigo(s)",
                         "editionId",
                         saved.getEditionId()
                 ));

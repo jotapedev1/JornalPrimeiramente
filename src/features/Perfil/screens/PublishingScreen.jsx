@@ -58,6 +58,13 @@ const PublishScreen = ({ navigation, route }) => {
     const [editingArticleId, setEditingArticleId] = useState(null);
     const [isArticleFormExpanded, setIsArticleFormExpanded] = useState(false); // Novo estado para controlar expansão
 
+    const convertToISO = (dateString) => {
+
+        const [day, month, year] = dateString.split('/');
+
+        return `${year}-${month}-${day}`;
+    };
+
     const formatDataWithBars = (text) => {
         let cleaned = text.replace(/\D/g, '');
         if(cleaned.length > 8){
@@ -308,69 +315,57 @@ const PublishScreen = ({ navigation, route }) => {
 
         try {
 
-            // 1. Upload individual dos artigos
-            const uploadedArticleIds = [];
+            const formData = new FormData();
 
-            for (const article of articles) {
+            const medias = articles.map((article, index) => ({
+                mediaTitle: article.title,
+                mediaDescription: article.content,
+                mediaAuthor: article.author,
+                mediaType: article.category || 'ARTICLE',
+            }));
 
-                const formData = new FormData();
-
-                formData.append(
-                    'media',
-                    JSON.stringify({
-                        mediaTitle: article.title,
-                        mediaDescription: article.content,
-                        mediaAuthor: article.author,
-                        mediaType: article.category || 'ARTICLE'
-                    })
-                );
-
-                // Se tiver PDF
-                if (article.featuredPdf) {
-
-                    formData.append('file', {
-                        uri: article.featuredPdf.uri,
-                        type: article.featuredPdf.type || 'application/pdf',
-                        name: article.featuredPdf.name || 'document.pdf'
-                    });
-                }
-
-                const uploadResponse = await api.post(
-                    '/media/upload',
-                    formData,
-                    {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
-                    }
-                );
-
-                uploadedArticleIds.push(uploadResponse.data.mediaId);
-            }
-
-            // 2. Criar edição com os UUIDs
             const edicaoData = {
-                type: 'edicao',
                 title,
                 editionNumber,
-                publicationDate,
-                articleIds: uploadedArticleIds
+                publicationDate: convertToISO(publicationDate),
+                media: medias
             };
 
-            const response = await api.post(
-                '/media/publish',
-                edicaoData
+            // JSON da edição
+            formData.append(
+                'edition',
+                JSON.stringify(edicaoData)
             );
 
-            if (response.data) {
+            // PDFs
+            articles.forEach((article, index) => {
 
-                Alert.alert(
-                    'Sucesso',
-                    `Edição publicada com ${articles.length} artigo(s)!`
-                );
+                if (article.featuredPdf) {
 
-                navigation.goBack();
-            }
+                    formData.append('files', {
+                        uri: article.featuredPdf.uri,
+                        name: article.featuredPdf.name || `arquivo_${index}.pdf`,
+                        type: 'application/pdf'
+                    });
+                }
+            });
+
+            const response = await api.post(
+                '/edition/create',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            );
+
+            Alert.alert(
+                'Sucesso',
+                'Edição publicada com sucesso!'
+            );
+
+            navigation.goBack();
 
         } catch(error) {
 

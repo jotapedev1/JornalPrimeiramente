@@ -2,10 +2,12 @@ package com.CJSantos.Jornal_Primeiramente.service;
 
 import com.CJSantos.Jornal_Primeiramente.model.EditionModel;
 import com.CJSantos.Jornal_Primeiramente.model.MediaModel;
+import com.CJSantos.Jornal_Primeiramente.model.UserModel;
 import com.CJSantos.Jornal_Primeiramente.repository.EditionRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,46 +15,40 @@ import java.util.UUID;
 public class EditionService {
 
     private final EditionRepository editionRepository;
-    private final MediaService mediaService;
 
-    public EditionService(EditionRepository editionRepository, MediaService mediaService) {
+    public EditionService(EditionRepository editionRepository) {
         this.editionRepository = editionRepository;
-        this.mediaService = mediaService;
     }
 
-    public EditionModel createEdition(EditionModel edition) {
-        // Validar campos obrigatórios
+    public EditionModel createEdition(EditionModel edition, UserModel user) {
+
         if (edition.getTitle() == null || edition.getTitle().trim().isEmpty()) {
             throw new RuntimeException("O título da edição é obrigatório");
         }
         if (edition.getEditionNumber() == null || edition.getEditionNumber().trim().isEmpty()) {
             throw new RuntimeException("O número da edição é obrigatório");
         }
-
-        // Definir data de criação
         edition.setCreatedAt(LocalDateTime.now());
+        if (edition.getMedia() == null) {
+            edition.setMedia(new ArrayList<>());
+        }
+        // Vincular mídia à edição
+        for (MediaModel media : edition.getMedia()) {
 
-        // Se não tiver lista de artigos, inicializa vazia
-        if (edition.getArticles() == null) {
-            edition.setArticles(new java.util.ArrayList<>());
+            if (media.getMediaTitle() == null || media.getMediaTitle().trim().isEmpty()) {
+                throw new RuntimeException("Toda mídia deve possuir título");
+            }
+
+            if (media.getMediaAuthor() == null || media.getMediaAuthor().trim().isEmpty()) {
+                throw new RuntimeException("Toda mídia deve possuir autor");
+            }
+
+            media.setEdition(edition);
+
+            media.setUser(user);
         }
 
-        // Salvar a edição primeiro
-        EditionModel savedEdition = editionRepository.save(edition);
-
-        // Garantir que cada artigo tenha referência à edição e seja salvo
-        for (MediaModel article : savedEdition.getArticles()) {
-            if (article.getMediaTitle() == null || article.getMediaTitle().trim().isEmpty()) {
-                throw new RuntimeException("Todos os artigos devem ter título");
-            }
-            if (article.getMediaAuthor() == null || article.getMediaAuthor().trim().isEmpty()) {
-                throw new RuntimeException("Todos os artigos devem ter autor");
-            }
-            article.setEdition(savedEdition);
-            mediaService.createMedia(article);
-        }
-
-        return savedEdition;
+        return editionRepository.save(edition);
     }
 
     public List<EditionModel> getAllEditions() {
@@ -61,16 +57,12 @@ public class EditionService {
 
     public EditionModel getEditionById(UUID id) {
         return editionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Edição não encontrada com ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Edição não encontrada"));
     }
 
     public EditionModel getEditionByNumber(String editionNumber) {
         return editionRepository.findByEditionNumber(editionNumber)
-                .orElseThrow(() -> new RuntimeException("Edição não encontrada com número: " + editionNumber));
-    }
-
-    public List<EditionModel> getEditionsBySpecialEdition(boolean isSpecial) {
-        return editionRepository.findByIsSpecialEdition(isSpecial);
+                .orElseThrow(() -> new RuntimeException("Edição não encontrada"));
     }
 
     public List<EditionModel> getRecentEditions(int limit) {
@@ -78,67 +70,63 @@ public class EditionService {
     }
 
     public EditionModel updateEdition(UUID id, EditionModel updatedEdition) {
+
         EditionModel edition = getEditionById(id);
 
-        if (updatedEdition.getTitle() != null && !updatedEdition.getTitle().trim().isEmpty()) {
+        if (updatedEdition.getTitle() != null &&
+                !updatedEdition.getTitle().trim().isEmpty()) {
             edition.setTitle(updatedEdition.getTitle());
         }
-        if (updatedEdition.getEditionNumber() != null && !updatedEdition.getEditionNumber().trim().isEmpty()) {
+
+        if (updatedEdition.getEditionNumber() != null &&
+                !updatedEdition.getEditionNumber().trim().isEmpty()) {
             edition.setEditionNumber(updatedEdition.getEditionNumber());
         }
+
         if (updatedEdition.getPublicationDate() != null) {
             edition.setPublicationDate(updatedEdition.getPublicationDate());
         }
-        if (updatedEdition.getIsSpecialEdition() != null) {
-            edition.setIsSpecialEdition(updatedEdition.getIsSpecialEdition());
-        }
 
         return editionRepository.save(edition);
     }
 
-    public EditionModel addArticleToEdition(UUID editionId, MediaModel article) {
+    public EditionModel addMediaToEdition(UUID editionId, MediaModel media) {
+
         EditionModel edition = getEditionById(editionId);
 
-        // Validar artigo
-        if (article.getMediaTitle() == null || article.getMediaTitle().trim().isEmpty()) {
-            throw new RuntimeException("O título do artigo é obrigatório");
-        }
-        if (article.getMediaAuthor() == null || article.getMediaAuthor().trim().isEmpty()) {
-            throw new RuntimeException("O autor do artigo é obrigatório");
+        if (media.getMediaTitle() == null ||
+                media.getMediaTitle().trim().isEmpty()) {
+            throw new RuntimeException("O título da mídia é obrigatório");
         }
 
-        article.setEdition(edition);
-        MediaModel savedArticle = mediaService.createMedia(article);
-        edition.getArticles().add(savedArticle);
+        if (media.getMediaAuthor() == null ||
+                media.getMediaAuthor().trim().isEmpty()) {
+            throw new RuntimeException("O autor da mídia é obrigatório");
+        }
+
+        media.setEdition(edition);
+
+        edition.getMedia().add(media);
 
         return editionRepository.save(edition);
     }
 
-    public EditionModel removeArticleFromEdition(UUID editionId, UUID articleId) {
+    public EditionModel removeMediaFromEdition(UUID editionId, UUID mediaId) {
+
         EditionModel edition = getEditionById(editionId);
 
-        MediaModel article = edition.getArticles().stream()
-                .filter(a -> a.getMediaId().equals(articleId))
+        MediaModel media = edition.getMedia()
+                .stream()
+                .filter(m -> m.getMediaId().equals(mediaId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Artigo não encontrado na edição"));
+                .orElseThrow(() -> new RuntimeException("Mídia não encontrada na edição"));
 
-        article.setEdition(null);
-        edition.getArticles().remove(article);
-
-        // Opcional: deletar o artigo ou apenas desassociar
-        // mediaService.deleteMedia(articleId); // Descomente se quiser deletar
+        edition.getMedia().remove(media);
 
         return editionRepository.save(edition);
     }
 
     public void deleteEdition(UUID id) {
-        EditionModel edition = getEditionById(id);
-
-        // Desassociar todos os artigos da edição antes de deletar
-        for (MediaModel article : edition.getArticles()) {
-            article.setEdition(null);
-        }
-
         editionRepository.deleteById(id);
     }
 
@@ -146,7 +134,10 @@ public class EditionService {
         return editionRepository.count();
     }
 
-    public List<EditionModel> getEditionsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+    public List<EditionModel> getEditionsByDateRange(
+            LocalDateTime startDate,
+            LocalDateTime endDate
+    ) {
         return editionRepository.findByCreatedAtBetween(startDate, endDate);
     }
 }
