@@ -39,13 +39,13 @@ public class EditionModel {
     private LocalDateTime createdAt;
 
     // Uma edição possui várias mídias
+    @JsonManagedReference(value = "edition-media")
     @OneToMany(
             mappedBy = "edition",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
-    @JsonManagedReference
     private List<MediaModel> media = new ArrayList<>();
 
     @PrePersist

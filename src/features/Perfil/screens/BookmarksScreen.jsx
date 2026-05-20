@@ -5,8 +5,8 @@ import {
     ScrollView,
     Text,
 } from 'react-native';
-import ArticleCard from "../../../shared/components/ArticleCard";
-import { useArticles } from "../../../context/ArticleContext";
+import MediaCard from "../../../shared/components/MediaCard";
+import { useArticles } from "../../../context/MediaContext";
 
 const BookmarksScreen = ({ navigation }) => {
     const {
@@ -42,7 +42,7 @@ const BookmarksScreen = ({ navigation }) => {
 
             <View style={styles.articlesContainer}>
                 {bookmarks.map((item, index) => (
-                    <ArticleCard
+                    <MediaCard
                         key={item.id ?? index}
                         article={item}
                     />

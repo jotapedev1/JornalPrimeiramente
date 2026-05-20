@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Entity
 @Table(
-        name = "like",
+        name = "\"like\"",
         uniqueConstraints = @UniqueConstraint(
                 //Way for the like be unique per user
                 columnNames = {"likeUserId", "likeMediaId"}

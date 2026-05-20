@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+
 import {
     View,
     Text,
@@ -11,51 +12,75 @@ import {
 
 import JornalLogo from "../../../shared/components/JornalLogo";
 import BottomBar from "../../../shared/components/BottomBar";
-import ArticleCard from "../../../shared/components/ArticleCard";
+import MediaCard from "../../../shared/components/MediaCard";
 
-import { useArticles } from '../../../context/ArticleContext';
+import { useArticles } from '../../../context/MediaContext';
 
 const HomeScreen = ({ navigation }) => {
+
     const {
         loading,
-        getCurrentEdition,
-        getAllEditions,
-        getMediaByEdition
+        getAllEditions
     } = useArticles();
 
-    const [currentEdition, setCurrentEdition] = useState(null);
+    const [currentEdition, setCurrentEdition] =
+        useState(null);
 
-    const [editionArticles, setEditionArticles] = useState([]);
+    const [editionArticles, setEditionArticles] =
+        useState([]);
 
     const loadHomeData = async () => {
-        const editions =
-            await getAllEditions();
 
-        if (!editions || editions.length === 0) {
-            setCurrentEdition(null);
-            setEditionArticles([]);
+        try {
 
-            return;
-        }
-        const current =
-            getCurrentEdition(editions);
+            const editionsData =
+                await getAllEditions();
 
-        setCurrentEdition(current);
+            if (
+                !editionsData ||
+                editionsData.length === 0
+            ) {
 
-        if (current?.editionId) {
-            const media = await getMediaByEdition(current.editionId);
+                setCurrentEdition(null);
+                setEditionArticles([]);
 
-            setEditionArticles(media);
+                return;
+            }
+
+            const current =
+                [...editionsData]
+                    .sort(
+                        (a, b) =>
+                            new Date(b.createdAt) -
+                            new Date(a.createdAt)
+                    )[0];
+
+            setCurrentEdition(current);
+
+            setEditionArticles(
+                current?.media || []
+            );
+
+        } catch (error) {
+
+            console.log(
+                "Erro HomeScreen:",
+                error
+            );
         }
     };
 
     useEffect(() => {
+
         loadHomeData();
+
     }, []);
 
-    if (loading) {
+    if (loading && !currentEdition) {
+
         return (
             <View style={styles.loadingContainer}>
+
                 <JornalLogo />
 
                 <ActivityIndicator
@@ -63,17 +88,22 @@ const HomeScreen = ({ navigation }) => {
                     color="#000"
                     style={{ marginTop: 40 }}
                 />
+
                 <Text style={styles.loadingText}>
                     Carregando...
                 </Text>
+
                 <BottomBar navigation={navigation} />
+
             </View>
         );
     }
 
     return (
         <View style={styles.container}>
+
             <JornalLogo />
+
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 refreshControl={
@@ -83,13 +113,14 @@ const HomeScreen = ({ navigation }) => {
                     />
                 }
             >
+
                 <Text
                     style={[
                         styles.title,
                         { fontFamily: 'Lalezar_400Regular' }
                     ]}
                 >
-                    {currentEdition?.title || 'Edição Atual'}
+                    {currentEdition?.title || 'Sem edição'}
                 </Text>
 
                 <View style={styles.editionInfoContainer}>
@@ -109,17 +140,9 @@ const HomeScreen = ({ navigation }) => {
                     <Image
                         style={styles.coverImage}
                         source={
-                            currentEdition?.coverImage
-                                ? { uri: currentEdition.coverImage }
-                                : require('../../../assets/imgs/signupimg.jpg')
+                            require('../../../assets/imgs/signupimg.jpg')
                         }
                     />
-
-                    {currentEdition?.description && (
-                        <Text style={styles.editionDescription}>
-                            {currentEdition.description}
-                        </Text>
-                    )}
 
                 </View>
 
@@ -144,7 +167,7 @@ const HomeScreen = ({ navigation }) => {
                             <View
                                 key={item.mediaId}
                             >
-                                <ArticleCard article={item} />
+                                <MediaCard article={item} />
                             </View>
                         ))
 
@@ -229,15 +252,6 @@ const styles = StyleSheet.create({
         height: 250,
         borderRadius: 18,
         resizeMode: 'cover'
-    },
-
-    editionDescription: {
-        textAlign: 'center',
-        fontSize: 14,
-        color: '#666',
-        marginTop: 10,
-        lineHeight: 20,
-        paddingHorizontal: 5
     },
 
     sectionHeader: {

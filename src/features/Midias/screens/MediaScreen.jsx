@@ -1,12 +1,12 @@
-// src/features/Midias/screens/ArticleScreen.js
+// src/features/Midias/screens/MediaScreen.js
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import JornalLogo from '../../../shared/components/JornalLogo';
 import LikeButton from '../../../shared/components/LikeButton';
 import BookmarkButton from '../../Perfil/components/BookmarkButton';
-import { useArticles } from '../../../context/ArticleContext';
+import { useArticles } from '../../../context/MediaContext';
 
-const ArticleScreen = ({ navigation, route }) => {
+const MediaScreen = ({ navigation, route }) => {
     const { articleId } = route.params || {};
     const { isBookmarked, toggleBookmark, articles } = useArticles();
 
@@ -65,7 +65,7 @@ const ArticleScreen = ({ navigation, route }) => {
     );
 };
 
-export default ArticleScreen;
+export default MediaScreen;
 
 const styles = StyleSheet.create({
     container: {

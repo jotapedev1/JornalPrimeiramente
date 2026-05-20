@@ -8,9 +8,9 @@ import React, {
 import axios from 'axios';
 import { AuthContext } from './AuthContext';
 
-const ArticleContext = createContext({});
+const MediaContext = createContext({});
 
-const ArticleProvider = ({ children }) => {
+const MediaProvider = ({ children }) => {
 
     const { api } = useContext(AuthContext);
     const [articles, setArticles] = useState([]);
@@ -52,7 +52,6 @@ const ArticleProvider = ({ children }) => {
             setEditions([]);
             return [];
         } finally {
-
             setLoading(false);
         }
     };
@@ -137,8 +136,9 @@ const ArticleProvider = ({ children }) => {
             return null;
         }
 
-        // mais recente
-        return editions[0];
+        return [...editions].sort(
+                    (a, b) =>
+                        new Date(b.createdAt) - new Date(a.createdAt))[0];
     };
 
     const value = {
@@ -158,17 +158,17 @@ const ArticleProvider = ({ children }) => {
     };
 
     return (
-        <ArticleContext.Provider value={value}>
+        <MediaContext.Provider value={value}>
             {children}
-        </ArticleContext.Provider>
+        </MediaContext.Provider>
     );
 };
 
-export default ArticleProvider;
+export default MediaProvider;
 
 export const useArticles = () => {
 
-    const context = useContext(ArticleContext);
+    const context = useContext(MediaContext);
 
     if (!context) {
         throw new Error(

@@ -10,11 +10,11 @@ import BrowseScreen from "../features/Midias/screens/BrowseScreen";
 import NotificationScreen from "../features/Perfil/screens/NotificationScreen";
 import ProfileScreen from "../features/Perfil/screens/ProfileScreen";
 import {HeaderStyleInterpolators, TransitionSpecs} from '@react-navigation/stack';
-import ArticleScreen from "../features/Midias/screens/ArticleScreen";
+import MediaScreen from "../features/Midias/screens/MediaScreen";
 import BookmarksScreen from "../features/Perfil/screens/BookmarksScreen";
 import ConfigurationScreen from "../features/Config/ConfigurationScreen";
 import PasswordResetScreen from "../features/Auth/screens/PasswordResetScreen";
-import EditionArticlesScreen from "../features/Midias/screens/EditionArticlesScreen";
+import EditionMediaScreen from "../features/Midias/screens/EditionMediaScreen";
 import AccountDeactivationScreen from "../features/Config/YourAccountConfig/AccountDeactivationScreen";
 import AccountInfoScreen from "../features/Config/YourAccountConfig/AccountInfoScreen";
 import ChangePassScreen from "../features/Config/YourAccountConfig/ChangePassScreen";
@@ -90,9 +90,9 @@ export default function AppNavigator() {
                               options={{ headerShown: true }}/>
                 <Stack.Screen name="Browse" component={BrowseScreen}
                               options={{ headerShown: true, }}/>
-                <Stack.Screen name="ArticleScreen" component={ArticleScreen}
+                <Stack.Screen name="MediaScreen" component={MediaScreen}
                               options={{ headerShown: true }}/>
-                <Stack.Screen name={"EditionArticles"} component={EditionArticlesScreen}
+                <Stack.Screen name={"EditionMedia"} component={EditionMediaScreen}
                               options={{headerShown: true}}/>
 
                 {/*PROFILE SCREENS*/}

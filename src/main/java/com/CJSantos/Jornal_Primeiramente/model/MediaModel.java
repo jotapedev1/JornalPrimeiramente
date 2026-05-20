@@ -1,6 +1,7 @@
 package com.CJSantos.Jornal_Primeiramente.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,21 +34,25 @@ public class MediaModel {
 
     private LocalDateTime mediaCreatedAt;
 
+    @JsonIgnore
     @Column(columnDefinition = "bytea", name = "media_file")
     private byte[] mediaFile;
 
-    private String mediaFileName;
-
+    @JsonIgnore
     private String mediaFileType;
 
+    @JsonIgnore
     private Long mediaFileSize;
 
-    @ManyToOne
+    private String mediaFileName;
+
+    @JsonBackReference(value = "user-media")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mediaAuthorId", nullable = false)
     private UserModel user;
 
     // Relacionamento com edição (um artigo pertence a uma edição)
-    @JsonBackReference
+    @JsonBackReference(value = "edition-media")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "edition_id", nullable = false)
     private EditionModel edition;

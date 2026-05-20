@@ -1,5 +1,7 @@
 package com.CJSantos.Jornal_Primeiramente.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,6 +46,7 @@ public class UserModel {
     @Column(name = "\"user_role\"")  // ← ASPAS DUPLAS
     private Role userRole;
 
+    @JsonBackReference(value = "user-media")
     @OneToMany(mappedBy = "user")
     private List<MediaModel> medias;
 
