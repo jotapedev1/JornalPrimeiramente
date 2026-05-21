@@ -1,7 +1,7 @@
 import {Image, StyleSheet, Text, TouchableOpacity} from "react-native";
 import {useState} from "react";
 
-const LikeButton = ({}) => {
+const LikeButton = ({height, width}) => {
 
     const icons = {
         heartFilled: require('../../assets/icons/heartFilled.png'),
@@ -24,7 +24,7 @@ const LikeButton = ({}) => {
             >
                 <Image
                     source={likeState}
-                    style={styles.icon}
+                    style={{height: height, width: width}}
                 />
             </TouchableOpacity>
         )
@@ -35,9 +35,5 @@ const styles = StyleSheet.create({
     container: {
         display: "flex",
         justifyContent: "center"
-    },
-    icon: {
-        height: 30,
-        width: 30,
     },
 });

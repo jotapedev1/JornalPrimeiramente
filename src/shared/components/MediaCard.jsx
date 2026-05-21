@@ -10,20 +10,20 @@ import { useNavigation } from "@react-navigation/native";
 
 import BookmarkButton from '../../features/Perfil/components/BookmarkButton';
 
-import { useArticles } from '../../context/MediaContext';
+import { useMedia } from '../../context/MediaContext';
 
 const MediaCard = ({ article }) => {
 
     const navigation = useNavigation();
 
-    const { toggleBookmark } = useArticles();
+    const { toggleBookmark } = useMedia();
 
     const handlePress = () => {
 
         navigation.navigate(
             'MediaScreen',
             {
-                articleId: article.mediaId
+                media: article
             }
         );
     };

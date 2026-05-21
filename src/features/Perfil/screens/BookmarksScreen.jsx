@@ -6,13 +6,13 @@ import {
     Text,
 } from 'react-native';
 import MediaCard from "../../../shared/components/MediaCard";
-import { useArticles } from "../../../context/MediaContext";
+import { useMedia } from "../../../context/MediaContext";
 
 const BookmarksScreen = ({ navigation }) => {
     const {
         bookmarks, // Pega os artigos salvos do contexto
         loading,
-    } = useArticles();
+    } = useMedia();
 
     if (loading) {
         return (

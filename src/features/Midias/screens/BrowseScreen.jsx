@@ -13,7 +13,7 @@ import JornalLogo from "../../../shared/components/JornalLogo";
 import BottomBar from "../../../shared/components/BottomBar";
 import EditionCard from "../components/EditionCard";
 
-import { useArticles } from "../../../context/MediaContext";
+import { useMedia } from "../../../context/MediaContext";
 
 const BrowseScreen = ({ navigation }) => {
 
@@ -21,7 +21,7 @@ const BrowseScreen = ({ navigation }) => {
         editions,
         loading,
         getAllEditions
-    } = useArticles();
+    } = useMedia();
 
     useEffect(() => {
 

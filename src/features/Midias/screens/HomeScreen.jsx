@@ -14,14 +14,14 @@ import JornalLogo from "../../../shared/components/JornalLogo";
 import BottomBar from "../../../shared/components/BottomBar";
 import MediaCard from "../../../shared/components/MediaCard";
 
-import { useArticles } from '../../../context/MediaContext';
+import { useMedia } from '../../../context/MediaContext';
 
 const HomeScreen = ({ navigation }) => {
 
     const {
         loading,
         getAllEditions
-    } = useArticles();
+    } = useMedia();
 
     const [currentEdition, setCurrentEdition] =
         useState(null);

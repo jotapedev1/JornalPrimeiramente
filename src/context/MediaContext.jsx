@@ -166,7 +166,7 @@ const MediaProvider = ({ children }) => {
 
 export default MediaProvider;
 
-export const useArticles = () => {
+export const useMedia = () => {
 
     const context = useContext(MediaContext);
 

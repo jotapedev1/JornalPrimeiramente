@@ -1,66 +1,88 @@
-// src/features/Midias/screens/MediaScreen.js
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
-import JornalLogo from '../../../shared/components/JornalLogo';
-import LikeButton from '../../../shared/components/LikeButton';
-import BookmarkButton from '../../Perfil/components/BookmarkButton';
-import { useArticles } from '../../../context/MediaContext';
 
-const MediaScreen = ({ navigation, route }) => {
-    const { articleId } = route.params || {};
-    const { isBookmarked, toggleBookmark, articles } = useArticles();
+import {
+    View,
+    Text,
+    StyleSheet,
+    Dimensions, ScrollView,
+} from 'react-native';
 
-    // Encontra o artigo pelo ID ou pega o primeiro
-    const article = articles.find(a => a.id === articleId) || articles[0];
+import Pdf from 'react-native-pdf';
+import JornalLogo from "../../../shared/components/JornalLogo";
+import LikeButton from "../../../shared/components/LikeButton";
+import BookmarkButton from "../../Perfil/components/BookmarkButton";
 
-    if (!article) {
+const API_URL = 'http://localhost:8080';
+
+const MediaScreen = ({ route }) => {
+
+    const { media } = route.params || {};
+
+    if (!media) {
+
         return (
             <View style={styles.container}>
-                <Text>Artigo não encontrado</Text>
+                <JornalLogo/>
+                <Text>PDF não encontrado</Text>
             </View>
         );
     }
 
+    const pdfUrl =
+        `${API_URL}/media/${media.mediaId}/view`;
+
+    console.log("PDF URL:", pdfUrl);
+
     return (
         <View style={styles.container}>
-            <JornalLogo />
-            <View style={styles.imageContainer}>
-                {article?.image && (
-                    <Image
-                        source={article.image}
-                        style={styles.image}
-                    />
-                )}
+            <JornalLogo/>
+            <Text style={styles.title}>
+                {media.mediaTitle}
+            </Text>
+            <Text style={styles.subtitle}>{media.mediaDescription}</Text>
+            <Text style={styles.subsubtitle}>Por: {media.mediaAuthor}</Text>
 
-                <Text style={[styles.title, { fontFamily: 'Lalezar_400Regular' }]}>
-                    {article.title}
-                </Text>
+            <ScrollView>
+            <Pdf
+                source={{
+                    uri: pdfUrl,
+                    cache: true,
+                }}
 
-                <Text style={styles.author}>Por: {article.author}</Text>
+                style={styles.pdf}
 
-                <Text style={styles.description}>{article.desc}</Text>
+                onLoadComplete={(pages) => {
+                    console.log(
+                        `PDF carregado com ${pages} páginas`
+                    );
+                }}
+
+                onError={(error) => {
+                    console.log(
+                        "PDF ERROR:",
+                        error
+                    );
+                }}
+
+                trustAllCerts={false}
+                fitPolicy={0}
+            />
 
                 <View style={styles.actionsContainer}>
-                    <View style={styles.action}>
-                        <LikeButton />
-                        <Text style={styles.text}>Likes</Text>
-                    </View>
-
-                    <View style={styles.action}>
-                        <BookmarkButton
-                            isBookmarked={article.id}
-                            onPress={() => toggleBookmark(article)}
-                            height={24}
-                            width={24}
-                        />
-                        <Text style={styles.text}>Salvar</Text>
-                    </View>
+                <LikeButton
+                    height={35}
+                    width={35}
+                />
+                <BookmarkButton
+                    height={30}
+                    width={30}
+                />
                 </View>
+                <View style={styles.commentsContainer}>
+                    <Text style={styles.commentTitle}>Comentários:</Text>
 
-                <Text style={[styles.comments, { fontFamily: 'Lalezar_400Regular' }]}>
-                    Comentários
-                </Text>
-            </View>
+                </View>
+            </ScrollView>
         </View>
     );
 };
@@ -68,50 +90,53 @@ const MediaScreen = ({ navigation, route }) => {
 export default MediaScreen;
 
 const styles = StyleSheet.create({
+
     container: {
         flex: 1,
         backgroundColor: '#fff',
     },
+
     title: {
         fontSize: 24,
         textAlign: 'center',
-        padding: 10,
-    },
-    imageContainer: {
-        width: '90%',
-        alignSelf: 'center',
-        marginTop: 10,
-    },
-    image: {
-        width: '100%',
-        height: 220,
-        borderRadius: 15,
-    },
-    author: {
-        textAlign: 'center',
-        fontSize: 14,
-        color: '#555',
-    },
-    description: {
-        fontSize: 14,
-        color: '#333',
-        padding: 10,
-        lineHeight: 20,
-    },
-    comments: {
-        textAlign: 'center',
-        fontSize: 20,
-        padding: 10,
-    },
-    text: {
+        marginTop: 5,
         fontFamily: 'Lalezar_400Regular',
+    },
+    subtitle: {
+        fontSize: 13,
+        textAlign: 'center',
+        color: '#7c7c7c',
+    },
+    subsubtitle: {
+        fontSize: 10,
+        textAlign: 'center',
+        color: '#7c7c7c',
+        marginBottom: 20
+    },
+    pdf: {
+        flex: 1,
+        width: Dimensions.get('window').width,
+        minHeight: 400,
+        minWidth: 200
     },
     actionsContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
-        padding: 10,
-    },
-    action: {
+        justifyContent: 'space-evenly',
         alignItems: 'center',
+        minHeight: 60,
+        boxShadow: '0 -1px 20px rgba(0,0,0,0.5)',
     },
-});
+    commentsContainer: {
+        backgroundColor: 'white',
+        flex: 1,
+        minHeight: 300
+    },
+    commentTitle: {
+        textAlign: 'center',
+        fontFamily: 'Lalezar_400Regular',
+        fontSize: 20,
+        top: 30
+
+    }
+
+})

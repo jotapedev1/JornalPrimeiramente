@@ -10,7 +10,7 @@ import {
 
 import { useNavigation } from "@react-navigation/native";
 
-import { useArticles } from "../../../context/MediaContext";
+import { useMedia } from "../../../context/MediaContext";
 
 const EditionCard = ({ edition, navigation }) => {
 
@@ -19,7 +19,7 @@ const EditionCard = ({ edition, navigation }) => {
 
     const {
         getMediaByEdition
-    } = useArticles();
+    } = useMedia();
 
     if (!edition) {
 
@@ -42,7 +42,7 @@ const EditionCard = ({ edition, navigation }) => {
                 );
 
             nav.navigate(
-                'EditionArticles',
+                'EditionMedia',
                 {
                     edition,
                     media
