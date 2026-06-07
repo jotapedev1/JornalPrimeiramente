@@ -1,4 +1,4 @@
-package com.anonymous.jornalprimeiramente
+package com.anonymous.JornalPrimeiramente
 
 import android.app.Application
 import android.content.res.Configuration

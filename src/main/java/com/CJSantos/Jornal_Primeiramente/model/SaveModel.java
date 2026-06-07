@@ -1,5 +1,6 @@
 package com.CJSantos.Jornal_Primeiramente.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,9 +29,11 @@ import java.util.UUID;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "saveUserId", nullable = false)
+    @JsonIgnore
     private UserModel saveUser;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "saveMediaId", nullable = false)
+    @JsonIgnore
     private MediaModel saveMedia;
 }

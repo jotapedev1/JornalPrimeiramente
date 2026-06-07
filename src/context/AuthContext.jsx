@@ -20,6 +20,20 @@ export function AuthProvider({ children }) {
         return 'http://localhost:8080';
     };
 
+    /*
+    const getBaseUrl = () => {
+    if (__DEV__) {
+        // Desenvolvimento
+        if (Platform.OS === 'android') {
+            return 'http://10.0.2.2:8080'; // Emulador Android
+        }
+        return 'http://localhost:8080'; // iOS / Web
+    }
+    // Produção — substitua pela URL do seu servidor quando fizer deploy
+    return 'https://sua-api.railway.app';
+    };
+    * */
+
     // Criar instância do axios com configuração dinâmica
      const api = axios.create({
         baseURL: getBaseUrl(),
@@ -39,6 +53,21 @@ export function AuthProvider({ children }) {
             return config;
         },
         (error) => {
+            return Promise.reject(error);
+        }
+    );
+    // Interceptor de RESPOSTA
+    api.interceptors.response.use(
+        (response) => response,
+        async (error) => {
+            if (error.response?.status === 401 || error.response?.status === 403) {
+                // Token expirado ou inválido — limpa tudo e força novo login
+                await AsyncStorage.removeItem('@JornalApp:token');
+                await AsyncStorage.removeItem('@JornalApp:user');
+                setToken(null);
+                setUser(null);
+                setIsAdmin(false);
+            }
             return Promise.reject(error);
         }
     );
@@ -167,81 +196,77 @@ export function AuthProvider({ children }) {
     };
 
     // Função de registro que já retorna o token
-    const register = async (name, email, password) => {
-        // Validação básica no frontend
-        if (!name || !email || !password) {
-            return { success: false, msg: 'Todos os campos são obrigatórios' };
-        }
-
-        if (password.length < 6) {
-            return { success: false, msg: 'A senha deve ter pelo menos 6 caracteres' };
-        }
-
+    const register = async (name, email, password, role) => {
+        // ...
         try {
-            const response = await api.post('/auth/register', { name, email, password });
+            const response = await api.post('/auth/register', {
+                name,
+                email,
+                password,
+                role
+            });
 
-            // Verificar se a resposta tem os dados esperados
             if (!response.data || !response.data.token) {
-                return { success: false, msg: 'Resposta do servidor inválida' };
+                return {success: false, msg: 'Resposta do servidor inválida'};
             }
 
-            const { token, userId, email: userEmail, userName, role, isAdmin: adminFlag } = response.data;
+            // ✅ Renomear role para userRole para evitar conflito
+            const {
+                token: responseToken,
+                userId,
+                email: userEmail,
+                userName,
+                role: userRole,      // <-- renomear aqui
+                isAdmin: adminFlag
+            } = response.data;
 
-            // Verificar se os dados essenciais existem
-            if (!token || !userId) {
-                return { success: false, msg: 'Dados de autenticação incompletos' };
+            if (!responseToken || !userId) {
+                return {success: false, msg: 'Dados de autenticação incompletos'};
             }
 
-            // Salvar no AsyncStorage
-            await AsyncStorage.setItem('@JornalApp:token', token);
+            await AsyncStorage.setItem('@JornalApp:token', responseToken);
 
             const userData = {
                 userId,
                 email: userEmail,
                 userName,
-                role,
+                role: userRole,      // <-- e aqui
                 isAdmin: adminFlag || false
             };
 
             await AsyncStorage.setItem('@JornalApp:user', JSON.stringify(userData));
 
-            setToken(token);
+            setToken(responseToken);
             setUser(userData);
             setIsAdmin(adminFlag || false);
 
-            return { success: true, data: response.data };
+            return {success: true, data: response.data};
         } catch (error) {
             console.log('Erro ao registrar:', error);
 
             if (error.response) {
                 let errorMessage = 'Erro ao criar conta';
+                let validationErrors = null;
 
                 if (error.response.status === 400) {
-                    errorMessage = error.response.data.error || 'Dados inválidos. Verifique se o email já está cadastrado.';
-                } else if (error.response.status === 409) {
-                    errorMessage = 'Email já cadastrado. Use outro email ou faça login.';
-                } else if (error.response.status === 500) {
-                    errorMessage = 'Erro no servidor. Tente novamente mais tarde';
+                    // Erros de validação Bean Validation retornam { errors: { campo: msg } }
+                    if (error.response.data?.errors) {
+                        validationErrors = error.response.data.errors;
+                        errorMessage = 'Campos inválidos';
+                    } else {
+                        errorMessage = error.response.data?.error || 'Dados inválidos';
+                    }
                 }
 
                 return {
                     success: false,
                     msg: errorMessage,
+                    validationErrors,
                     status: error.response.status
-                };
-            } else if (error.request) {
-                return {
-                    success: false,
-                    msg: 'Não foi possível conectar ao servidor. Verifique sua conexão.'
-                };
-            } else {
-                return {
-                    success: false,
-                    msg: 'Erro ao criar conta. Tente novamente.'
                 };
             }
         }
-    };
+    }
 
     const logout = async () => {
         try {

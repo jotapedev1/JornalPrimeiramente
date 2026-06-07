@@ -61,32 +61,20 @@ const MediaProvider = ({ children }) => {
     // =========================
 
     const toggleBookmark = async (media) => {
-
         try {
-
-            await api.post(`/${media.mediaId}/save`, {
-                mediaId: media.mediaId,
-            });
+            // ANTES: await api.post(`/${media.mediaId}/save`, ...)  ← URL errada
+            // DEPOIS:
+            await api.post(`/save/${media.mediaId}`);
 
             setBookmarks(prev => {
-
-                const exists = prev.some(
-                    item => item.mediaId === media.mediaId
-                );
-
+                const exists = prev.some(item => item.mediaId === media.mediaId);
                 if (exists) {
-
-                    return prev.filter(
-                        item => item.mediaId !== media.mediaId
-                    );
+                    return prev.filter(item => item.mediaId !== media.mediaId);
                 }
-
                 return [...prev, media];
             });
-
         } catch (error) {
-
-            console.log('Erro bookmark:', error);
+            console.log('Erro bookmark:', error.response?.data || error.message);
         }
     };
 

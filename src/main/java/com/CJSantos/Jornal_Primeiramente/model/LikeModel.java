@@ -1,5 +1,6 @@
 package com.CJSantos.Jornal_Primeiramente.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,9 +33,11 @@ public class LikeModel {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "likeUserId", nullable = false)
+    @JsonIgnore
     private UserModel likeUser;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "likeMediaId", nullable = false)
+    @JsonIgnore
     private MediaModel likeMedia;
 }

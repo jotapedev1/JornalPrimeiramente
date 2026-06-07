@@ -2,6 +2,7 @@ package com.CJSantos.Jornal_Primeiramente.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -34,13 +35,16 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public routes
-//                        .requestMatchers("/auth/login", "/auth/register").permitAll()
-//                        // User profile routes (authenticated users)
-//                        .requestMatchers("/user/profile/**").authenticated()
-//                        // All other requests need authentication
-//                        .requestMatchers("/api/editions/edition").authenticated()
-                        .anyRequest().permitAll()
+                        // Rotas públicas
+                        .requestMatchers("/auth/login", "/auth/register", "/").permitAll()
+                        // Somente ADMIN cria, edita e deleta edições
+                        .requestMatchers(HttpMethod.POST, "/edition/create", "/edition/create-announcement").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/edition/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/edition/**").hasRole("ADMIN")
+                        // Leitura de edições e mídias é pública para autenticados
+                        .requestMatchers(HttpMethod.GET, "/edition/**", "/media/**").authenticated()
+                        // Tudo mais requer autenticação
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

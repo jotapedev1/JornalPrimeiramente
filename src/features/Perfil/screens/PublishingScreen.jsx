@@ -2,13 +2,14 @@ import React, {useContext, useState} from 'react';
 import {
     Alert,
     Dimensions,
+    Platform,
     ScrollView,
     StyleSheet,
     Switch,
     Text,
     TextInput,
     TouchableOpacity,
-    View,
+    View
 } from 'react-native';
 import {keepLocalCopy, pick} from '@react-native-documents/picker';
 import JornalLogo from "../../../shared/components/JornalLogo";
@@ -105,7 +106,9 @@ const PublishScreen = ({ navigation, route }) => {
             setIsLoadingPdf(true);
 
             const [selectedFile] = await pick({
-                type: ['com.adobe.pdf'],
+                type: Platform.OS === 'ios'
+                    ? ['com.adobe.pdf']
+                    : ['application/pdf'],
                 allowMultiSelection: false,
             });
 

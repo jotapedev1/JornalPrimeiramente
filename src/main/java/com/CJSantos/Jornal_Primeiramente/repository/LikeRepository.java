@@ -12,4 +12,5 @@ import java.util.UUID;
 @Repository
 public interface LikeRepository extends JpaRepository<LikeModel, UUID> {
     Optional<LikeModel> findByLikeUserAndLikeMedia(UserModel user, MediaModel media);
+    List<LikeModel> findByLikeUser_UserId(UUID userId);
 }

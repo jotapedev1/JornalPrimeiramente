@@ -27,7 +27,6 @@ const ProfileScreen = ({ navigation }) => {
 
     const loadUserData = async () => {
         try {
-            // Carregar artigos do usuário e artigos curtidos
             const [postsResponse, likesResponse] = await Promise.all([
                 api.get(`/user/${user?.userId}/posts`),
                 api.get(`/user/${user?.userId}/likes`)
@@ -35,12 +34,19 @@ const ProfileScreen = ({ navigation }) => {
 
             setUserPosts(postsResponse.data);
             setLikedArticles(likesResponse.data);
-            return true;
         } catch (error) {
-            console.log('Erro ao carregar dados do usuário:', error);
+            // Falha silenciosa — exibe listas vazias
+            console.log('Erro ao carregar dados do perfil:', error.response?.data || error.message);
+            setUserPosts([]);
+            setLikedArticles([]);
         } finally {
             setLoading(false);
         }
+        console.log("POSTS:");
+        console.log(postsResponse.data);
+
+        console.log("LIKES:");
+        console.log(likesResponse.data);
     };
 
     useEffect(() => {

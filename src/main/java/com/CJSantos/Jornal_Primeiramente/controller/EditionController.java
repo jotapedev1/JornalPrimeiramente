@@ -1,5 +1,6 @@
 package com.CJSantos.Jornal_Primeiramente.controller;
 
+import com.CJSantos.Jornal_Primeiramente.dto.AnnouncementRequest;
 import com.CJSantos.Jornal_Primeiramente.model.EditionModel;
 import com.CJSantos.Jornal_Primeiramente.model.MediaModel;
 import com.CJSantos.Jornal_Primeiramente.model.UserModel;
@@ -180,17 +181,4 @@ public class EditionController{
         }
     }
 
-}
-
-// DTOs
-@Data
-class EditionRequest {
-    private String title;
-    private String content;
-}
-
-@Data
-class AnnouncementRequest {
-    private String message;
-    private String priority;
 }

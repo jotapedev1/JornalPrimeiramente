@@ -11,8 +11,11 @@ import Pdf from 'react-native-pdf';
 import JornalLogo from "../../../shared/components/JornalLogo";
 import LikeButton from "../../../shared/components/LikeButton";
 import BookmarkButton from "../../Perfil/components/BookmarkButton";
+import { Platform } from 'react-native';
 
-const API_URL = 'http://localhost:8080';
+const API_URL = Platform.OS === 'android'
+    ? 'http://10.0.2.2:8080'
+    : 'http://localhost:8080';
 
 const MediaScreen = ({ route }) => {
 
@@ -69,14 +72,19 @@ const MediaScreen = ({ route }) => {
             />
 
                 <View style={styles.actionsContainer}>
+
                 <LikeButton
                     height={35}
                     width={35}
+                    mediaId={media.mediaId}
                 />
+
                 <BookmarkButton
                     height={30}
                     width={30}
+                    mediaId={media.mediaId}
                 />
+
                 </View>
                 <View style={styles.commentsContainer}>
                     <Text style={styles.commentTitle}>Comentários:</Text>

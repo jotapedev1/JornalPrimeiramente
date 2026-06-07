@@ -33,7 +33,7 @@ public class UserModel {
     private String userEmail;
 
     @Transient
-    @Column(name = "\"user_password\"")  // ← ASPAS DUPLAS
+    //@Column(name = "\"user_password\"")  // ← ASPAS DUPLAS
     private String userPassword;
 
     @Column(name = "\"user_hash\"")  // ← ASPAS DUPLAS
@@ -46,7 +46,7 @@ public class UserModel {
     @Column(name = "\"user_role\"")  // ← ASPAS DUPLAS
     private Role userRole;
 
-    @JsonBackReference(value = "user-media")
+    @JsonManagedReference(value = "user-media")
     @OneToMany(mappedBy = "user")
     private List<MediaModel> medias;
 

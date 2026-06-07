@@ -46,40 +46,38 @@ const SignUpScreen = ({ navigation }) => {
     const handleSubmit = async () => {
         if (password !== confirmPassword) {
             Alert.alert('Erro', 'As senhas não coincidem');
-            return false;
+            return;
         }
-
         if (email !== confirmEmail) {
             Alert.alert('Erro', 'Os e-mails não coincidem');
-            return false;
+            return;
         }
-
         if (fullName.trim().split(' ').length < 2) {
             Alert.alert('Erro', 'Digite seu nome completo');
-            return false;
+            return;
         }
-
         if (!role) {
-            Alert.alert('Erro', 'Escolha seu papel');
-            return false;
+            Alert.alert('Erro', 'Escolha seu tipo de usuário');
+            return;
         }
 
         setLoading(true);
         try {
             const result = await register(fullName, email, password, role);
-            console.log(result.data);
 
             if (result.success) {
-                navigation.replace('Home'); // Use replace ao invés de navigate
+                navigation.replace('Home');
             } else {
-                // ❌ Mostra o erro retornado pelo backend
-                Alert.alert('Erro no cadastro', result.msg || 'Alguns campos inválidos');
+                // Trata tanto erros de validação de campo quanto erros gerais
+                if (result.validationErrors) {
+                    const msgs = Object.values(result.validationErrors).join('\n');
+                    Alert.alert('Campos inválidos', msgs);
+                } else {
+                    Alert.alert('Erro no cadastro', result.msg || 'Verifique os campos e tente novamente');
+                }
             }
-
-            return true;
         } catch (error) {
-            console.error('Erro no registro:', error);
-            Alert.alert('Erro', 'Ocorreu um erro ao tentar criar sua conta');
+            Alert.alert('Erro', 'Ocorreu um erro ao criar sua conta');
         } finally {
             setLoading(false);
         }

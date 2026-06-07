@@ -1,7 +1,13 @@
 package com.CJSantos.Jornal_Primeiramente.controller;
 
+import com.CJSantos.Jornal_Primeiramente.dto.ChangePasswordRequest;
+import com.CJSantos.Jornal_Primeiramente.dto.ProfileUpdateRequest;
+import com.CJSantos.Jornal_Primeiramente.model.LikeModel;
+import com.CJSantos.Jornal_Primeiramente.model.MediaModel;
 import com.CJSantos.Jornal_Primeiramente.model.Role;
 import com.CJSantos.Jornal_Primeiramente.model.UserModel;
+import com.CJSantos.Jornal_Primeiramente.repository.LikeRepository;
+import com.CJSantos.Jornal_Primeiramente.service.MediaService;
 import com.CJSantos.Jornal_Primeiramente.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
@@ -23,6 +29,10 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private MediaService mediaService;
+    @Autowired
+    private LikeRepository likeRepository;
 
     // ===== PROFILE OPERATIONS (User can access their own profile) =====
 
@@ -104,19 +114,49 @@ public class UserController {
             return ResponseEntity.status(404).body(Map.of("error", "User not found"));
         }
     }
-}
 
-// DTO Classes for Requests
-@Data
-class ProfileUpdateRequest {
-    private String userName;
-    private String userEmail;
+    @GetMapping("/{userId}/posts")
+    public ResponseEntity<?> getUserPosts(@PathVariable UUID userId) {
+        try {
+            List<MediaModel> medias = mediaService.getMediaByUser(userId);
+            return ResponseEntity.ok(medias);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(Map.of("error", "Usuário não encontrado"));
+        }
+    }
 
-}
+    @GetMapping("/{userId}/likes")
+    public ResponseEntity<?> getUserLikes(@PathVariable UUID userId) {
+        try {
+            List<LikeModel> likes = likeRepository.findByLikeUser_UserId(userId);
+            List<Map<String, Object>> result = likes.stream()
+                    .map(like -> {
+                        Map<String, Object> m = new java.util.HashMap<>();
+                        m.put("mediaId", like.getLikeMedia().getMediaId());
+                        m.put("title", like.getLikeMedia().getMediaTitle());
+                        m.put("createdAt", like.getLikeCreatedAt());
+                        return m;
+                    })
+                    .toList();
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(Map.of("error", "Erro ao buscar curtidas"));
+        }
+    }
 
-@Data
-class AdminUpdateRequest {
-    private String userName;
-    private String userEmail;
-    private Role userRole; // Can promote/demote users
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody ChangePasswordRequest request) {
+        try {
+            userService.changePassword(
+                    userDetails.getUsername(),
+                    request.getCurrentPassword(),
+                    request.getNewPassword()
+            );
+            return ResponseEntity.ok(Map.of("message", "Senha alterada com sucesso"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }

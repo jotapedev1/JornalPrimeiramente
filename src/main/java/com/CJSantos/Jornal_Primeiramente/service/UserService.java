@@ -75,4 +75,20 @@ public class UserService {
         }
         userRepository.deleteById(id);
     }
+
+    public void changePassword(String email, String currentPassword, String newPassword) {
+        UserModel user = getUserByEmail(email);
+
+        // Verifica se a senha atual está correta
+        if (!passwordEncoder.matches(currentPassword, user.getUserHash())) {
+            throw new RuntimeException("Senha atual incorreta");
+        }
+
+        if (newPassword == null || newPassword.length() < 6) {
+            throw new RuntimeException("A nova senha deve ter no mínimo 6 caracteres");
+        }
+
+        user.setUserHash(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
 }

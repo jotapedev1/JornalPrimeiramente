@@ -5,6 +5,7 @@ import com.CJSantos.Jornal_Primeiramente.dto.CommentResponse;
 import com.CJSantos.Jornal_Primeiramente.model.UserModel;
 import com.CJSantos.Jornal_Primeiramente.service.CommentService;
 import com.CJSantos.Jornal_Primeiramente.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class CommentController {
     @PostMapping("/{mediaId}")
     public ResponseEntity<CommentResponse> createComment(
             @PathVariable UUID mediaId,
-            @RequestBody CommentRequest request,
+            @Valid @RequestBody CommentRequest request,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         UserModel currentUser = userService.getUserByEmail(userDetails.getUsername());

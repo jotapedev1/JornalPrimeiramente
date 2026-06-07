@@ -1,10 +1,12 @@
 package com.CJSantos.Jornal_Primeiramente.controller;
 
+import com.CJSantos.Jornal_Primeiramente.dto.LoginRequest;
+import com.CJSantos.Jornal_Primeiramente.dto.RegisterRequest;
 import com.CJSantos.Jornal_Primeiramente.model.Role;
 import com.CJSantos.Jornal_Primeiramente.model.UserModel;
 import com.CJSantos.Jornal_Primeiramente.service.UserService;
 import com.CJSantos.Jornal_Primeiramente.utils.JwtUtil;
-import lombok.Data;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,12 +35,17 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
-            Authentication authentication = authenticationManager.authenticate(
+            authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
 
             UserModel user = userService.getUserByEmail(request.getEmail());
-
+/*
+            // Cancela desativação pendente ao logar
+            if (user.getDeactivationRequestedAt() != null) {
+                userService.cancelDeactivation(user.getUserEmail());
+            }
+*/
             String token = jwtUtil.generateToken(
                     user.getUserEmail(),
                     user.getUserId(),
@@ -56,29 +63,27 @@ public class AuthController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
+            return ResponseEntity.status(401).body(Map.of("error", "Credenciais inválidas"));
         }
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         try {
             try {
                 UserModel existingUser = userService.getUserByEmail(request.getEmail());
                 if (existingUser != null) {
-                    return ResponseEntity.badRequest().body(Map.of("error", "Email already registered"));
+                    return ResponseEntity.badRequest().body(Map.of("error", "Email já cadastrado"));
                 }
             } catch (RuntimeException e) {
-                // Email não encontrado, pode prosseguir com o cadastro
+                // E-mail não encontrado — pode prosseguir
             }
 
             UserModel newUser = new UserModel();
             newUser.setUserName(request.getName());
             newUser.setUserEmail(request.getEmail());
             newUser.setUserPassword(request.getPassword());
-            Role userRole = Role.valueOf(request.getRole());
-            newUser.setUserRole(userRole);
-
+            newUser.setUserRole(Role.valueOf(request.getRole()));
 
             UserModel createdUser = userService.createUser(newUser);
 
@@ -95,14 +100,14 @@ public class AuthController {
             response.put("userName", createdUser.getUserName());
             response.put("role", createdUser.getUserRole().toString());
             response.put("isAdmin", createdUser.getUserRole() == Role.ADMIN);
-            response.put("message", "User created and logged in successfully");
+            response.put("message", "Usuário criado com sucesso");
 
             return ResponseEntity.ok(response);
 
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", "Internal server error: " + e.getMessage()));
+            return ResponseEntity.status(500).body(Map.of("error", "Erro interno: " + e.getMessage()));
         }
     }
 
@@ -117,11 +122,9 @@ public class AuthController {
                 return ResponseEntity.badRequest().body(Map.of("valid", false, "error", "Senha não fornecida"));
             }
 
-            // Pega o usuário atual autenticado
             UserModel currentUser = userService.getUserByEmail(userDetails.getUsername());
 
-            // Verifica se a senha está correta
-            Authentication authentication = authenticationManager.authenticate(
+            authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(currentUser.getUserEmail(), password)
             );
 
@@ -131,19 +134,4 @@ public class AuthController {
             return ResponseEntity.ok(Map.of("valid", false, "error", "Senha incorreta"));
         }
     }
-}
-
-// DTO Classes
-@Data
-class LoginRequest {
-    private String email;
-    private String password;
-}
-
-@Data
-class RegisterRequest {
-    private String name;
-    private String email;
-    private String password;
-    private String role;
 }

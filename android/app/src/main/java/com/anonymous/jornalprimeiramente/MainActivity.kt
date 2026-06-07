@@ -1,4 +1,4 @@
-package com.anonymous.jornalprimeiramente
+package com.anonymous.JornalPrimeiramente
 
 import android.os.Build
 import android.os.Bundle

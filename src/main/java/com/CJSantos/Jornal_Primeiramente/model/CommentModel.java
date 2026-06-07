@@ -1,5 +1,6 @@
 package com.CJSantos.Jornal_Primeiramente.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,9 +27,11 @@ public class CommentModel {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "commentUserId", nullable = false)
+    @JsonIgnore
     private UserModel commentUser;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "commentMediaId", nullable = false)
+    @JsonIgnore
     private MediaModel commentMedia;
 }
