@@ -16,6 +16,7 @@ import {
 import JornalLogo from "../../../shared/components/JornalLogo";
 import BottomBar from "../../../shared/components/BottomBar";
 import { AuthContext } from "../../../context/AuthContext";
+import MediaCard from "../../../shared/components/MediaCard";
 
 const ProfileScreen = ({ navigation }) => {
     const { user, token, isAdmin, logout, api } = useContext(AuthContext);
@@ -32,8 +33,27 @@ const ProfileScreen = ({ navigation }) => {
                 api.get(`/user/${user?.userId}/likes`)
             ]);
 
-            setUserPosts(postsResponse.data);
-            setLikedArticles(likesResponse.data);
+            console.log('Posts response status:', postsResponse.status);
+            console.log('Posts data:', postsResponse.data);
+            console.log('Likes response status:', likesResponse.status);
+            console.log('Likes data:', likesResponse.data);
+
+            const posts = Array.isArray(postsResponse.data)? postsResponse.data : [];
+            const likes  = Array.isArray(likesResponse.data)? likesResponse.data : [];
+
+            const likedMedia = likes.map(like => ({
+                id: like.mediaId,
+                mediaTitle: like.title,
+                mediaDescription: 'Artigo curtido',
+                createdAt: like.createdAt,
+            }));
+
+            setUserPosts(posts);
+            setLikedArticles(likedMedia);
+
+            console.log('Posts carregados:', posts.length);
+            console.log('Likes carregados:', likedMedia.length);
+
         } catch (error) {
             // Falha silenciosa — exibe listas vazias
             console.log('Erro ao carregar dados do perfil:', error.response?.data || error.message);
@@ -162,16 +182,10 @@ const ProfileScreen = ({ navigation }) => {
                         <Text style={styles.sectionTitle}>Artigos Curtidos</Text>
                         {likedArticles.length > 0 ? (
                             likedArticles.map((article, index) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    style={styles.articleCard}
-                                    onPress={() => navigation.navigate('ArticleDetail', { articleId: article.id })}
-                                >
-                                    <Text style={styles.articleTitle}>{article.title}</Text>
-                                    <Text style={styles.articleDate}>
-                                        {new Date(article.createdAt).toLocaleDateString('pt-BR')}
-                                    </Text>
-                                </TouchableOpacity>
+                                <MediaCard
+                                    key={article.id || index}
+                                    article={article}
+                                />
                             ))
                         ) : (
                             <Text style={styles.emptyText}>Nenhum artigo curtido ainda</Text>
@@ -183,16 +197,10 @@ const ProfileScreen = ({ navigation }) => {
                         <Text style={styles.sectionTitle}>Minhas Publicações</Text>
                         {userPosts.length > 0 ? (
                             userPosts.map((post, index) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    style={styles.articleCard}
-                                    onPress={() => navigation.navigate('ArticleDetail', { articleId: post.id })}
-                                >
-                                    <Text style={styles.articleTitle}>{post.title}</Text>
-                                    <Text style={styles.articleDate}>
-                                        {new Date(post.createdAt).toLocaleDateString('pt-BR')}
-                                    </Text>
-                                </TouchableOpacity>
+                                <MediaCard
+                                    key={post.mediaId || post.id || index}
+                                    article={post}
+                                />
                             ))
                         ) : (
                             <Text style={styles.emptyText}>Nenhuma publicação ainda</Text>

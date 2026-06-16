@@ -1,152 +1,117 @@
+// MediaCard.js
+import React from "react";
 import {
     View,
     Text,
     Image,
     StyleSheet,
-    TouchableOpacity
-} from 'react-native';
-
+    TouchableOpacity,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import BookmarkButton from "../../features/Perfil/components/BookmarkButton";
 
-import BookmarkButton from '../../features/Perfil/components/BookmarkButton';
-
-import { useMedia } from '../../context/MediaContext';
-
-const MediaCard = ({ article }) => {
-
+const MediaCard = ({ article, onToggleSaved }) => {
     const navigation = useNavigation();
 
-    const { toggleBookmark } = useMedia();
+    if (!article) return null;
 
     const handlePress = () => {
-
-        navigation.navigate(
-            'MediaScreen',
-            {
-                media: article
-            }
-        );
+        navigation.navigate("MediaScreen", {
+            media: article,
+        });
     };
 
-    const imageSource =
-        article?.mediaUrl
-            ? { uri: article.mediaUrl }
-            : require('../../assets/imgs/img_placeholder.png');
+    const handleToggleSaved = (mediaId, newSaved) => {
+        // Propagar a mudança para o componente pai
+        onToggleSaved?.(mediaId, newSaved);
+    };
+
+    const imageSource = article.mediaUrl
+        ? { uri: article.mediaUrl }
+        : require("../../assets/imgs/img_placeholder.png");
 
     return (
-
-        <TouchableOpacity
-            onPress={handlePress}
-            activeOpacity={0.7}
-        >
-
+        <TouchableOpacity activeOpacity={0.7} onPress={handlePress}>
             <View style={styles.shadow}>
-
                 <View style={styles.card}>
-
-                    <Image
-                        source={imageSource}
-                        style={styles.image}
-                    />
+                    <Image source={imageSource} style={styles.image} />
 
                     <View style={styles.content}>
-
                         <Text style={styles.author}>
-                            Por: {article.mediaAuthor || 'Autor desconhecido'}
+                            Por: {article.mediaAuthor || "Autor desconhecido"}
                         </Text>
 
-                        <Text
-                            style={styles.title}
-                            numberOfLines={2}
-                        >
-                            {article.mediaTitle}
+                        <Text style={styles.title} numberOfLines={2}>
+                            {article.mediaTitle || "Sem título"}
                         </Text>
 
-                        <Text
-                            style={styles.description}
-                            numberOfLines={3}
-                        >
-                            {article.mediaDescription}
+                        <Text style={styles.description} numberOfLines={3}>
+                            {article.mediaDescription || ""}
                         </Text>
 
                         <View style={styles.bookmarkContainer}>
-
                             <BookmarkButton
-                                isBookmarked={article.mediaId}
-                                onPress={() =>
-                                    toggleBookmark(article)
-                                }
+                                mediaId={article.mediaId}
                                 height={25}
                                 width={25}
+                                saved={article.saved || false}
+                                onToggle={handleToggleSaved}
                             />
-
                         </View>
-
                     </View>
-
                 </View>
-
             </View>
-
         </TouchableOpacity>
     );
 };
 
-export default MediaCard;
-
 const styles = StyleSheet.create({
-
     card: {
         width: 350,
-        backgroundColor: '#fff',
+        backgroundColor: "#fff",
         borderRadius: 16,
         margin: 16,
-        overflow: 'hidden',
-        alignSelf: 'center',
+        overflow: "hidden",
+        alignSelf: "center",
     },
-
     shadow: {
         elevation: 4,
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: {
             width: 1,
-            height: 2
+            height: 2,
         },
         shadowOpacity: 0.2,
         shadowRadius: 6,
     },
-
     image: {
-        width: '100%',
+        width: "100%",
         height: 115,
-        resizeMode: 'cover'
+        resizeMode: "cover",
     },
-
     content: {
         padding: 12,
     },
-
     author: {
         fontSize: 12,
-        color: '#666',
+        color: "#666",
         marginBottom: 4,
     },
-
     title: {
         fontSize: 16,
-        fontWeight: '600',
-        color: '#111',
+        fontWeight: "600",
+        color: "#111",
         marginBottom: 4,
     },
-
     description: {
         fontSize: 12,
-        color: '#444',
+        color: "#444",
         marginBottom: 8,
-        maxWidth: '90%'
+        maxWidth: "90%",
     },
-
     bookmarkContainer: {
-        alignItems: 'flex-end',
+        alignItems: "flex-end",
     },
 });
+
+export default MediaCard;

@@ -103,4 +103,13 @@ public class MediaService {
     public void deleteMedia(UUID id) {
         mediaRepository.deleteById(id);
     }
+
+
+    public void updateSavedState(UUID mediaId, boolean saved) {
+            MediaModel media = mediaRepository.findById(mediaId)
+                    .orElseThrow(() -> new RuntimeException("Media not found"));
+
+            media.setSaved(saved);
+            mediaRepository.save(media);
+        }
 }

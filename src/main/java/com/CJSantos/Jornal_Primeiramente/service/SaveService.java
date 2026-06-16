@@ -47,4 +47,19 @@ public class SaveService {
 
         return true;
     }
+
+    public boolean isSaved(UUID userId, UUID mediaId) {
+        return saveRepository.existsBySaveUser_UserIdAndSaveMedia_MediaId(
+                userId,
+                mediaId
+        );
+    }
+
+    public List<MediaModel> getSavedMedia(UUID userId) {
+        return saveRepository
+                .findBySaveUser_UserId(userId)
+                .stream()
+                .map(SaveModel::getSaveMedia)
+                .toList();
+    }
 }

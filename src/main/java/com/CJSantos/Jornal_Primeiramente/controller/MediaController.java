@@ -8,7 +8,6 @@ import com.CJSantos.Jornal_Primeiramente.service.EditionService;
 import com.CJSantos.Jornal_Primeiramente.service.MediaService;
 import com.CJSantos.Jornal_Primeiramente.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.Nullable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -102,12 +101,13 @@ public class MediaController {
             MediaModel media = mediaService.getMediaById(mediaId);
             byte[] fileContent = mediaService.getMediaFile(mediaId);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            headers.setContentDispositionFormData(media.getMediaFileName(), media.getMediaFileName());
-
             return ResponseEntity.ok()
-                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .contentLength(fileContent.length)
+                    .header(
+                            HttpHeaders.CONTENT_DISPOSITION,
+                            "inline; filename=\"" + media.getMediaFileName() + "\""
+                    )
                     .body(fileContent);
         } catch (Exception e) {
             return ResponseEntity.notFound().build();

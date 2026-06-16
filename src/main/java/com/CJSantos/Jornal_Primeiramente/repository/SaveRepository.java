@@ -11,4 +11,9 @@ import java.util.UUID;
 
 public interface SaveRepository extends JpaRepository<SaveModel, UUID> {
     Optional<SaveModel> findBySaveUserAndSaveMedia(UserModel user, MediaModel media);
+    boolean existsBySaveUser_UserIdAndSaveMedia_MediaId(
+            UUID userId,
+            UUID mediaId
+    );
+    List<SaveModel> findBySaveUser_UserId(UUID userId);
 }

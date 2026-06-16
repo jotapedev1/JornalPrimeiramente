@@ -46,6 +46,8 @@ public class MediaModel {
 
     private String mediaFileName;
 
+    private boolean saved;
+
     @JsonBackReference(value = "user-media")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mediaAuthorId", nullable = false)
