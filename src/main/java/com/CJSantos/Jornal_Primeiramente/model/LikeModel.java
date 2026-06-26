@@ -2,6 +2,7 @@ package com.CJSantos.Jornal_Primeiramente.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,13 +32,14 @@ public class LikeModel {
 
     private LocalDateTime likeCreatedAt;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "likeUserId", nullable = false)
-    @JsonIgnore
-    private UserModel likeUser;
+        @NotNull
+        @ManyToOne(optional = false)
+        @JoinColumn(name = "likeUserId", nullable = false)
+        private UserModel likeUser;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "likeMediaId", nullable = false)
-    @JsonIgnore
-    private MediaModel likeMedia;
+        @NotNull
+        @ManyToOne(optional = false)
+        @JoinColumn(name = "likeMediaId", nullable = false)
+        private MediaModel likeMedia;
+        
 }

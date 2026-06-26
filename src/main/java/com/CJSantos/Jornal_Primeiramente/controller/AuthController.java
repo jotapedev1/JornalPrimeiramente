@@ -83,7 +83,7 @@ public class AuthController {
             newUser.setUserName(request.getName());
             newUser.setUserEmail(request.getEmail());
             newUser.setUserPassword(request.getPassword());
-            newUser.setUserRole(Role.valueOf(request.getRole()));
+            newUser.setUserRole(Role.READER);
 
             UserModel createdUser = userService.createUser(newUser);
 

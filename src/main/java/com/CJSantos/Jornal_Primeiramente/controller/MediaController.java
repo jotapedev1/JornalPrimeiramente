@@ -12,15 +12,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/media")
@@ -116,7 +117,7 @@ public class MediaController {
 
     // Criar mídia sem arquivo (texto)
     @PostMapping
-    public MediaModel createMedia(@RequestBody MediaModel media) {
+    public MediaModel createMedia(@Valid @RequestBody MediaModel media) {
         return mediaService.createMedia(media);
     }
 
@@ -130,16 +131,18 @@ public class MediaController {
         return mediaService.getMediaById(id);
     }
 
-    @PutMapping("/{id}")
-    public MediaModel updateMedia(@PathVariable UUID id, @RequestBody MediaModel media) {
-        return mediaService.updateMedia(id, media);
-    }
-
     @GetMapping("/user/{userId}")
     public List<MediaModel> getMediaByUser(@PathVariable UUID userId) {
         return mediaService.getMediaByUser(userId);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}")
+    public MediaModel updateMedia(@PathVariable UUID id, @Valid @RequestBody MediaModel media) {
+        return mediaService.updateMedia(id, media);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void deleteMediaById(@PathVariable UUID id) {
         mediaService.deleteMedia(id);

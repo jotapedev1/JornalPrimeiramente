@@ -3,11 +3,14 @@ package com.CJSantos.Jornal_Primeiramente.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Email;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -26,25 +29,32 @@ public class UserModel {
     @Column(name = "\"user_id\"")  // ← ASPAS DUPLAS
     private UUID userId;
 
-    @Column(name = "\"user_name\"")  // ← ASPAS DUPLAS
+    @NotBlank(message = "O nome é obrigatório.")
+    @Size(min = 3, max = 100)
+    @Column(name = "\"user_name\"", nullable = false)
     private String userName;
 
-    @Column(name = "\"user_email\"")  // ← ASPAS DUPLAS
+    @NotBlank(message = "O e-mail é obrigatório.")
+    @Email(message = "E-mail inválido.")
+    @Column(name = "\"user_email\"", nullable = false, unique = true)
     private String userEmail;
 
     @Transient
-    //@Column(name = "\"user_password\"")  // ← ASPAS DUPLAS
+    @NotBlank(message = "A senha é obrigatória.")
+    @Size(min = 8, max = 100)
     private String userPassword;
 
-    @Column(name = "\"user_hash\"")  // ← ASPAS DUPLAS
+    @NotBlank
+    @Column(name = "\"user_hash\"", nullable = false)
     private String userHash;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "\"user_role\"", nullable = false)
+    private Role userRole;
 
     @Column(name = "\"user_created_at\"")  // ← ASPAS DUPLAS
     private LocalDateTime userCreatedAt;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "\"user_role\"")  // ← ASPAS DUPLAS
-    private Role userRole;
 
     @JsonManagedReference(value = "user-media")
     @OneToMany(mappedBy = "user")

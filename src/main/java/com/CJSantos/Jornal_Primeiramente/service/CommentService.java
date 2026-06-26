@@ -10,8 +10,8 @@ import com.CJSantos.Jornal_Primeiramente.repository.CommentRepository;
 import com.CJSantos.Jornal_Primeiramente.repository.MediaRepository;
 import com.CJSantos.Jornal_Primeiramente.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -24,16 +24,24 @@ public class CommentService {
     private final UserRepository userRepository;
     private final MediaRepository mediaRepository;
 
+    private CommentResponse toResponse(CommentModel comment) {
+        return new CommentResponse(
+                comment.getCommentId(),
+                comment.getCommentContent(),
+                comment.getCommentUser().getUserId(),
+                comment.getCommentUser().getUserName(),
+                comment.getCommentMedia().getMediaId(),
+                comment.getCommentCreatedAt()
+        );
+    }
+
     public CommentResponse createComment(UUID userId, UUID mediaId, CommentRequest request) {
-        //search user by id
         UserModel user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        //search media by id
         MediaModel media = mediaRepository.findById(mediaId)
                 .orElseThrow(() -> new RuntimeException("Media not found"));
 
-        //create new comment
         CommentModel comment = new CommentModel();
         comment.setCommentUser(user);
         comment.setCommentMedia(media);
@@ -42,42 +50,27 @@ public class CommentService {
 
         commentRepository.save(comment);
 
-        return new CommentResponse(
-                comment.getCommentId(),
-                comment.getCommentContent(),
-                user.getUserId(),
-                media.getMediaId()
-        );
+        return toResponse(comment);
     }
 
     public List<CommentResponse> getComments(UUID mediaId) {
-        List<CommentModel> comments = commentRepository.findByCommentMedia_MediaId(mediaId);
-        //list all comments
-        return comments.stream()
-                .map(comment -> new CommentResponse(
-                        comment.getCommentId(),
-                        comment.getCommentContent(),
-                        comment.getCommentUser().getUserId(),
-                        comment.getCommentMedia().getMediaId()
-                ))
+        return commentRepository.findByCommentMedia_MediaId(mediaId)
+                .stream()
+                .map(this::toResponse)
                 .toList();
     }
 
     public void deleteComment(UUID mediaId, UUID commentId, UserModel currentUser) {
-        // 1. Verificar se a mídia existe
-        MediaModel media = mediaRepository.findById(mediaId)
+        mediaRepository.findById(mediaId)
                 .orElseThrow(() -> new RuntimeException("Media not found"));
 
-        // 2. Verificar se o comentário existe
         CommentModel comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
 
-        // 3. Verificar se o comentário pertence à mídia
         if (!comment.getCommentMedia().getMediaId().equals(mediaId)) {
             throw new RuntimeException("Comment does not belong to this media");
         }
 
-        // 4. Verificar permissão (apenas autor do comentário ou ADMIN)
         boolean isAuthor = comment.getCommentUser().getUserId().equals(currentUser.getUserId());
         boolean isAdmin = currentUser.getUserRole() == Role.ADMIN;
 
@@ -85,7 +78,6 @@ public class CommentService {
             throw new RuntimeException("You don't have permission to delete this comment");
         }
 
-        // 5. Deletar o comentário
         commentRepository.delete(comment);
     }
 }

@@ -2,11 +2,12 @@ package com.CJSantos.Jornal_Primeiramente.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +27,17 @@ public class EditionModel {
     @Column(name = "edition_id")
     private UUID editionId;
 
+    @NotBlank(message = "O título da edição é obrigatório.")
+    @Size(max = 255)
     @Column(name = "title", nullable = false)
     private String title;
 
+    @NotBlank(message = "O número da edição é obrigatório.")
+    @Size(max = 30)
     @Column(name = "edition_number", nullable = false)
     private String editionNumber;
 
+    @NotBlank(message = "A data de publicação é obrigatória.")
     @Column(name = "publication_date")
     private String publicationDate;
 

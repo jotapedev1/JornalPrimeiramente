@@ -9,10 +9,12 @@ import com.CJSantos.Jornal_Primeiramente.service.EditionService;
 import com.CJSantos.Jornal_Primeiramente.utils.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +35,7 @@ public class EditionController{
     @Autowired
     private EditionService editionService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createEdition(
             @RequestPart("edition") String editionJson,
@@ -42,13 +45,6 @@ public class EditionController{
     ) {
         try {
             String token = authHeader.substring(7);
-            if (!jwtUtil.isAdminFromToken(token)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(Map.of(
-                                "error",
-                                "Access denied. Only administrators can create editions."
-                        ));
-            }
 
             ObjectMapper mapper = new ObjectMapper();
 
@@ -116,19 +112,13 @@ public class EditionController{
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create-announcement")
     public ResponseEntity<?> createAnnouncement(
             @RequestBody AnnouncementRequest request,
             @RequestHeader("Authorization") String authHeader
     ) {
         String token = authHeader.substring(7);
-
-        if (!jwtUtil.isAdminFromToken(token)) {
-            return ResponseEntity.status(403).body(Map.of(
-                    "error", "Access denied. Only administrators can create announcements."
-            ));
-        }
-
         // Announcement creation logic here
 
         return ResponseEntity.ok(Map.of(
@@ -161,8 +151,9 @@ public class EditionController{
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateEdition(@PathVariable UUID id, @RequestBody EditionModel edition) {
+    public ResponseEntity<?> updateEdition(@PathVariable UUID id, @Valid @RequestBody EditionModel edition) {
         try {
             EditionModel updatedEdition = editionService.updateEdition(id, edition);
             return ResponseEntity.ok(updatedEdition);
@@ -171,6 +162,7 @@ public class EditionController{
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEdition(@PathVariable UUID id) {
         try {

@@ -11,6 +11,7 @@ import com.CJSantos.Jornal_Primeiramente.service.MediaService;
 import com.CJSantos.Jornal_Primeiramente.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -65,7 +66,7 @@ public class UserController {
     @PutMapping("/profile")
     public ResponseEntity<?> updateCurrentUserProfile(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestBody ProfileUpdateRequest updateRequest) {
+            @Valid @RequestBody ProfileUpdateRequest updateRequest) {
         try {
             UserModel user = userService.getUserByEmail(userDetails.getUsername());
 
@@ -147,7 +148,7 @@ public class UserController {
     @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestBody ChangePasswordRequest request) {
+            @Valid @RequestBody ChangePasswordRequest request) {
         try {
             userService.changePassword(
                     userDetails.getUsername(),

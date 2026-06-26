@@ -22,7 +22,6 @@ public class LikeService {
     private final MediaRepository mediaRepository;
 
     public boolean toggleLike(UUID userId, UUID mediaId) {
-
         UserModel user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -34,16 +33,23 @@ public class LikeService {
 
         if (existingLike.isPresent()) {
             likeRepository.delete(existingLike.get());
-            return false; // it's NOT liked
+            return false;
         }
 
         LikeModel like = new LikeModel();
         like.setLikeUser(user);
         like.setLikeMedia(media);
         like.setLikeCreatedAt(LocalDateTime.now());
-
         likeRepository.save(like);
 
-        return true; // its liked
+        return true;
+    }
+
+    public boolean isLiked(UUID userId, UUID mediaId) {
+        return likeRepository.existsByLikeUser_UserIdAndLikeMedia_MediaId(userId, mediaId);
+    }
+
+    public long countLikes(UUID mediaId) {
+        return likeRepository.countByLikeMedia_MediaId(mediaId);
     }
 }

@@ -3,11 +3,13 @@ package com.CJSantos.Jornal_Primeiramente.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -24,13 +26,30 @@ public class MediaModel {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID mediaId;
 
+    @NotBlank(message = "O título da mídia é obrigatório.")
+    @Size(max = 255, message = "O título deve possuir no máximo 255 caracteres.")
+    @Column(nullable = false)
     private String mediaTitle;
+
+    @Size(max = 5000, message = "A descrição deve possuir no máximo 5000 caracteres.")
     private String mediaDescription;
+
+    @NotBlank(message = "A URL da mídia é obrigatória.")
+    @Column(nullable = false)
     private String mediaUrl;
+
+    @NotBlank(message = "O autor é obrigatório.")
+    @Size(max = 150)
+    @Column(nullable = false)
     private String mediaAuthor;
 
+    @NotNull(message = "O tipo da mídia é obrigatório.")
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Media mediaType;
+
+    @NotBlank(message = "O nome do arquivo é obrigatório.")
+    private String mediaFileName;
 
     private LocalDateTime mediaCreatedAt;
 
@@ -42,19 +61,16 @@ public class MediaModel {
     private String mediaFileType;
 
     @JsonIgnore
-    private Long mediaFileSize;
-
-    private String mediaFileName;
+    private Long mediaFileSize;    
 
     private boolean saved;
 
-    @JsonBackReference(value = "user-media")
+    @NotNull(message = "O usuário é obrigatório.")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mediaAuthorId", nullable = false)
     private UserModel user;
 
-    // Relacionamento com edição (um artigo pertence a uma edição)
-    @JsonBackReference(value = "edition-media")
+    @NotNull(message = "A edição é obrigatória.")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "edition_id", nullable = false)
     private EditionModel edition;

@@ -9,8 +9,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 @Repository
 public interface LikeRepository extends JpaRepository<LikeModel, UUID> {
     Optional<LikeModel> findByLikeUserAndLikeMedia(UserModel user, MediaModel media);
     List<LikeModel> findByLikeUser_UserId(UUID userId);
+    boolean existsByLikeUser_UserIdAndLikeMedia_MediaId(UUID userId, UUID mediaId);
+    long countByLikeMedia_MediaId(UUID mediaId);
 }
