@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, {useContext, useState, useEffect, useCallback} from 'react';
 import {
     Animated,
     Dimensions,
@@ -42,9 +42,11 @@ const ProfileScreen = ({ navigation }) => {
             const likes  = Array.isArray(likesResponse.data)? likesResponse.data : [];
 
             const likedMedia = likes.map(like => ({
-                id: like.mediaId,
-                mediaTitle: like.title,
-                mediaDescription: 'Artigo curtido',
+                mediaId: like.mediaId,
+                mediaTitle: like.mediaTitle,
+                mediaDescription: like.mediaDescription,
+                mediaAuthor: like.mediaAuthor,
+                mediaFileName: like.mediaFileName,
                 createdAt: like.createdAt,
             }));
 
@@ -72,6 +74,24 @@ const ProfileScreen = ({ navigation }) => {
     useEffect(() => {
         loadUserData();
     }, []);
+
+    const handleToggleSaved = (mediaId, newSaved) => {
+        setUserPosts(prev =>
+            prev.map(item =>
+                item.mediaId === mediaId
+                    ? { ...item, saved: newSaved }
+                    : item
+            )
+        );
+
+        setLikedArticles(prev =>
+            prev.map(item =>
+                item.mediaId === mediaId
+                    ? { ...item, saved: newSaved }
+                    : item
+            )
+        );
+    };
 
     const handlePublishingButton = () => {
         setModalVisible(true);
@@ -183,8 +203,9 @@ const ProfileScreen = ({ navigation }) => {
                         {likedArticles.length > 0 ? (
                             likedArticles.map((article, index) => (
                                 <MediaCard
-                                    key={article.id || index}
+                                    key={article.mediaId || index}
                                     article={article}
+                                    onToggleSaved={handleToggleSaved}
                                 />
                             ))
                         ) : (
@@ -200,6 +221,7 @@ const ProfileScreen = ({ navigation }) => {
                                 <MediaCard
                                     key={post.mediaId || post.id || index}
                                     article={post}
+                                    onToggleSaved={handleToggleSaved}
                                 />
                             ))
                         ) : (

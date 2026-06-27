@@ -1,9 +1,11 @@
 package com.CJSantos.Jornal_Primeiramente.controller;
 
+import com.CJSantos.Jornal_Primeiramente.dto.MediaRequest;
 import com.CJSantos.Jornal_Primeiramente.model.EditionModel;
 import com.CJSantos.Jornal_Primeiramente.model.Media;
 import com.CJSantos.Jornal_Primeiramente.model.MediaModel;
 import com.CJSantos.Jornal_Primeiramente.model.UserModel;
+import com.CJSantos.Jornal_Primeiramente.repository.MediaRepository;
 import com.CJSantos.Jornal_Primeiramente.service.EditionService;
 import com.CJSantos.Jornal_Primeiramente.service.MediaService;
 import com.CJSantos.Jornal_Primeiramente.service.UserService;
@@ -30,11 +32,13 @@ public class MediaController {
     private final MediaService mediaService;
     private final EditionService editionService;
     private final UserService userService;
+    private final MediaRepository mediaRepository;
 
-    public MediaController(MediaService mediaService, EditionService editionService, UserService userService) {
+    public MediaController(MediaService mediaService, EditionService editionService, UserService userService, MediaRepository mediaRepository) {
         this.mediaService = mediaService;
         this.editionService = editionService;
         this.userService = userService;
+        this.mediaRepository = mediaRepository;
     }
 
     // Criar mídia com arquivo PDF
@@ -122,8 +126,22 @@ public class MediaController {
     }
 
     @GetMapping
-    public List<MediaModel> getAllMedia() {
-        return mediaService.getAllMedia();
+    public List<MediaRequest> getAllMedia(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        UserModel user =
+                userService.getUserByEmail(userDetails.getUsername());
+
+        return mediaRepository.findAll()
+                .stream()
+                .map(media ->
+                        mediaService.toDTO(
+                                media,
+                                user.getUserId()
+                        )
+                )
+                .toList();
     }
 
     @GetMapping("/{id}")

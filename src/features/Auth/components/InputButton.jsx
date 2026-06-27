@@ -1,11 +1,11 @@
 import { Text, TextInput, View, StyleSheet } from "react-native";
 import React, {useState} from "react";
 
-const InputButton = ({ label, placeholder, value, onChangeText,  }) => {
+const InputButton = ({ label, placeholder, value, onChangeText, style }) => {
     return (
         <View style={styles.inputView}>
             <Text style={styles.inputLabel}>{label}</Text>
-            <TextInput style={styles.input} placeholder={placeholder || ''}
+            <TextInput style={[styles.input, style]} placeholder={placeholder || ''}
                 value={value} onChangeText={onChangeText} autoCapitalize="none"></TextInput>
         </View>
     );

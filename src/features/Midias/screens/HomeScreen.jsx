@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 
 import {
     View,
@@ -75,6 +75,16 @@ const HomeScreen = ({ navigation }) => {
         loadHomeData();
 
     }, []);
+
+    const handleToggleSaved = (mediaId, newSaved) => {
+        setEditionArticles(prev =>
+            prev.map(item =>
+                item.mediaId === mediaId
+                    ? { ...item, saved: newSaved }
+                    : item
+            )
+        );
+    };
 
     if (loading && !currentEdition) {
 
@@ -167,7 +177,9 @@ const HomeScreen = ({ navigation }) => {
                             <View
                                 key={item.mediaId}
                             >
-                                <MediaCard article={item} />
+                                <MediaCard article={item}
+                                           onToggleSaved={handleToggleSaved}
+                                />
                             </View>
                         ))
 

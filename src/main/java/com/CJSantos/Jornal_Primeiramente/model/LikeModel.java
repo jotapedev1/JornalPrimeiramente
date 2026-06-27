@@ -1,5 +1,6 @@
 package com.CJSantos.Jornal_Primeiramente.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -32,14 +33,16 @@ public class LikeModel {
 
     private LocalDateTime likeCreatedAt;
 
-        @NotNull
-        @ManyToOne(optional = false)
-        @JoinColumn(name = "likeUserId", nullable = false)
-        private UserModel likeUser;
+    @JsonBackReference(value = "user-like")
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "likeUserId", nullable = false)
+    private UserModel likeUser;
 
-        @NotNull
-        @ManyToOne(optional = false)
-        @JoinColumn(name = "likeMediaId", nullable = false)
-        private MediaModel likeMedia;
+    @JsonBackReference(value = "media-like")
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "likeMediaId", nullable = false)
+    private MediaModel likeMedia;
         
 }

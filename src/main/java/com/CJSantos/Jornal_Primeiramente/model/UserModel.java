@@ -60,12 +60,15 @@ public class UserModel {
     @OneToMany(mappedBy = "user")
     private List<MediaModel> medias;
 
+    @JsonManagedReference(value = "user-comment")
     @OneToMany(mappedBy = "commentUser")
     private List<CommentModel> comments;
 
+    @JsonManagedReference(value = "user-like")
     @OneToMany(mappedBy = "likeUser")
     private List<LikeModel> likes;
 
+    @JsonManagedReference(value = "user-save")
     @OneToMany(mappedBy = "saveUser")
     private List<SaveModel> saves;
 

@@ -1,6 +1,6 @@
 package com.CJSantos.Jornal_Primeiramente.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,20 +29,17 @@ public class CommentModel {
     @Column(nullable = false)
     private String commentContent;
 
+    @JsonBackReference(value = "user-comment")
     @NotNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "commentUserId", nullable = false)
     private UserModel commentUser;
 
+    @JsonBackReference(value = "media-comment")
     @NotNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "commentMediaId", nullable = false)
     private MediaModel commentMedia;
 
     private LocalDateTime commentCreatedAt;
-
-    public void setCommentCreatedAt(LocalDateTime now) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setCommentCreatedAt'");
-    }
 }

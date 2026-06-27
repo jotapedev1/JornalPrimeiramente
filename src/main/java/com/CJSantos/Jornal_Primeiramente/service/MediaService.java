@@ -1,9 +1,12 @@
 package com.CJSantos.Jornal_Primeiramente.service;
 
+import com.CJSantos.Jornal_Primeiramente.dto.MediaRequest;
 import com.CJSantos.Jornal_Primeiramente.model.MediaModel;
 import com.CJSantos.Jornal_Primeiramente.model.UserModel;
 import com.CJSantos.Jornal_Primeiramente.repository.MediaRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -16,9 +19,11 @@ public class MediaService {
 
     private final MediaRepository mediaRepository;
 
-    public MediaService(MediaRepository mediaRepository) {
+    public MediaService(MediaRepository mediaRepository, SaveService saveService) {
         this.mediaRepository = mediaRepository;
+        this.saveService = saveService;
     }
+    public final SaveService saveService;
 
     // Criar mídia com arquivo PDF
     public MediaModel createMediaWithFile(MediaModel media, MultipartFile file, UserModel user) throws IOException {
@@ -105,11 +110,20 @@ public class MediaService {
     }
 
 
-    public void updateSavedState(UUID mediaId, boolean saved) {
-            MediaModel media = mediaRepository.findById(mediaId)
-                    .orElseThrow(() -> new RuntimeException("Media not found"));
+    public MediaRequest toDTO(MediaModel media, UUID userId) {
 
-            media.setSaved(saved);
-            mediaRepository.save(media);
-        }
+        MediaRequest dto = new MediaRequest();
+
+        dto.setMediaId(media.getMediaId());
+        dto.setMediaTitle(media.getMediaTitle());
+        dto.setMediaDescription(media.getMediaDescription());
+        dto.setMediaAuthor(media.getMediaAuthor());
+        dto.setMediaUrl(media.getMediaUrl());
+
+        dto.setSaved(
+                saveService.isSaved(userId, media.getMediaId())
+        );
+
+        return dto;
+    }
 }

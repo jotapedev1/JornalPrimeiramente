@@ -43,8 +43,6 @@ public class SaveController {
                     mediaId
             );
 
-            // 🔥 sync denormalized field
-            mediaService.updateSavedState(mediaId, saved);
 
             return ResponseEntity.ok(Map.of("saved", saved));
 

@@ -1,6 +1,8 @@
 package com.CJSantos.Jornal_Primeiramente.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,11 +29,13 @@ import java.util.UUID;
     private UUID saveId;
     private LocalDateTime saveCreatedAt;
 
+    @JsonBackReference(value = "user-save")
     @ManyToOne(optional = false)
     @JoinColumn(name = "saveUserId", nullable = false)
     @JsonIgnore
     private UserModel saveUser;
 
+    @JsonBackReference(value = "media-save")
     @ManyToOne(optional = false)
     @JoinColumn(name = "saveMediaId", nullable = false)
     @JsonIgnore

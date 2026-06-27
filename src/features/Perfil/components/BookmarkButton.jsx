@@ -1,5 +1,6 @@
 // BookmarkButton.js
-import React, {useContext, useEffect, useState} from "react";
+
+import React, { useContext, useEffect, useState } from "react";
 import {
     Image,
     StyleSheet,
@@ -16,7 +17,9 @@ const BookmarkButton = ({
                             onToggle,
                         }) => {
     const { api } = useContext(AuthContext);
+
     const [loading, setLoading] = useState(false);
+    const [initialLoading, setInitialLoading] = useState(true);
     const [localSaved, setLocalSaved] = useState(saved);
 
     const icons = {
@@ -24,40 +27,77 @@ const BookmarkButton = ({
         bookmarkFilled: require("../../../assets/icons/bookmark-icon-filled.png"),
     };
 
-    // Atualizar estado local quando a prop saved mudar
+    // Busca o estado real do backend
     useEffect(() => {
-        setLocalSaved(saved);
-    }, [saved]);
+        if (!mediaId) return;
+
+        let mounted = true;
+
+        const fetchSavedState = async () => {
+            try {
+                setInitialLoading(true);
+
+                const response = await api.get(`/save/${mediaId}`);
+
+                if (
+                    mounted &&
+                    typeof response.data.saved === "boolean"
+                ) {
+                    setLocalSaved(response.data.saved);
+                    onToggle?.(mediaId, response.data.saved);
+                }
+            } catch (error) {
+                console.log(
+                    "Check save error:",
+                    error.response?.data || error.message
+                );
+
+                // fallback para a prop recebida
+                if (mounted) {
+                    setLocalSaved(saved);
+                }
+            } finally {
+                if (mounted) {
+                    setInitialLoading(false);
+                }
+            }
+        };
+
+        fetchSavedState();
+
+        return () => {
+            mounted = false;
+        };
+    }, [mediaId]);
 
     const handleBookmarkPress = async () => {
         if (loading || !mediaId) return;
 
-        // Estado otimista
-        const optimisticSaved = !localSaved;
-        setLocalSaved(optimisticSaved);
+        const previousState = localSaved;
+        const optimisticState = !previousState;
 
-        // Notificar o pai sobre a mudança otimista
-        onToggle?.(mediaId, optimisticSaved);
+        // atualização otimista
+        setLocalSaved(optimisticState);
+        onToggle?.(mediaId, optimisticState);
 
         try {
             setLoading(true);
+
             const response = await api.post(`/save/${mediaId}`);
 
-            // Estado real vindo do servidor
-            const newSaved = response.data.saved;
-            setLocalSaved(newSaved);
-
-            // Notificar o pai com o estado real
-            onToggle?.(mediaId, newSaved);
-
+            if (typeof response.data.saved === "boolean") {
+                setLocalSaved(response.data.saved);
+                onToggle?.(mediaId, response.data.saved);
+            }
         } catch (error) {
-            console.log("Bookmark error:", error.response?.data || error.message);
+            console.log(
+                "Bookmark error:",
+                error.response?.data || error.message
+            );
 
-            // Reverter para o estado anterior em caso de erro
-            const previousSaved = !optimisticSaved;
-            setLocalSaved(previousSaved);
-            onToggle?.(mediaId, previousSaved);
-
+            // rollback
+            setLocalSaved(previousState);
+            onToggle?.(mediaId, previousState);
         } finally {
             setLoading(false);
         }
@@ -68,13 +108,17 @@ const BookmarkButton = ({
             activeOpacity={0.8}
             onPress={handleBookmarkPress}
             style={styles.container}
-            disabled={loading}
+            disabled={loading || initialLoading}
         >
-            {loading ? (
+            {loading || initialLoading ? (
                 <ActivityIndicator size="small" color="#666" />
             ) : (
                 <Image
-                    source={localSaved ? icons.bookmarkFilled : icons.bookmarkEmpty}
+                    source={
+                        localSaved
+                            ? icons.bookmarkFilled
+                            : icons.bookmarkEmpty
+                    }
                     style={{ height, width }}
                     resizeMode="contain"
                 />

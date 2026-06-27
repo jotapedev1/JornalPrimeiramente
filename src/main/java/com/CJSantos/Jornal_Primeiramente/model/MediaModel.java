@@ -2,6 +2,7 @@ package com.CJSantos.Jornal_Primeiramente.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -61,27 +62,30 @@ public class MediaModel {
     private String mediaFileType;
 
     @JsonIgnore
-    private Long mediaFileSize;    
+    private Long mediaFileSize;
 
-    private boolean saved;
-
+    @JsonBackReference(value = "user-media")
     @NotNull(message = "O usuário é obrigatório.")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mediaAuthorId", nullable = false)
     private UserModel user;
 
+    @JsonBackReference(value = "edition-media")
     @NotNull(message = "A edição é obrigatória.")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "edition_id", nullable = false)
     private EditionModel edition;
 
     // Deleting media deletes all comments
+    @JsonManagedReference(value = "media-comment")
     @OneToMany(mappedBy = "commentMedia", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentModel> comments;
 
+    @JsonManagedReference(value = "media-like")
     @OneToMany(mappedBy = "likeMedia")
     private List<LikeModel> likes;
 
+    @JsonManagedReference(value = "media-save")
     @OneToMany(mappedBy = "saveMedia")
     private List<SaveModel> saves;
 

@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 
 import {
     View,
@@ -13,6 +13,8 @@ import LikeButton from "../../../shared/components/LikeButton";
 import BookmarkButton from "../../Perfil/components/BookmarkButton";
 import { Platform } from 'react-native';
 import {AuthContext} from "../../../context/AuthContext";
+import InputButton from "../../Auth/components/InputButton";
+import SendButton from "../../Auth/components/SendButton";
 
 const API_URL = Platform.OS === 'android'
     ? 'http://10.0.2.2:8080'
@@ -20,9 +22,54 @@ const API_URL = Platform.OS === 'android'
 
 const MediaScreen = ({ route }) => {
     const { media } = route.params || {};
-    const { token } = useContext(AuthContext);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { api, token } = useContext(AuthContext);
+
+    const [comments, setComments] = useState([]);
+    const [commentsLoading, setCommentsLoading] = useState(true);
+    const [commentText, setCommentText] = useState("");
+    const [sendingComment, setSendingComment] = useState(false);
+
+    useEffect(() => {
+        fetchComments();
+    }, []);
+
+    const fetchComments = async () => {
+        try {
+            setCommentsLoading(true);
+
+            const response = await api.get(`/comments/${media.mediaId}`);
+
+            setComments(response.data);
+        } catch (error) {
+            console.log("Erro ao buscar comentários:", error);
+        } finally {
+            setCommentsLoading(false);
+        }
+    };
+
+    const handleSendComment = async () => {
+        if (!commentText.trim()) return;
+
+        try {
+            setSendingComment(true);
+
+            const response = await api.post(
+                `/comments/${media.mediaId}`,
+                {
+                    content: commentText,
+                }
+            );
+
+            setComments((prev) => [response.data, ...prev]);
+            setCommentText("");
+        } catch (error) {
+            console.log("Erro ao enviar comentário:", error);
+        } finally {
+            setSendingComment(false);
+        }
+    };
 
 
     if (!media) {
@@ -57,7 +104,7 @@ const MediaScreen = ({ route }) => {
         setError(null);
     };
 
-    const hasPdf = !!media.mediaFileName;
+    const hasPdf = !!media.mediaId;
 
     return (
         <View style={styles.container}>
@@ -120,7 +167,57 @@ const MediaScreen = ({ route }) => {
 
                 <View style={styles.commentsContainer}>
                     <Text style={styles.commentTitle}>Comentários:</Text>
+
+                    <View style={styles.commentInput}>
+                        <InputButton
+                            placeholder="Comente algo na postagem"
+                            style={styles.commentDimensions}
+                            value={commentText}
+                            onChangeText={setCommentText}
+                        />
+                    </View>
+
+                    <View style={{ paddingBottom: 20 }}>
+                        <SendButton
+                            label={sendingComment ? "Enviando..." : "Comentar"}
+                            onPress={handleSendComment}
+                            disabled={sendingComment}
+                        />
+                    </View>
                 </View>
+
+                <View
+                    style={{
+                        height: 1,
+                        width: "100%",
+                        backgroundColor: "#e8e8e8",
+                    }}
+                />
+
+                {commentsLoading ? (
+                    <ActivityIndicator
+                        size="large"
+                        color="#1a1a1a"
+                        style={{ marginTop: 20 }}
+                    />
+                ) : comments.length > 0 ? (
+                    <View style={styles.commsListContainer}>
+                        {comments.map((comment) => (
+                            <View
+                                key={comment.id}
+                                style={styles.commentCard}
+                            >
+                                <Text style={styles.commentAuthor}>
+                                    {comment.userName}
+                                </Text>
+
+                                <Text style={styles.commentContent}>
+                                    {comment.content}
+                                </Text>
+                            </View>
+                        ))}
+                    </View>
+                ) : null}
             </ScrollView>
         </View>
     );
@@ -168,14 +265,46 @@ const styles = StyleSheet.create({
     commentsContainer: {
         backgroundColor: 'white',
         flex: 1,
-        minHeight: 300
+        minHeight: 150
     },
     commentTitle: {
         textAlign: 'center',
         fontFamily: 'Lalezar_400Regular',
         fontSize: 20,
         top: 30
+    },
+    commentInput: {
+        marginTop: 20,
+    },
+    commentDimensions: {
+        borderColor: '#e6e6e6',
+        borderWidth: 1,
+        borderRadius: 10,
+        backgroundColor: '#e6e6e6',
+        marginLeft: 10,
+        marginRight: 10,
+        fontSize: 16,
+        flexShrink: 1,
+        width: '95%',
+        flexDirection: 'row',
+    },
+    commsListContainer: {
+        minHeight: 200,
+        flex: 1
+    },
+    commentCard: {
+        padding: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: "#e8e8e8",
+    },
 
-    }
+    commentAuthor: {
+        fontFamily: "Lalezar_400Regular",
+        fontSize: 16,
+    },
 
+    commentContent: {
+        color: "#555",
+        marginTop: 5,
+    },
 })
