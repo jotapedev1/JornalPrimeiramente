@@ -64,11 +64,6 @@ const ProfileScreen = ({ navigation }) => {
         } finally {
             setLoading(false);
         }
-        console.log("POSTS:");
-        console.log(postsResponse.data);
-
-        console.log("LIKES:");
-        console.log(likesResponse.data);
     };
 
     useEffect(() => {

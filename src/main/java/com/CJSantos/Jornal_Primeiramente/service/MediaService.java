@@ -69,10 +69,12 @@ public class MediaService {
         if (media.getMediaType() == null) {
             throw new RuntimeException("Preencha o tipo de mídia");
         }
+        if (media.getMediaFileName() == null || media.getMediaFileName().isBlank()) {
+            media.setMediaFileName("sem-arquivo");
+        }
         media.setMediaCreatedAt(LocalDateTime.now());
         return mediaRepository.save(media);
     }
-
     public List<MediaModel> getAllMedia() {
         return mediaRepository.findAll();
     }

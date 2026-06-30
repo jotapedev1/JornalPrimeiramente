@@ -69,11 +69,11 @@ const EditionCard = ({ edition, navigation }) => {
                     source={
                         edition.coverImage
                             ? { uri: edition.coverImage }
-                            : require('../../../../../JornalPrimeiramente/src/assets/imgs/img_placeholder.png')
+                            : require('../../../assets/imgs/img_placeholder.png')
                     }
                     style={styles.coverImage}
                     defaultSource={
-                        require('../../../../../JornalPrimeiramente/src/assets/imgs/img_placeholder.png')
+                        require('../../../assets/imgs/img_placeholder.png')
                     }
                 />
 

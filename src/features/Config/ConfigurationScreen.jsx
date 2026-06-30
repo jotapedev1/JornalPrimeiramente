@@ -35,6 +35,7 @@ const ConfigurationScreen = ({navigation}) => {
             <View style={{display: 'absolute', width: '100%', height: '100%', backgroundColor: '#e30000', justifyContent: 'center',
                 borderTopColor: 'white', borderTopWidth: 2 }}>
             </View>
+            <BottomBar navigation={navigation}/>
         </View>
     );
 };

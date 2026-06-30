@@ -160,4 +160,16 @@ public class UserController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+    @PostMapping("/deactivate")
+    public ResponseEntity<?> deactivateAccount(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            UserModel user = userService.getUserByEmail(userDetails.getUsername());
+            userService.requestDeactivation(user.getUserEmail());
+            return ResponseEntity.ok(Map.of(
+                    "message", "Pedido de desativação registrado. Faça login novamente para cancelar."
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }

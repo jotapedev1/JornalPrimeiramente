@@ -91,4 +91,17 @@ public class UserService {
         user.setUserHash(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
+    public void requestDeactivation(String email) {
+        UserModel user = getUserByEmail(email);
+        user.setDeactivationRequestedAt(LocalDateTime.now());
+        userRepository.save(user);
+    }
+
+    public void cancelDeactivation(String email) {
+        UserModel user = getUserByEmail(email);
+        if (user.getDeactivationRequestedAt() != null) {
+            user.setDeactivationRequestedAt(null);
+            userRepository.save(user);
+        }
+    }
 }

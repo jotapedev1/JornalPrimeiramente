@@ -40,12 +40,11 @@ public class AuthController {
             );
 
             UserModel user = userService.getUserByEmail(request.getEmail());
-/*
-            // Cancela desativação pendente ao logar
+
             if (user.getDeactivationRequestedAt() != null) {
                 userService.cancelDeactivation(user.getUserEmail());
             }
-*/
+
             String token = jwtUtil.generateToken(
                     user.getUserEmail(),
                     user.getUserId(),

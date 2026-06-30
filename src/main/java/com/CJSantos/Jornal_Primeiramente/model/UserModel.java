@@ -72,6 +72,9 @@ public class UserModel {
     @OneToMany(mappedBy = "saveUser")
     private List<SaveModel> saves;
 
+    @Column(name = "\"deactivation_requested_at\"")
+    private LocalDateTime deactivationRequestedAt;
+
     @PrePersist
     public void prePersist() {
         this.userCreatedAt = LocalDateTime.now();

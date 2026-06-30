@@ -5,7 +5,6 @@ import {
     StyleSheet,
     ActivityIndicator,
 } from 'react-native';
-import InputButton from "../../Auth/components/InputButton";
 import SendButton from "../../Auth/components/SendButton";
 import { AuthContext } from "../../../context/AuthContext";
 import PasswordInputButton from "../../Auth/components/PasswordInputButton";

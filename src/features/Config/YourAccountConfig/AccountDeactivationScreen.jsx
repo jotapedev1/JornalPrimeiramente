@@ -1,14 +1,29 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
     View,
     Text,
     StyleSheet,
+    Alert,
 } from 'react-native';
 import SendButton from "../../Auth/components/SendButton";
+import { AuthContext } from "../../../context/AuthContext";
 
 const AccountDeactivationScreen = ({navigation}) => {
-    const deactivateRequest = () => {
-        alert('Pedido de desativacao enviado');
+    const { api } = useContext(AuthContext);
+    const [loading, setLoading] = useState(false);
+
+    const deactivateRequest = async () => {
+        setLoading(true);
+        try {
+            const response = await api.post('/user/deactivate');
+            Alert.alert('Sucesso', response.data.message, [
+                { text: 'OK', onPress: () => navigation.goBack() }
+            ]);
+        } catch (error) {
+            Alert.alert('Erro', error.response?.data?.error || 'Erro ao desativar conta');
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -19,7 +34,7 @@ const AccountDeactivationScreen = ({navigation}) => {
                     Dentro de 30 dias sua conta será desativada, se até lá você mudar de ideia: fazer login cancelará o processo de desativamento.</Text>
             </View>
 
-            <SendButton label={"Desativar"} onPress={deactivateRequest}/>
+            <SendButton label={loading ? "Enviando..." : "Desativar"} onPress={deactivateRequest} disabled={loading}/>
         </View>
     )
 };

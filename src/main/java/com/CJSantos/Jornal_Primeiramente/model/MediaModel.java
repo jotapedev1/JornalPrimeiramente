@@ -49,7 +49,6 @@ public class MediaModel {
     @Column(nullable = false)
     private Media mediaType;
 
-    @NotBlank(message = "O nome do arquivo é obrigatório.")
     private String mediaFileName;
 
     private LocalDateTime mediaCreatedAt;
