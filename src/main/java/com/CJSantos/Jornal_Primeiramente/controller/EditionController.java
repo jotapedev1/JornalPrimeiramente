@@ -1,6 +1,8 @@
 package com.CJSantos.Jornal_Primeiramente.controller;
 
 import com.CJSantos.Jornal_Primeiramente.dto.AnnouncementRequest;
+import com.CJSantos.Jornal_Primeiramente.dto.EditionCreateRequest;
+import com.CJSantos.Jornal_Primeiramente.dto.MediaCreateRequest;
 import com.CJSantos.Jornal_Primeiramente.model.EditionModel;
 import com.CJSantos.Jornal_Primeiramente.model.MediaModel;
 import com.CJSantos.Jornal_Primeiramente.model.UserModel;
@@ -48,65 +50,56 @@ public class EditionController{
 
             ObjectMapper mapper = new ObjectMapper();
 
-            EditionModel edition =
-                    mapper.readValue(editionJson, EditionModel.class);
+            // ANTES: EditionModel edition = mapper.readValue(editionJson, EditionModel.class);
+            EditionCreateRequest request = mapper.readValue(editionJson, EditionCreateRequest.class);
 
-            String email =
-                    jwtUtil.getUsernameFromToken(token);
-
-            UserModel user =
-                    userRepository.findByUserEmail(email);
+            String email = jwtUtil.getUsernameFromToken(token);
+            UserModel user = userRepository.findByUserEmail(email);
 
             if (user == null) {
-
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of(
-                                "error",
-                                "Usuário não encontrado"
-                        ));
+                        .body(Map.of("error", "Usuário não encontrado"));
             }
 
-            if (files != null && !files.isEmpty()) {
+            // Monta a entidade manualmente a partir do DTO
+            EditionModel edition = new EditionModel();
+            edition.setTitle(request.getTitle());
+            edition.setEditionNumber(request.getEditionNumber());
+            edition.setPublicationDate(request.getPublicationDate());
 
-                for (int i = 0; i < files.size(); i++) {
+            List<MediaModel> mediaList = new java.util.ArrayList<>();
+            if (request.getMedia() != null) {
+                for (int i = 0; i < request.getMedia().size(); i++) {
+                    MediaCreateRequest m = request.getMedia().get(i);
+                    MediaModel media = new MediaModel();
+                    media.setMediaTitle(m.getMediaTitle());
+                    media.setMediaDescription(m.getMediaDescription());
+                    media.setMediaAuthor(m.getMediaAuthor());
+                    media.setMediaType(m.getMediaType());
+                    media.setMediaUrl("pending"); // obrigatório no model, ajuste depois com o arquivo
 
-                    MultipartFile file = files.get(i);
-
-                    if (i < edition.getMedia().size()) {
-
-                        MediaModel media =
-                                edition.getMedia().get(i);
-
+                    if (files != null && i < files.size()) {
+                        MultipartFile file = files.get(i);
                         media.setMediaFile(file.getBytes());
-
-                        media.setMediaFileName(
-                                file.getOriginalFilename()
-                        );
-
-                        media.setMediaFileType(
-                                file.getContentType()
-                        );
-
-                        media.setMediaFileSize(
-                                file.getSize()
-                        );
+                        media.setMediaFileName(file.getOriginalFilename());
+                        media.setMediaFileType(file.getContentType());
+                        media.setMediaFileSize(file.getSize());
                     }
+
+                    mediaList.add(media);
                 }
             }
+            edition.setMedia(mediaList);
 
             EditionModel savedEdition = editionService.createEdition(edition, user);
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(Map.of(
-                            "message",
-                            "Edição criada com sucesso",
-                            "editionId",
-                            savedEdition.getEditionId(),
-                            "mediaCount",
-                            savedEdition.getMedia().size()
+                            "message", "Edição criada com sucesso",
+                            "editionId", savedEdition.getEditionId(),
+                            "mediaCount", savedEdition.getMedia().size()
                     ));
         } catch (Exception e) {
-
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("error", e.getMessage()));
         }

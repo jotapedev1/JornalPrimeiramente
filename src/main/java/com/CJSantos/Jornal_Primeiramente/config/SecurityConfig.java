@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Rotas públicas
-                        .requestMatchers("/auth/login", "/auth/register", "/").permitAll()
+                        .requestMatchers("/auth/login", "/auth/register", "/", "/error").permitAll()
                         // Somente ADMIN cria, edita e deleta edições
                         .requestMatchers(HttpMethod.POST, "/edition/create", "/edition/create-announcement").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/edition/**").hasRole("ADMIN")
