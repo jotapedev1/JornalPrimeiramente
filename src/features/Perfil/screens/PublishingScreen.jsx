@@ -16,6 +16,7 @@ import JornalLogo from "../../../shared/components/JornalLogo";
 import BottomBar from "../../../shared/components/BottomBar";
 import {AuthContext} from "../../../context/AuthContext";
 import DropDownPicker from "react-native-dropdown-picker";
+import Ionicons from "@react-native-vector-icons/ionicons";
 
 const PublishScreen = ({ navigation, route }) => {
     const { api } = useContext(AuthContext);
@@ -280,10 +281,7 @@ const PublishScreen = ({ navigation, route }) => {
         }
 
         if (publishType === 'Aviso') {
-            if (!expiryDate) {
-                Alert.alert('Erro', 'A data de expiração é obrigatória');
-                return;
-            }
+
             submitAviso();
         } else if (publishType === 'Edicao') {
             if (!editionNumber) {
@@ -300,18 +298,63 @@ const PublishScreen = ({ navigation, route }) => {
         }
     };
 
-    const submitAviso = () => {
-        const avisoData = {
-            type: 'aviso',
-            title,
-            content,
-            priority,
-            expiryDate,
-            createdAt: new Date().toISOString()
-        };
-        console.log('Enviando Aviso:', avisoData);
-        Alert.alert('Sucesso', 'Aviso publicado com sucesso!');
-        navigation.goBack();
+    // PublishScreen.js - Função submitAviso atualizada
+
+    const submitAviso = async () => {
+        try {
+            // Validar campos obrigatórios
+            if (!title.trim()) {
+                Alert.alert('Erro', 'O título do aviso é obrigatório');
+                return;
+            }
+
+            if (!priority) {
+                Alert.alert('Erro', 'A prioridade do aviso é obrigatória');
+                return;
+            }
+
+            // Converter prioridade para o formato do backend (HIGH, MEDIUM, LOW)
+            const priorityMap = {
+                'alta': 'HIGH',
+                'normal': 'NORMAL',
+                'baixa': 'LOW'
+            };
+
+            // Converter data de expiração para ISO (YYYY-MM-DD)
+            const formattedExpiryDate = expiryDate ? convertToISO(expiryDate) : null;
+
+            const avisoData = {
+                title: title.trim(),
+                priority: priorityMap[priority] || 'MEDIUM',
+                expirationDate: formattedExpiryDate
+            };
+
+            console.log('Enviando Aviso:', avisoData);
+
+            const response = await api.post('/warnings', avisoData);
+
+            console.log('Resposta do servidor:', response.data);
+
+            Alert.alert(
+                'Sucesso!',
+                'Aviso publicado com sucesso!',
+                [
+                    {
+                        text: 'OK',
+                        onPress: () => navigation.goBack()
+                    }
+                ]
+            );
+
+        } catch (error) {
+            console.log('Erro ao publicar aviso:', error);
+            console.log('Resposta do erro:', error.response?.data);
+
+            Alert.alert(
+                'Erro',
+                error.response?.data?.error || 'Não foi possível publicar o aviso. Tente novamente.'
+            );
+        }
     };
 
     const submitEdicao = async () => {
@@ -469,6 +512,18 @@ const PublishScreen = ({ navigation, route }) => {
             );
         }
 
+        const convertToISO = (dateString) => {
+            if (!dateString) return null;
+
+            try {
+                const [day, month, year] = dateString.split('/');
+                return `${year}-${month}-${day}`;
+            } catch (error) {
+                console.log('Erro ao converter data:', error);
+                return null;
+            }
+        };
+
         // Se estiver expandido, mostra o formulário completo
         return (
             <View style={styles.articleFormContainer}>
@@ -585,19 +640,25 @@ const PublishScreen = ({ navigation, route }) => {
                             style={[styles.priorityButton, priority === 'alta' && styles.priorityButtonActive]}
                             onPress={() => setPriority('alta')}
                         >
-                            <Text style={[styles.priorityText, priority === 'alta' && styles.priorityTextActive]}>🔴 Alta</Text>
+                            <Text style={[styles.priorityText, priority === 'alta' && styles.priorityTextActive]}>
+                                <View style={styles.priorityIcon}><Ionicons name="alert-circle" color="#d60000" size={24} style={styles.priorityIcon}/></View>
+                                Alta</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.priorityButton, priority === 'normal' && styles.priorityButtonActive]}
                             onPress={() => setPriority('normal')}
                         >
-                            <Text style={[styles.priorityText, priority === 'normal' && styles.priorityTextActive]}>🟡 Normal</Text>
+                            <Text style={[styles.priorityText, priority === 'normal' && styles.priorityTextActive]}>
+                                <View style={styles.priorityIcon}><Ionicons name="alert-circle" color="#fcdb00" size={24} style={styles.priorityIcon}/></View>
+                                    Normal</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.priorityButton, priority === 'baixa' && styles.priorityButtonActive]}
                             onPress={() => setPriority('baixa')}
                         >
-                            <Text style={[styles.priorityText, priority === 'baixa' && styles.priorityTextActive]}>🟢 Baixa</Text>
+                            <Text style={[styles.priorityText, priority === 'baixa' && styles.priorityTextActive]}>
+                                <View style={styles.priorityIcon}><Ionicons name="alert-circle" color="#26e300" size={24} style={styles.priorityIcon}/></View>
+                                    Baixa</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -607,7 +668,11 @@ const PublishScreen = ({ navigation, route }) => {
                         placeholder="DD/MM/AAAA"
                         placeholderTextColor="#999"
                         value={expiryDate}
-                        onChangeText={setExpiryDate}
+                        onChangeText={(text) => {
+                            const formattedDate = formatDataWithBars(text);
+                            setExpiryDate(formattedDate);
+                        }}
+                        maxLength={10}
                     />
                 </>
             );
@@ -742,16 +807,21 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         backgroundColor: '#f0f0f0',
         alignItems: 'center',
+        justifyContent: 'center'
     },
     priorityButtonActive: {
         backgroundColor: '#2196F3',
     },
     priorityText: {
-        fontSize: 14,
+        fontSize: 15,
         fontFamily: 'Inter-Regular',
+        bottom: 4
     },
     priorityTextActive: {
         color: '#fff',
+    },
+    priorityIcon: {
+        top: 7,
     },
     switchContainer: {
         flexDirection: 'row',

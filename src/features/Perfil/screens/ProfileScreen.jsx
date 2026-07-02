@@ -17,6 +17,7 @@ import JornalLogo from "../../../shared/components/JornalLogo";
 import BottomBar from "../../../shared/components/BottomBar";
 import { AuthContext } from "../../../context/AuthContext";
 import MediaCard from "../../../shared/components/MediaCard";
+import Ionicons from '@react-native-vector-icons/ionicons'
 
 const ProfileScreen = ({ navigation }) => {
     const { user, token, isAdmin, logout, api } = useContext(AuthContext);
@@ -275,7 +276,7 @@ const ProfileScreen = ({ navigation }) => {
                                         onPress={() => handleOptionPress('Aviso')}
                                     >
                                         <View style={[styles.optionIcon, { backgroundColor: '#FF9800' }]}>
-                                            <Text style={styles.optionIconText}>📢</Text>
+                                            <Ionicons name="megaphone" color="#000" size={24} />
                                         </View>
                                         <Text style={styles.optionText}>Aviso</Text>
                                         <Text style={styles.optionArrow}>→</Text>
@@ -286,7 +287,7 @@ const ProfileScreen = ({ navigation }) => {
                                         onPress={() => handleOptionPress('Edição')}
                                     >
                                         <View style={[styles.optionIcon, { backgroundColor: '#2196F3' }]}>
-                                            <Text style={styles.optionIconText}>📰</Text>
+                                            <Ionicons name="newspaper" color="#000" size={24} />
                                         </View>
                                         <Text style={styles.optionText}>Edição</Text>
                                         <Text style={styles.optionArrow}>→</Text>

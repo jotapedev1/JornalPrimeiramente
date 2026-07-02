@@ -9,7 +9,8 @@ const PasswordResetScreen = ({ navigation }) => {
     const [press, setPress] = useState(false);
 
     function handlePress(){
-        //console.log(press);
+
+
         return setPress(true);
     }
 

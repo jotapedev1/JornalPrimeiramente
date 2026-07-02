@@ -1,5 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
-
+import React, {useCallback, useEffect, useState, useContext } from 'react';
 import {
     View,
     Text,
@@ -7,17 +6,23 @@ import {
     Image,
     ScrollView,
     ActivityIndicator,
-    RefreshControl
+    RefreshControl,
+    TouchableOpacity,
+    Alert,
 } from 'react-native';
 
 import JornalLogo from "../../../shared/components/JornalLogo";
 import BottomBar from "../../../shared/components/BottomBar";
 import MediaCard from "../../../shared/components/MediaCard";
-
 import { useMedia } from '../../../context/MediaContext';
+import Ionicons from "@react-native-vector-icons/ionicons";
+import { AuthContext } from "../../../context/AuthContext";
 
 const HomeScreen = ({ navigation }) => {
-
+    const { api, isAdmin } = useContext(AuthContext);
+    
+    const [warnings, setWarnings] = useState([]);
+    
     const {
         loading,
         getAllEditions
@@ -30,16 +35,16 @@ const HomeScreen = ({ navigation }) => {
         useState([]);
 
     const loadHomeData = async () => {
-
         try {
 
-            const editionsData =
-                await getAllEditions();
+            const [editionsData, warningsResponse] = await Promise.all([
+                getAllEditions(),
+                api.get("/warnings/active")
+            ]);
 
-            if (
-                !editionsData ||
-                editionsData.length === 0
-            ) {
+            setWarnings(warningsResponse.data);
+
+            if (!editionsData || editionsData.length === 0) {
 
                 setCurrentEdition(null);
                 setEditionArticles([]);
@@ -47,26 +52,19 @@ const HomeScreen = ({ navigation }) => {
                 return;
             }
 
-            const current =
-                [...editionsData]
-                    .sort(
-                        (a, b) =>
-                            new Date(b.createdAt) -
-                            new Date(a.createdAt)
-                    )[0];
+            const current = [...editionsData]
+                .sort(
+                    (a, b) =>
+                        new Date(b.createdAt) -
+                        new Date(a.createdAt)
+                )[0];
 
             setCurrentEdition(current);
-
-            setEditionArticles(
-                current?.media || []
-            );
+            setEditionArticles(current.media || []);
 
         } catch (error) {
 
-            console.log(
-                "Erro HomeScreen:",
-                error
-            );
+            console.log("Erro HomeScreen:", error);
         }
     };
 
@@ -83,6 +81,47 @@ const HomeScreen = ({ navigation }) => {
                     ? { ...item, saved: newSaved }
                     : item
             )
+        );
+    };
+
+    const handleDeleteWarning = (warningId) => {
+
+        Alert.alert(
+            "Excluir aviso",
+            "Deseja realmente excluir este aviso?",
+            [
+                {
+                    text: "Cancelar",
+                    style: "cancel"
+                },
+                {
+                    text: "Excluir",
+                    style: "destructive",
+                    onPress: async () => {
+
+                        try {
+
+                            await api.delete(`/warnings/${warningId}`);
+
+                            setWarnings(prev =>
+                                prev.filter(
+                                    warning =>
+                                        warning.warningId !== warningId
+                                )
+                            );
+
+                        } catch (error) {
+
+                            console.log(error);
+
+                            Alert.alert(
+                                "Erro",
+                                "Não foi possível excluir o aviso."
+                            );
+                        }
+                    }
+                }
+            ]
         );
     };
 
@@ -123,6 +162,59 @@ const HomeScreen = ({ navigation }) => {
                     />
                 }
             >
+
+                {warnings.length > 0 && (
+
+                    <View style={styles.warningSection}>
+
+                        <Text style={styles.warningTitle}>
+                            Avisos
+                        </Text>
+
+                        {warnings.map(warning => (
+
+                            <View
+                                key={warning.warningId}
+                                style={[
+                                    styles.warningCard,
+                                    styles[
+                                        `warning${warning.priority}`
+                                        ]
+                                ]}
+                            >
+
+                                <View style={styles.warningHeader}>
+
+                                    <Text style={styles.warningText}>
+                                        {warning.title}
+                                    </Text>
+
+                                    {isAdmin && (
+
+                                        <TouchableOpacity
+                                            onPress={() =>
+                                                handleDeleteWarning(
+                                                    warning.id
+                                                )
+                                            }
+                                        >
+                                            <Ionicons
+                                                name="trash"
+                                                size={22}
+                                                color="#d32f2f"
+                                            />
+                                        </TouchableOpacity>
+                                    )}
+
+                                </View>
+
+                            </View>
+
+                        ))}
+
+                    </View>
+
+                )}
 
                 <Text
                     style={[
@@ -312,7 +404,56 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 10,
         lineHeight: 20
-    }
+    },
+    warningSection: {
+        marginHorizontal: 18,
+        marginBottom: 20,
+        marginTop: 20
+    },
+
+    warningTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        marginBottom: 12,
+        color: '#222',
+    },
+
+    warningCard: {
+        padding: 14,
+        borderRadius: 12,
+        marginBottom: 10,
+    },
+
+    warningHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+
+    warningText: {
+        flex: 1,
+        fontSize: 15,
+        fontWeight: '500',
+        color: '#222',
+    },
+
+    warningHIGH: {
+        backgroundColor: '#ffebee',
+        borderLeftWidth: 16,
+        borderLeftColor: '#d32f2f',
+    },
+
+    warningNORMAL: {
+        backgroundColor: '#fff8e1',
+        borderLeftWidth: 16,
+        borderLeftColor: '#f9a825',
+    },
+
+    warningLOW: {
+        backgroundColor: '#e8f5e9',
+        borderLeftWidth: 16,
+        borderLeftColor: '#388e3c',
+    },
 });
 
 export default HomeScreen;
