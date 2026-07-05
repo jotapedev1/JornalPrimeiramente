@@ -2,7 +2,7 @@ import SendButton from "../components/SendButton";
 import PasswordInputButton from "../components/PasswordInputButton";
 import {useContext, useState} from "react";
 import {AuthContext} from "../../../context/AuthContext";
-import {Alert, View} from "react-native";
+import {Alert, View, Text, StyleSheet} from "react-native";
 
 const PasswordChangeScreen = ({ route, navigation }) => {
     const token = route.params?.token;
@@ -64,5 +64,26 @@ const PasswordChangeScreen = ({ route, navigation }) => {
         </View>
     );
 };
-
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        padding: 20,
+        justifyContent: 'center',
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 30,
+        fontFamily: 'Lalezar_400Regular',
+    },
+    errorText: {
+        color: 'red',
+        marginBottom: 2,
+        textAlign: 'left',
+        paddingHorizontal: 10,
+        fontSize: 12,
+    },
+});
 export default PasswordChangeScreen;

@@ -2,6 +2,7 @@
   "expo": {
     "name": "JornalPrimeiramente",
     "slug": "JornalPrimeiramente",
+    "scheme": "jornalprimeiramente",
     "plugins": [
       [
         "expo-font",

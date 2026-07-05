@@ -5,10 +5,13 @@ import com.CJSantos.Jornal_Primeiramente.model.PasswordResetTokenModel;
 import com.CJSantos.Jornal_Primeiramente.model.UserModel;
 import com.CJSantos.Jornal_Primeiramente.repository.PasswordResetTokenRepository;
 import com.CJSantos.Jornal_Primeiramente.repository.UserRepository;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,22 +58,39 @@ public class PasswordResetService {
     }
 
     private void sendResetEmail(String email, String token) {
-        String resetLink = frontendUrl + "/reset-password?token=" + token;
+        String resetLink = frontendUrl + "reset-password?token=" + token;
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("Recuperação de Senha - Jornal Primeiramente");
-        message.setText(
-                "Olá!\n\n" +
-                        "Você solicitou a recuperação de senha para sua conta.\n\n" +
-                        "Clique no link abaixo para redefinir sua senha:\n" +
-                        resetLink + "\n\n" +
-                        "Este link é válido por " + EXPIRATION_MINUTES + " minutos.\n\n" +
-                        "Se você não solicitou esta recuperação, ignore este email.\n\n" +
-                        "Atenciosamente,\n" +
-                        "Equipe Jornal Primeiramente"
-        );
-        mailSender.send(message);
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(email);
+            helper.setSubject("Recuperação de Senha - Jornal Primeiramente");
+
+            String htmlContent =
+                    "<html>" +
+                            "<body style='font-family: Arial, sans-serif; color: #333;'>" +
+                            "<h2>Jornal Primeiramente</h2>" +
+                            "<p>Olá!</p>" +
+                            "<p>Você solicitou a recuperação de senha para sua conta.</p>" +
+                            "<p><a href='" + resetLink + "' " +
+                            "style='display:inline-block; padding:10px 20px; background-color:#e30000; " +
+                            "color:#fff; text-decoration:none; border-radius:5px;'>Redefinir Senha</a></p>" +
+                            "<p>Ou copie e cole este link no seu navegador/dispositivo:</p>" +
+                            "<p>" + resetLink + "</p>" +
+                            "<p>Este link é válido por " + EXPIRATION_MINUTES + " minutos.</p>" +
+                            "<p>Se você não solicitou esta recuperação, ignore este e-mail.</p>" +
+                            "<p>Atenciosamente,<br/>Equipe Jornal Primeiramente</p>" +
+                            "</body>" +
+                            "</html>";
+
+            helper.setText(htmlContent, true); // true = isHtml
+
+            mailSender.send(message);
+
+        } catch (MessagingException e) {
+            throw new RuntimeException("Erro ao enviar e-mail de recuperação: " + e.getMessage());
+        }
     }
 
     @Transactional

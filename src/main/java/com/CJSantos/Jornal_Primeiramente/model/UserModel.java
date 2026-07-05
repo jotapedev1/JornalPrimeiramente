@@ -40,8 +40,6 @@ public class UserModel {
     private String userEmail;
 
     @Transient
-    @NotBlank(message = "A senha é obrigatória.")
-    @Size(min = 8, max = 100)
     private String userPassword;
 
     @NotBlank

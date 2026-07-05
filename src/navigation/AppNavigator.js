@@ -46,6 +46,15 @@ const transitionAnimation = {
     headerStyleInterpolator: HeaderStyleInterpolators.forFade,
 }
 
+const linking = {
+    prefixes: ['jornalprimeiramente://'],
+    config: {
+        screens: {
+            PasswordChange: 'reset-password',
+        },
+    },
+};
+
 function LoadingScreen() {
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -72,7 +81,7 @@ export default function AppNavigator() {
     }
 
     return (
-        <NavigationContainer>
+        <NavigationContainer linking={linking}>
             <Stack.Navigator initialRouteName={initialRoute}
             screenOptions={{
                 headerBackTitleVisible: false,}}>
