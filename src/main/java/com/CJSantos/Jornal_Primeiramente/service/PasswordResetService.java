@@ -22,7 +22,7 @@ public class PasswordResetService {
 
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository tokenRepository;
-    //private final JavaMailSender mailSender; to do!!
+    private final JavaMailSender mailSender;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${app.frontend-url}")
@@ -70,8 +70,7 @@ public class PasswordResetService {
                         "Atenciosamente,\n" +
                         "Equipe Jornal Primeiramente"
         );
-
-        //mailSender.send(message);
+        mailSender.send(message);
     }
 
     @Transactional

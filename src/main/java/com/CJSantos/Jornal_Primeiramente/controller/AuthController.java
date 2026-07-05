@@ -4,6 +4,7 @@ import com.CJSantos.Jornal_Primeiramente.dto.LoginRequest;
 import com.CJSantos.Jornal_Primeiramente.dto.RegisterRequest;
 import com.CJSantos.Jornal_Primeiramente.model.Role;
 import com.CJSantos.Jornal_Primeiramente.model.UserModel;
+import com.CJSantos.Jornal_Primeiramente.service.PasswordResetService;
 import com.CJSantos.Jornal_Primeiramente.service.UserService;
 import com.CJSantos.Jornal_Primeiramente.utils.JwtUtil;
 import jakarta.validation.Valid;
@@ -31,6 +32,9 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PasswordResetService passwordResetService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
@@ -131,6 +135,41 @@ public class AuthController {
 
         } catch (Exception e) {
             return ResponseEntity.ok(Map.of("valid", false, "error", "Senha incorreta"));
+        }
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        if (email == null || email.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "E-mail é obrigatório"));
+        }
+
+        passwordResetService.sendPasswordResetEmail(email);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Se o e-mail existir em nossa base, um link de recuperação foi enviado."
+        ));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
+        try {
+            String token = request.get("token");
+            String newPassword = request.get("newPassword");
+
+            if (token == null || newPassword == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Token e nova senha são obrigatórios"));
+            }
+            if (newPassword.length() < 6) {
+                return ResponseEntity.badRequest().body(Map.of("error", "A senha deve ter no mínimo 6 caracteres"));
+            }
+
+            passwordResetService.resetPassword(token, newPassword);
+            return ResponseEntity.ok(Map.of("message", "Senha redefinida com sucesso"));
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 }

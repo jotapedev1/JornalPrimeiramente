@@ -1,18 +1,35 @@
-import React, { useState } from 'react';
-import {View, Text,  StyleSheet } from 'react-native';
+import React, { useState, useContext } from 'react';
+import {View, Text,  StyleSheet, Alert } from 'react-native';
 import InputButton from "../components/InputButton"
 import SendButton from "../components/SendButton";
 import TemplateButton from "../components/TemplateButton";
 import JornalLogo from "../../../shared/components/JornalLogo";
+import { AuthContext } from "../../../context/AuthContext";
 
 const PasswordResetScreen = ({ navigation }) => {
-    const [press, setPress] = useState(false);
+    const { api } = useContext(AuthContext);
+    const [email, setEmail] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    function handlePress(){
-
-
-        return setPress(true);
-    }
+    const handleSubmit = async () => {
+        if (!email.trim()) {
+            Alert.alert('Erro', 'Digite seu e-mail');
+            return;
+        }
+        setLoading(true);
+        try {
+            await api.post('/auth/forgot-password', { email });
+            Alert.alert(
+                'Verifique seu e-mail',
+                'Se o e-mail informado existir em nossa base, enviamos um link de recuperação.',
+                [{ text: 'OK', onPress: () => navigation.popTo('Login') }]
+            );
+        } catch (error) {
+            Alert.alert('Erro', 'Não foi possível processar sua solicitação');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -23,21 +40,26 @@ const PasswordResetScreen = ({ navigation }) => {
                 Esqueci minha senha</Text>
 
             <View style={{top: 10}}>
-            <InputButton
-                label="E-mail:"
-                placeholder="Digite seu email"
-            />
+                <InputButton
+                    label="E-mail:"
+                    placeholder="Digite seu email"
+                    value={email}
+                    onChangeText={setEmail}
+                />
             </View>
 
-            <SendButton label={'Enviar'} onPress={handlePress} style={press === false ? {} : styles.pressedPermanent}/>
+            <SendButton
+                label={loading ? 'Enviando...' : 'Enviar'}
+                onPress={handleSubmit}
+                disabled={loading || !email.trim()}
+            />
 
             <TemplateButton style={styles.templateButtonView} label={'Já tenho login'}
                             onPress={()=>navigation.popTo('Login')}/>
-
-
         </View>
     );
 };
+// ... styles permanecem iguais
 
 const styles = StyleSheet.create({
     container: {

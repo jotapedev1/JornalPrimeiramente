@@ -32,6 +32,7 @@ import OtherResourcesScreen from "../features/Config/OtherResourcesScreen";
 import PublishingScreen from "../features/Perfil/screens/PublishingScreen";
 import {ActivityIndicator, View} from "react-native";
 import {useContext, useEffect, useState} from "react";
+import PasswordChangeScreen from "../features/Auth/screens/PasswordChangeScreen";
 import {AuthContext} from "../context/AuthContext";
 
 const Stack = createNativeStackNavigator();
@@ -82,6 +83,8 @@ export default function AppNavigator() {
                 <Stack.Screen name="SignUp" component={SignUpScreen}/>
                 <Stack.Screen name="PasswordReset" component={PasswordResetScreen}
                               options={{headerShown: true}}/>
+                <Stack.Screen name="PasswordChange" component={PasswordChangeScreen}
+                              options={{headerShown: true, title: 'Nova Senha'}}/>
 
                 {/*MEDIA SCREENS*/}
                 <Stack.Screen name="Home" component={HomeScreen}
