@@ -7,7 +7,6 @@ import SignUpScreen from "../features/Auth/screens/SignUpScreen";
 import HomeScreen from "../features/Midias/screens/HomeScreen";
 import MenuScreen from "../features/Midias/screens/MenuScreen";
 import BrowseScreen from "../features/Midias/screens/BrowseScreen";
-import NotificationScreen from "../features/Perfil/screens/NotificationScreen";
 import ProfileScreen from "../features/Perfil/screens/ProfileScreen";
 import {HeaderStyleInterpolators, TransitionSpecs} from '@react-navigation/stack';
 import MediaScreen from "../features/Midias/screens/MediaScreen";
@@ -19,7 +18,6 @@ import AccountDeactivationScreen from "../features/Config/YourAccountConfig/Acco
 import AccountInfoScreen from "../features/Config/YourAccountConfig/AccountInfoScreen";
 import ChangePassScreen from "../features/Config/YourAccountConfig/ChangePassScreen";
 import AccessibilityScreen from "../features/Config/AccessibilityScreen";
-import NotificationsConfigScreen from "../features/Config/NotificationsConfigScreen";
 import YourAccountScreen from "../features/Config/YourAccountScreen";
 import AccessibilityConfigScreen from "../features/Config/AccessibilityConfig/AccessibilityConfigScreen";
 import AboutScreen from "../features/Config/OtherResourcesConfig/AboutScreen";
@@ -108,8 +106,7 @@ export default function AppNavigator() {
                               options={{headerShown: true}}/>
 
                 {/*PROFILE SCREENS*/}
-                <Stack.Screen name="Notification" component={NotificationScreen}
-                              options={{ headerShown: true }}/>
+
                 <Stack.Screen name="Profile" component={ProfileScreen}
                               options={{ headerShown: true }}/>
                 <Stack.Screen name ="Bookmarks" component={BookmarksScreen}
@@ -122,8 +119,7 @@ export default function AppNavigator() {
                               options={{headerShown: true}}/>
                 <Stack.Screen name={"Accessibility"} component={AccessibilityScreen}
                               options={{headerShown: true}}/>
-                <Stack.Screen name={"NotificationsConfig"} component={NotificationsConfigScreen}
-                              options={{headerShown: true}}/>
+
                 <Stack.Screen name={"OtherResources"} component={OtherResourcesScreen}
                               options={{headerShown: true}}/>
                 <Stack.Screen name={"YourAccount"} component={YourAccountScreen}

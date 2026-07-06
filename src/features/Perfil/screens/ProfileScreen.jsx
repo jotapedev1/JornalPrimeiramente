@@ -29,6 +29,19 @@ const ProfileScreen = ({ navigation }) => {
 
     const loadUserData = async () => {
         try {
+            if (isAdmin) {
+                // Admin é responsável apenas pelas publicações
+                const postsResponse = await api.get(`/user/${user?.userId}/posts`);
+                const posts = Array.isArray(postsResponse.data) ? postsResponse.data : [];
+
+                setUserPosts(posts);
+                setLikedArticles([]);
+
+                console.log('Posts carregados (admin):', posts.length);
+
+                return;
+            }
+
             const [postsResponse, likesResponse] = await Promise.all([
                 api.get(`/user/${user?.userId}/posts`),
                 api.get(`/user/${user?.userId}/likes`)
@@ -186,28 +199,35 @@ const ProfileScreen = ({ navigation }) => {
                             <Text style={styles.statNumber}>{userPosts.length}</Text>
                             <Text style={styles.statLabel}>Publicações</Text>
                         </View>
-                        <View style={styles.statDivider} />
-                        <View style={styles.statItem}>
-                            <Text style={styles.statNumber}>{likedArticles.length}</Text>
-                            <Text style={styles.statLabel}>Curtidas</Text>
-                        </View>
-                    </View>
 
-                    {/* Seção de Artigos Curtidos */}
-                    <View style={styles.sectionContainer}>
-                        <Text style={styles.sectionTitle}>Artigos Curtidos</Text>
-                        {likedArticles.length > 0 ? (
-                            likedArticles.map((article, index) => (
-                                <MediaCard
-                                    key={article.mediaId || index}
-                                    article={article}
-                                    onToggleSaved={handleToggleSaved}
-                                />
-                            ))
-                        ) : (
-                            <Text style={styles.emptyText}>Nenhum artigo curtido ainda</Text>
+                        {!isAdmin && (
+                            <>
+                                <View style={styles.statDivider} />
+                                <View style={styles.statItem}>
+                                    <Text style={styles.statNumber}>{likedArticles.length}</Text>
+                                    <Text style={styles.statLabel}>Curtidas</Text>
+                                </View>
+                            </>
                         )}
                     </View>
+
+                    {/* Seção de Artigos Curtidos — não se aplica ao admin */}
+                    {!isAdmin && (
+                        <View style={styles.sectionContainer}>
+                            <Text style={styles.sectionTitle}>Artigos Curtidos</Text>
+                            {likedArticles.length > 0 ? (
+                                likedArticles.map((article, index) => (
+                                    <MediaCard
+                                        key={article.mediaId || index}
+                                        article={article}
+                                        onToggleSaved={handleToggleSaved}
+                                    />
+                                ))
+                            ) : (
+                                <Text style={styles.emptyText}>Nenhum artigo curtido ainda</Text>
+                            )}
+                        </View>
+                    )}
 
                     {/* Seção de Publicações do Usuário */}
                     <View style={styles.sectionContainer}>

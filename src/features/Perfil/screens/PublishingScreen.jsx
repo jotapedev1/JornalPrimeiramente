@@ -44,7 +44,6 @@ const PublishScreen = ({ navigation, route }) => {
         { label: 'Poesia', value: 'POETRY' },
         { label: 'Ilustração', value: 'DRAWING' },
         { label: 'Texto', value: 'TEXT' },
-        { label: 'Aviso', value: 'WARNING' },
     ]);
 
 
@@ -60,11 +59,34 @@ const PublishScreen = ({ navigation, route }) => {
     const [editingArticleId, setEditingArticleId] = useState(null);
     const [isArticleFormExpanded, setIsArticleFormExpanded] = useState(false); // Novo estado para controlar expansão
 
+    const isValidDate = (dateString) => {
+        if (!dateString || dateString.length !== 10) return false;
+
+        const parts = dateString.split('/');
+        if (parts.length !== 3) return false;
+
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10);
+        const year = parseInt(parts[2], 10);
+
+        if (isNaN(day) || isNaN(month) || isNaN(year)) return false;
+        if (month < 1 || month > 12) return false;
+        if (year < 1900 || year > 2100) return false;
+
+        const daysInMonth = new Date(year, month, 0).getDate();
+        if (day < 1 || day > daysInMonth) return false;
+
+        return true;
+    };
+
     const convertToISO = (dateString) => {
+        if (!isValidDate(dateString)) {
+            return null;
+        }
 
         const [day, month, year] = dateString.split('/');
 
-        return `${year}-${month}-${day}`;
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     };
 
     const formatDataWithBars = (text) => {
@@ -282,10 +304,20 @@ const PublishScreen = ({ navigation, route }) => {
 
         if (publishType === 'Aviso') {
 
+            if (expiryDate && !isValidDate(expiryDate)) {
+                Alert.alert('Erro', 'Data de expiração inválida. Verifique dia, mês e ano.');
+                return;
+            }
+
             submitAviso();
         } else if (publishType === 'Edicao') {
             if (!editionNumber) {
                 Alert.alert('Erro', 'O número da edição é obrigatório');
+                return;
+            }
+
+            if (!publicationDate || !isValidDate(publicationDate)) {
+                Alert.alert('Erro', 'Data de publicação inválida. Verifique dia, mês e ano.');
                 return;
             }
 
@@ -302,7 +334,6 @@ const PublishScreen = ({ navigation, route }) => {
 
     const submitAviso = async () => {
         try {
-            // Validar campos obrigatórios
             if (!title.trim()) {
                 Alert.alert('Erro', 'O título do aviso é obrigatório');
                 return;
@@ -313,19 +344,24 @@ const PublishScreen = ({ navigation, route }) => {
                 return;
             }
 
-            // Converter prioridade para o formato do backend (HIGH, MEDIUM, LOW)
             const priorityMap = {
                 'alta': 'HIGH',
                 'normal': 'NORMAL',
                 'baixa': 'LOW'
             };
 
-            // Converter data de expiração para ISO (YYYY-MM-DD)
-            const formattedExpiryDate = expiryDate ? convertToISO(expiryDate) : null;
+            let formattedExpiryDate = null;
+            if (expiryDate) {
+                formattedExpiryDate = convertToISO(expiryDate);
+                if (!formattedExpiryDate) {
+                    Alert.alert('Erro', 'Data de expiração inválida');
+                    return;
+                }
+            }
 
             const avisoData = {
                 title: title.trim(),
-                priority: priorityMap[priority] || 'MEDIUM',
+                priority: priorityMap[priority] || 'NORMAL',
                 expirationDate: formattedExpiryDate
             };
 
@@ -361,6 +397,13 @@ const PublishScreen = ({ navigation, route }) => {
 
         try {
 
+            const formattedPublicationDate = convertToISO(publicationDate);
+
+            if (!formattedPublicationDate) {
+                Alert.alert('Erro', 'Data de publicação inválida');
+                return;
+            }
+
             const formData = new FormData();
 
             const medias = articles.map((article, index) => ({
@@ -373,17 +416,15 @@ const PublishScreen = ({ navigation, route }) => {
             const edicaoData = {
                 title,
                 editionNumber,
-                publicationDate: convertToISO(publicationDate),
+                publicationDate: formattedPublicationDate,
                 media: medias
             };
 
-            // JSON da edição
             formData.append(
                 'edition',
                 JSON.stringify(edicaoData)
             );
 
-            // PDFs
             articles.forEach((article, index) => {
 
                 if (article.featuredPdf) {
@@ -511,19 +552,6 @@ const PublishScreen = ({ navigation, route }) => {
                 </TouchableOpacity>
             );
         }
-
-        const convertToISO = (dateString) => {
-            if (!dateString) return null;
-
-            try {
-                const [day, month, year] = dateString.split('/');
-                return `${year}-${month}-${day}`;
-            } catch (error) {
-                console.log('Erro ao converter data:', error);
-                return null;
-            }
-        };
-
         // Se estiver expandido, mostra o formulário completo
         return (
             <View style={styles.articleFormContainer}>
@@ -718,7 +746,7 @@ const PublishScreen = ({ navigation, route }) => {
                 <View style={styles.formContainer}>
                     <Text style={styles.headerTitle}>{getTitle()}</Text>
 
-                    <Text style={styles.label}>Título da {publishType === 'Aviso' ? 'Edição' : 'Edição'}</Text>
+                    <Text style={styles.label}>Título d{publishType === 'Aviso' ? 'o Aviso' : 'a Edição'}</Text>
                     <TextInput
                         style={styles.input}
                         placeholder="Digite o título"

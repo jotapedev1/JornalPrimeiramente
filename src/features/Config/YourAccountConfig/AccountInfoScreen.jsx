@@ -114,7 +114,9 @@ const AccountInfoScreen = ({ navigation }) => {
 
                 <View style={styles.infoContainer}>
                     <Text style={styles.subTitle}>Tipo de usuário:</Text>
-                    <Text style={styles.mainText}>{userInfo.userRole === 'ADMIN' ? 'Administrador' : 'Integrante'}</Text>
+                    <Text style={styles.mainText}>
+                        {userInfo.userRole === 'ADMIN' ? 'Administrador' : userInfo.userRole === 'READER' ? 'Leitor' : 'Integrante'}
+                    </Text>
                 </View>
             </View>
         );

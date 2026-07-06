@@ -9,7 +9,6 @@ import BottomBar from "../../shared/components/BottomBar";
 const ConfigurationScreen = ({navigation}) => {
     const data=[
         {id: 1, name: 'Sua Conta', route: 'YourAccount'},
-        {id: 2, name: 'Notificacoes', route: 'NotificationsConfig'},
         {id: 3, name: 'Acessiblidade e exibição', route: 'Accessibility'},
         {id: 4, name: 'Recursos adicionais', route: 'OtherResources'},
     ];

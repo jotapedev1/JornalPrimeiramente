@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import {
     View,
     Text,
-    StyleSheet,
     Dimensions,
     ScrollView,
     ActivityIndicator,
@@ -196,30 +195,36 @@ const MediaScreen = ({ route }) => {
                     </>
                 )}
 
-                <View style={styles.actionsContainer}>
-                    <LikeButton height={35} width={35} mediaId={media.mediaId} />
-                    <BookmarkButton height={30} width={30} mediaId={media.mediaId} />
-                </View>
+                {!isAdmin && (
+                    <View style={styles.actionsContainer}>
+                        <LikeButton height={35} width={35} mediaId={media.mediaId} />
+                        <BookmarkButton height={30} width={30} mediaId={media.mediaId} />
+                    </View>
+                )}
 
                 <View style={styles.commentsContainer}>
                     <Text style={styles.commentTitle}>Comentários:</Text>
 
-                    <View style={styles.commentInput}>
-                        <InputButton
-                            placeholder="Comente algo na postagem"
-                            style={styles.commentDimensions}
-                            value={commentText}
-                            onChangeText={setCommentText}
-                        />
-                    </View>
+                    {!isAdmin && (
+                        <>
+                            <View style={styles.commentInput}>
+                                <InputButton
+                                    placeholder="Comente algo na postagem"
+                                    style={styles.commentDimensions}
+                                    value={commentText}
+                                    onChangeText={setCommentText}
+                                />
+                            </View>
 
-                    <View style={{ paddingBottom: 20 }}>
-                        <SendButton
-                            label={sendingComment ? "Enviando..." : "Comentar"}
-                            onPress={handleSendComment}
-                            disabled={sendingComment}
-                        />
-                    </View>
+                            <View style={{ paddingBottom: 20 }}>
+                                <SendButton
+                                    label={sendingComment ? "Enviando..." : "Comentar"}
+                                    onPress={handleSendComment}
+                                    disabled={sendingComment}
+                                />
+                            </View>
+                        </>
+                    )}
                 </View>
 
                 <View

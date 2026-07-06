@@ -11,7 +11,6 @@ const BottomBar = ({ navigation }) => {
         burger: require('../../assets/icons/burger-icon.png'),
         compass: require('../../assets/icons/compass-icon.png'),
         home: require('../../assets/icons/home-icon.png'),
-        bell: require('../../assets/icons/bell-icon.png'),
         profile: require('../../assets/icons/profile-icon.png'),
     };
 
@@ -19,7 +18,6 @@ const BottomBar = ({ navigation }) => {
         {id: 1, name: 'burger', route: 'Menu'},
         {id: 2, name: 'compass', route: 'Browse'},
         {id: 3, name: 'home', route: 'Home'},
-        {id: 4, name: 'bell', route: 'Notification'},
         {id: 5, name: 'profile', route: 'Profile'},
     ];
 
