@@ -56,11 +56,12 @@ const ProfileScreen = ({ navigation }) => {
             const likes  = Array.isArray(likesResponse.data)? likesResponse.data : [];
 
             const likedMedia = likes.map(like => ({
-                mediaId: like.mediaId,
-                mediaTitle: like.mediaTitle,
-                mediaDescription: like.mediaDescription,
-                mediaAuthor: like.mediaAuthor,
-                mediaFileName: like.mediaFileName,
+                mediaId: like.mediaId || like.id,
+                mediaTitle: like.mediaTitle || like.title || "Sem título",
+                mediaDescription: like.mediaDescription || like.description || "",
+                mediaAuthor: like.mediaAuthor || like.author || "Autor desconhecido",
+                mediaFileName: like.mediaFileName || like.fileName || "",
+                mediaPreview: like.mediaPreview || like.preview || null,
                 createdAt: like.createdAt,
             }));
 
@@ -101,6 +102,9 @@ const ProfileScreen = ({ navigation }) => {
             )
         );
     };
+
+    const canPublish =
+        isAdmin || user?.role === 'PARTICIPANT';
 
     const handlePublishingButton = () => {
         setModalVisible(true);
@@ -230,20 +234,29 @@ const ProfileScreen = ({ navigation }) => {
                     )}
 
                     {/* Seção de Publicações do Usuário */}
-                    <View style={styles.sectionContainer}>
-                        <Text style={styles.sectionTitle}>Minhas Publicações</Text>
-                        {userPosts.length > 0 ? (
-                            userPosts.map((post, index) => (
-                                <MediaCard
-                                    key={post.mediaId || post.id || index}
-                                    article={post}
-                                    onToggleSaved={handleToggleSaved}
-                                />
-                            ))
-                        ) : (
-                            <Text style={styles.emptyText}>Nenhuma publicação ainda</Text>
-                        )}
-                    </View>
+                    {canPublish && (
+                        <View style={styles.sectionContainer}>
+
+                            <Text style={styles.sectionTitle}>
+                                Minhas Publicações
+                            </Text>
+
+                            {userPosts.length > 0 ? (
+                                userPosts.map((post, index) => (
+                                    <MediaCard
+                                        key={post.mediaId || post.id || index}
+                                        article={post}
+                                        onToggleSaved={handleToggleSaved}
+                                    />
+                                ))
+                            ) : (
+                                <Text style={styles.emptyText}>
+                                    Nenhuma publicação ainda
+                                </Text>
+                            )}
+
+                        </View>
+                    )}
 
                     {/* Botão de publicação - SÓ APARECE SE FOR ADMIN */}
                     {isAdmin && (

@@ -1,17 +1,20 @@
 // MediaCard.js
-import React from "react";
+import React, {useContext, useState} from "react";
 import {
     View,
     Text,
     Image,
     StyleSheet,
-    TouchableOpacity,
+    TouchableOpacity, LogBox,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import BookmarkButton from "../../features/Perfil/components/BookmarkButton";
+import {AuthContext} from "../../context/AuthContext";
 
 const MediaCard = ({ article, onToggleSaved }) => {
     const navigation = useNavigation();
+    const { api, BASE_URL } = useContext(AuthContext);
+    const [imageError, setImageError] = useState(false);
 
     if (!article) return null;
 
@@ -22,19 +25,44 @@ const MediaCard = ({ article, onToggleSaved }) => {
     };
 
     const handleToggleSaved = (mediaId, newSaved) => {
-        // Propagar a mudança para o componente pai
         onToggleSaved?.(mediaId, newSaved);
     };
 
-    const imageSource = article.mediaUrl
-        ? { uri: article.mediaUrl }
-        : require("../../assets/imgs/img_placeholder.png");
+    const getImageSource = () => {
+        // Prioridade: Capa personalizada > Preview > Placeholder
+        if (article.hasCover) {
+            // Se tem capa personalizada, usa a URL da capa
+            return { uri: `${BASE_URL}/media/${article.mediaId}/cover` };
+        }
+        // Se tem mediaPreview, usar o preview
+        if (article.mediaPreview && typeof article.mediaPreview === 'string') {
+            return { uri: `data:image/png;base64,${article.mediaPreview}` };
+        }
+        if (article.mediaId) {
+            return { uri: `${BASE_URL}/media/${article.mediaId}/preview` };
+        }
+        // Fallback para placeholder
+        return require('../../assets/imgs/img_placeholder.png');
+    };
+
+    const imageSource = getImageSource();
 
     return (
         <TouchableOpacity activeOpacity={0.7} onPress={handlePress}>
             <View style={styles.shadow}>
                 <View style={styles.card}>
-                    <Image source={imageSource} style={styles.image} />
+                    <Image
+                        source={imageSource}
+                        style={styles.image}
+                        onError={() => {
+                            console.log('Erro ao carregar preview');
+                            setImageError(true);
+                        }}
+                        onLoad={() => {
+                            console.log('Preview carregado com sucesso:', article.mediaId);
+                            setImageError(false);
+                        }}
+                    />
 
                     <View style={styles.content}>
                         <Text style={styles.author}>

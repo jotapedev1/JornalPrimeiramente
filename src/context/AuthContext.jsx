@@ -1,9 +1,13 @@
 import { createContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { Platform } from "react-native";
+import {LogBox, Platform} from "react-native";
 
 export const AuthContext = createContext({});
+
+LogBox.ignoreLogs([
+    'hapticpatternlibrary.plist',
+]);
 
 const BASE_URL =
     Platform.OS === "android"
@@ -192,6 +196,7 @@ export function AuthProvider({ children }) {
                 loginWithCredentials,
                 register,
                 logout,
+                BASE_URL,
                 isAuthenticated: !!token && !!user,
             }}
         >

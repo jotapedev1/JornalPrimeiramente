@@ -1,5 +1,6 @@
 package com.CJSantos.Jornal_Primeiramente.dto;
 
+import com.CJSantos.Jornal_Primeiramente.model.Media;
 import lombok.Data;
 
 import java.util.UUID;
@@ -11,5 +12,8 @@ public class MediaRequest {
     private String mediaDescription;
     private String mediaAuthor;
     private String mediaUrl;
-    private boolean saved;
+    private String mediaContent;
+    private Media mediaType;
+    private boolean hasCover;
+    private boolean coverGenerated;
 }

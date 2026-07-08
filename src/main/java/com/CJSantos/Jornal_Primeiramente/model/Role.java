@@ -4,5 +4,4 @@ public enum Role {
     ADMIN,
     PARTICIPANT,
     READER;
-
 }

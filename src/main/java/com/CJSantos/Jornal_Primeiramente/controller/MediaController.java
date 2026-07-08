@@ -19,11 +19,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.sql.SQLException;
+
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/media")
@@ -45,35 +47,27 @@ public class MediaController {
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createMediaWithFile(
             @RequestPart("media") String mediaJson,
-            @RequestPart(value = "file", required = false)
-            MultipartFile file,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestPart(value = "cover", required = false) MultipartFile cover,  // ← NOVO: capa opcional
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-
         try {
-
             ObjectMapper mapper = new ObjectMapper();
-
-            MediaModel media =
-                    mapper.readValue(mediaJson, MediaModel.class);
-
-            UserModel author =
-                    userService.getUserByEmail(userDetails.getUsername());
-
+            MediaModel media = mapper.readValue(mediaJson, MediaModel.class);
+            UserModel author = userService.getUserByEmail(userDetails.getUsername());
             media.setUser(author);
 
-            MediaModel savedMedia =
-                    mediaService.createMediaWithFile(media, file, author);
+            MediaModel savedMedia = mediaService.createMediaWithFile(media, file, cover, author);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                     "message", "Mídia criada com sucesso",
                     "mediaId", savedMedia.getMediaId(),
                     "fileName", savedMedia.getMediaFileName(),
-                    "fileSize", savedMedia.getMediaFileSize()
+                    "fileSize", savedMedia.getMediaFileSize(),
+                    "hasCover", savedMedia.getMediaCover() != null
             ));
 
         } catch (Exception e) {
-
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("error", e.getMessage()));
         }
@@ -233,6 +227,68 @@ public class MediaController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping(value = "/content", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createMediaWithContent(
+            @RequestPart("media") String mediaJson,
+            @RequestPart(value = "cover", required = false) MultipartFile cover,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            MediaModel media = mapper.readValue(mediaJson, MediaModel.class);
+            UserModel author = userService.getUserByEmail(userDetails.getUsername());
+
+            if (media.getMediaType() != Media.POETRY && media.getMediaType() != Media.TEXT) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Este endpoint é apenas para POESIA e TEXTO"));
+            }
+
+            MediaModel saved = mediaService.createMediaWithContent(media, media.getMediaContent(), cover, author);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                    "message", "Mídia criada com sucesso",
+                    "mediaId", saved.getMediaId(),
+                    "mediaType", saved.getMediaType(),
+                    "coverGenerated", saved.isMediaCoverGenerated()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{mediaId}/content")
+    public ResponseEntity<?> getMediaContent(@PathVariable UUID mediaId) {
+        try {
+            String content = mediaService.getMediaContent(mediaId);
+            return ResponseEntity.ok(Map.of(
+                    "mediaId", mediaId,
+                    "content", content
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{mediaId}/cover")
+    public ResponseEntity<byte[]> getMediaCover(@PathVariable UUID mediaId) {
+        try {
+            byte[] cover = mediaService.getMediaCover(mediaId);
+
+            if (cover == null || cover.length == 0) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_PNG)
+                    .header(HttpHeaders.CACHE_CONTROL, "max-age=3600")
+                    .body(cover);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

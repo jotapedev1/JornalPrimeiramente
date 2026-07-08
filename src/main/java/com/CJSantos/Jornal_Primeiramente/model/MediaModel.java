@@ -35,8 +35,6 @@ public class MediaModel {
     @Size(max = 5000, message = "A descrição deve possuir no máximo 5000 caracteres.")
     private String mediaDescription;
 
-    @NotBlank(message = "A URL da mídia é obrigatória.")
-    @Column(nullable = false)
     private String mediaUrl;
 
     @NotBlank(message = "O autor é obrigatório.")
@@ -53,6 +51,7 @@ public class MediaModel {
 
     private LocalDateTime mediaCreatedAt;
 
+    // Para arquivos (PDF, PNG, JPG)
     @JsonIgnore
     @Column(columnDefinition = "bytea", name = "media_file")
     private byte[] mediaFile;
@@ -63,6 +62,18 @@ public class MediaModel {
     @JsonIgnore
     private Long mediaFileSize;
 
+    // Para conteúdo textual (POESIA, TEXTO)
+    @Column(columnDefinition = "TEXT")
+    private String mediaContent;
+
+    // Capa enviada pelo usuário (imagem personalizada)
+    @Column(name = "media_cover")
+    private byte[] mediaCover;
+
+    @Column(name = "media_cover_generated")
+    private boolean mediaCoverGenerated;
+
+
     @JsonBackReference(value = "user-media")
     @NotNull(message = "O usuário é obrigatório.")
     @ManyToOne(fetch = FetchType.LAZY)
@@ -70,12 +81,10 @@ public class MediaModel {
     private UserModel user;
 
     @JsonBackReference(value = "edition-media")
-    @NotNull(message = "A edição é obrigatória.")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "edition_id", nullable = false)
+    @JoinColumn(name = "edition_id")
     private EditionModel edition;
 
-    // Deleting media deletes all comments
     @JsonManagedReference(value = "media-comment")
     @OneToMany(mappedBy = "commentMedia", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentModel> comments;
